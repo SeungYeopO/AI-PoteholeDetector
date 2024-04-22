@@ -1,11 +1,13 @@
 FROM openjdk:17
 
-CMD ./gradlew
+WORKDIR /app
+COPY . .
 
-CMD ./gradlew build
+RUN chmod +x ./gradlew
+
+RUN ./gradlew build
 
 ARG JAR_FILE=build/libs/*.jar
-
 COPY ${JAR_FILE} app.jar
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
