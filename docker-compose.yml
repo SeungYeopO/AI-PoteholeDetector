@@ -1,13 +1,13 @@
 services:
   client:
-    image : H2O_client
+    image : h2o_client
     container_name: client
     build:
       context: ./frontend
     ports:
       - "3000:3000"
   server:
-    image: H2O_server
+    image: h2o_server
     container_name: server
     build:
       context: ./backend/poppy
