@@ -5,6 +5,8 @@ COPY . .
 
 RUN chmod +x ./gradlew
 
+RUN ./gradlew
+
 RUN ./gradlew build
 
 ARG JAR_FILE=./build/libs/*.jar
