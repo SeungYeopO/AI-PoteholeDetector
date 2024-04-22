@@ -1,4 +1,4 @@
-FROM openjdk:22
+FROM openjdk:17
 
 CMD ./gradlew
 
