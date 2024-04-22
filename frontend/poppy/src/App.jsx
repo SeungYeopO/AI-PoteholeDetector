@@ -10,7 +10,6 @@ const App = () => {
         <Route path="/" element={<LoginPage />} />
       </Routes>
   </BrowserRouter>
-
   );
 };
 
