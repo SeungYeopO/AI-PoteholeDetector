@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjdk:17-jdk-alpine AS builder
 
 RUN apt-get update && apt-get install -y xargs
 
