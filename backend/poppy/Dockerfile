@@ -9,6 +9,8 @@ RUN ./gradlew
 
 RUN ./gradlew build
 
+RUN ls -l ./build/libs/
+
 ARG JAR_FILE=./build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
