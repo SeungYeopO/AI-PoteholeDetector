@@ -5,12 +5,13 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYY_7_SvYIBAR5lAtf84PMm5-keG1z0Gg"></script>
     <script>
         let map, infoWindow;
+        let hasOrientationPermission = false;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: -34.397, lng: 150.644},
                 zoom: 16,
-                heading: 0  // 초기 방향 설정
+                heading: 0
             });
             infoWindow = new google.maps.InfoWindow;
 
@@ -33,20 +34,39 @@
                 handleLocationError(false, infoWindow, map.getCenter());
             }
 
-            // Listen for orientation changes
-            if (window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientation', function(event) {
-                    let alpha = event.alpha;
-                    if (typeof event.webkitCompassHeading !== 'undefined') {
-                        alpha = event.webkitCompassHeading; // iOS는 webkitCompassHeading을 사용
-                        map.setHeading(360 - alpha); // 북쪽을 맞추기 위해 360에서 alpha를 뺌
-                    } else {
-                        const mapHeading = 360 - alpha; // 기타 디바이스
-                        map.setHeading(mapHeading);
-                    }
-                });
+            // Request permission for device orientation
+            requestOrientationPermission();
+        }
+
+        function handleOrientationPermission(status) {
+            if (status === 'granted') {
+                hasOrientationPermission = true;
+                // Listen for orientation changes
+                window.addEventListener('deviceorientation', handleDeviceOrientation);
             } else {
-                alert("Sorry, your browser does not support Device Orientation");
+                alert("Permission denied for device orientation.");
+            }
+        }
+
+        function requestOrientationPermission() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(handleOrientationPermission);
+            } else {
+                alert("Device orientation permissions not supported in this browser.");
+            }
+        }
+
+        function handleDeviceOrientation(event) {
+            if (!hasOrientationPermission) return;
+
+            let alpha = event.alpha;
+            if (typeof event.webkitCompassHeading !== 'undefined') {
+                alpha = event.webkitCompassHeading;
+                map.setHeading(360 - alpha);
+            } else {
+                const mapHeading = 360 - alpha;
+                map.setHeading(mapHeading);
             }
         }
 
