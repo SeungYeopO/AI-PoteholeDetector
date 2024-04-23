@@ -9,7 +9,8 @@
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: -34.397, lng: 150.644},
-                zoom: 16
+                zoom: 16,
+                heading: 0  // 초기 방향 설정
             });
             infoWindow = new google.maps.InfoWindow;
 
@@ -29,16 +30,24 @@
                     handleLocationError(true, infoWindow, map.getCenter());
                 });
             } else {
-                // Browser doesn't support Geolocation
                 handleLocationError(false, infoWindow, map.getCenter());
             }
 
             // Listen for orientation changes
-            window.addEventListener('deviceorientation', function(event) {
-                const alpha = event.alpha;
-                const mapHeading = 360 - alpha;
-                map.setHeading(mapHeading);
-            });
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', function(event) {
+                    let alpha = event.alpha;
+                    if (typeof event.webkitCompassHeading !== 'undefined') {
+                        alpha = event.webkitCompassHeading; // iOS는 webkitCompassHeading을 사용
+                        map.setHeading(360 - alpha); // 북쪽을 맞추기 위해 360에서 alpha를 뺌
+                    } else {
+                        const mapHeading = 360 - alpha; // 기타 디바이스
+                        map.setHeading(mapHeading);
+                    }
+                });
+            } else {
+                alert("Sorry, your browser does not support Device Orientation");
+            }
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
