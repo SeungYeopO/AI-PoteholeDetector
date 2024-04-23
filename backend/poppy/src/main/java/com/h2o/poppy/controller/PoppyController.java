@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PoppyController {
-    @GetMapping("users")
+    @GetMapping("api/users")
     @ResponseBody
     public Hello HelloApi(@RequestParam("name") String name) {
         Hello hello = new Hello();
