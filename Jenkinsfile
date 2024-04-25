@@ -9,7 +9,9 @@ pipeline {
                         dockerComposeDown('client')
                         dockerComposeUp('client')
                     } else if (env.BRANCH_NAME == 'server') {
+                        dockerComposeDown('db')
                         dockerComposeDown('server')
+                        dockerComposeUp('db')
                         dockerComposeUp('server')
                     } else if (env.BRANCH_NAME == 'develop') {
                         dockerComposeDown()
