@@ -1,10 +1,10 @@
 package com.h2o.poppy.entity;
-//ackage com.example.demo.demo.enttiy;
-
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "serial_lists")
@@ -20,6 +20,12 @@ public class SerialList {
     @Column(name = "serial_number", length = 20)
     private String serialNumber;
 
+    @OneToOne(mappedBy = "serialPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UsersSerials usersSerials;
+
+    @OneToMany(mappedBy = "serialPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BlackboxVideoMetadata> blackboxVideoMetadata;
+
     // 생성자
     public SerialList() {
     }
@@ -28,5 +34,5 @@ public class SerialList {
         this.serialNumber = serialNumber;
     }
 
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
+
 }

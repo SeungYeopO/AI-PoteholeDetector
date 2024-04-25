@@ -1,6 +1,4 @@
 package com.h2o.poppy.entity;
-//package com.example.demo.demo.enttiy;
-
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,20 +15,19 @@ public class UsersSerials {
     @Column(name = "user_serial_pk", nullable = false, updatable = false)
     private Long userSerialPk;
 
-    @Column(name = "user_pk", nullable = false)
-    private Long userPk;
+    @OneToOne
+    @JoinColumn(name = "user_pk", nullable = false)
+    private User userPk;
 
-    @Column(name = "serial_pk", nullable = false)
-    private Long serialPk;
+    @OneToOne
+    @JoinColumn(name = "serial_pk", nullable = false)
+    private SerialList serialPk;
 
-    // 생성자
     public UsersSerials() {
     }
 
-    public UsersSerials(Long userPk, Long serialPk) {
+    public UsersSerials(User userPk, SerialList serialPk) {
         this.userPk = userPk;
         this.serialPk = serialPk;
     }
-
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
 }

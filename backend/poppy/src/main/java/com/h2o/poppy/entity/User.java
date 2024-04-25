@@ -4,11 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+
 @Entity
 @Table(name = "Users")
 @Getter
 @Setter
-public class User {
+public class User implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +34,13 @@ public class User {
     @Column(name = "phone_number", nullable = true, length = 20)
     private String phoneNumber;
 
-    // 기본 생성자
+    @OneToOne(mappedBy = "userPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UsersSerials usersSerials;
+
+    @OneToMany(mappedBy = "userPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AccidentReport> accidentReport;
+
+    // 생성자
     public User() {
     }
 
@@ -37,4 +50,6 @@ public class User {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
     }
+
 }
+

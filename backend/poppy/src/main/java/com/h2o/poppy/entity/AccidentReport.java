@@ -1,6 +1,4 @@
 package com.h2o.poppy.entity;
-//package com.example.demo.demo.enttiy;
-
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,14 +15,17 @@ public class AccidentReport {
     @Column(name = "report_pk", nullable = false, updatable = false)
     private Long reportPk;
 
-    @Column(name = "user_pk", nullable = false)
-    private Long userPk;
+    @ManyToOne
+    @JoinColumn(name = "user_pk", nullable = false)
+    private User userPk;
 
-    @Column(name = "pothole_pk", nullable = false)
-    private Long potholePk;
+    @ManyToOne
+    @JoinColumn(name = "pothole_pk", nullable = false)
+    private Pothole potholePk;
 
-    @Column(name = "video_pk", nullable = false)
-    private Long videoPk;
+    @OneToOne
+    @JoinColumn(name = "video_pk", nullable = false)
+    private BlackboxVideoMetadata videoPk;
 
     @Column(name = "report_content", length = 255)
     private String reportContent;
@@ -36,7 +37,7 @@ public class AccidentReport {
     public AccidentReport() {
     }
 
-    public AccidentReport(Long userPk, Long potholePk, Long videoPk, String reportContent, Boolean isProcess) {
+    public AccidentReport(User userPk, Pothole potholePk, BlackboxVideoMetadata videoPk, String reportContent, Boolean isProcess) {
         this.userPk = userPk;
         this.potholePk = potholePk;
         this.videoPk = videoPk;
@@ -44,5 +45,4 @@ public class AccidentReport {
         this.isProcess = isProcess;
     }
 
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
 }

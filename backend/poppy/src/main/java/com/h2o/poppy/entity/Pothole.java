@@ -1,17 +1,22 @@
 package com.h2o.poppy.entity;
-//package com.example.demo.demo.enttiy;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "potholes")
 @Getter
 @Setter
-public class Pothole {
+public class Pothole implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,11 +48,12 @@ public class Pothole {
     @Temporal(TemporalType.TIMESTAMP)
     private Date detectedAt;
 
+    @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AccidentReport> accidentReports;
+
     // 생성자
     public Pothole() {
     }
-
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
 
     public Pothole(Double latitude, Double longitude, Boolean isPothole, Boolean isRepair, String province, String city, String street, Date detectedAt) {
         this.latitude = latitude;

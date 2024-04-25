@@ -1,5 +1,5 @@
 package com.h2o.poppy.entity;
-//package com.example.demo.demo.enttiy;
+
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,8 +17,9 @@ public class BlackboxVideoMetadata {
     @Column(name = "video_pk", nullable = false, updatable = false)
     private Long videoPk;
 
-    @Column(name = "serial_pk", nullable = false)
-    private Long serialPk;
+    @ManyToOne
+    @JoinColumn(name = "serial_pk", nullable = false)
+    private SerialList serialPk;
 
     @Column(name = "detected_at", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
@@ -30,16 +31,18 @@ public class BlackboxVideoMetadata {
     @Column(name = "longitude", nullable = true)
     private Double longitude;
 
+    @OneToOne(mappedBy = "videoPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private AccidentReport accidentReport;
+
     // 생성자
     public BlackboxVideoMetadata() {
     }
 
-    public BlackboxVideoMetadata(Long serialPk, Date detectedAt, Double latitude, Double longitude) {
+    public BlackboxVideoMetadata(SerialList serialPk, Date detectedAt, Double latitude, Double longitude) {
         this.serialPk = serialPk;
         this.detectedAt = detectedAt;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
 }
