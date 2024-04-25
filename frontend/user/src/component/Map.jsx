@@ -241,7 +241,7 @@ function Map() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
-              height: isMobile ? "30px" : "40px",
+              height: isMobile ? "40px" : "40px",
               fontSize: isMobile ? "16px" : "18px",
               flexGrow: 1,
               marginRight: "8px",
@@ -251,7 +251,7 @@ function Map() {
           <button
             onClick={handleSearch}
             style={{
-              height: isMobile ? "30px" : "40px",
+              height: isMobile ? "45px" : "40px",
               fontSize: isMobile ? "16px" : "18px",
               padding: "0 12px",
             }}
@@ -319,7 +319,7 @@ function Map() {
             style={{
               flexGrow: 1,
               backgroundColor: "#dc3545",
-              padding: "10px",
+              padding: "0px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -327,11 +327,11 @@ function Map() {
           >
             <button
               style={{
-                color: "white",
+                color: "black",
                 fontSize: "16px",
                 fontWeight: "bold",
                 border: "none",
-                padding: "10px 20px",
+                padding: "20px 30px",
                 cursor: "pointer",
               }}
             >

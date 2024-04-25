@@ -22,6 +22,7 @@ function SearchResults({ results, onSelectLocation }) {
     >
       <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
         {results.map((result, index) => {
+        
           return (
             <li
               key={index}
