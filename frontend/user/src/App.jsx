@@ -1,9 +1,5 @@
-import { useState } from "react";
-import React, { Component } from "react";
-
-import Map from "./component/Map.jsx";
-
-import "./App.css";
+import React from "react";
+import Map from "./component/Map";
 
 function App() {
   return (
