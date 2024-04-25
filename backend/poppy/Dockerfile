@@ -7,7 +7,7 @@ RUN chmod +x ./gradlew
 
 RUN ./gradlew
 
-RUN ./gradlew build
+RUN ./gradlew build --scan
 
 RUN ls -l ./build/libs/
 
