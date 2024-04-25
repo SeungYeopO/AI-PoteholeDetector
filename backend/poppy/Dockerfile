@@ -5,8 +5,6 @@ COPY . .
 
 RUN chmod +x ./gradlew
 
-RUN ./gradlew --daemon
-
 RUN ./gradlew build
 
 ARG JAR_FILE_NAME=poppy-0.0.1-SNAPSHOT.jar
