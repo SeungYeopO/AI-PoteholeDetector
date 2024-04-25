@@ -1,6 +1,6 @@
 services:
   client:
-    image : h2o_client
+    image: h2o_client
     container_name: client
     build:
       context: ./frontend
@@ -13,3 +13,24 @@ services:
       context: ./backend/poppy
     ports:
       - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/poppy
+      - SPRING_DATASOURCE_USERNAME=h2o
+      - SPRING_DATASOURCE_PASSWORD=s10p31c106
+  db:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=s10p31c106
+      - MYSQL_DATABASE=poppy
+      - MYSQL_USER=h2o
+      - MYSQL_PASSWORD=s10p31c106
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
