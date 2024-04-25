@@ -5,11 +5,7 @@ COPY . .
 
 RUN chmod +x ./gradlew
 
-RUN gradle --stop
-
-RUN gradle --status
-
-RUN gradle build
+RUN ./gradlew --daemon
 
 RUN ./gradlew
 
