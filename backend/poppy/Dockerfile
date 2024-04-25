@@ -1,6 +1,7 @@
-FROM openjdk:17-jdk-alpine AS builder
+FROM openjdk:21-jdk AS builder
 
 WORKDIR /app
+
 COPY . .
 
 RUN chmod +x ./gradlew
