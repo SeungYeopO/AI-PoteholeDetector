@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import logoImg from '../assets/sidenav/logo.png'
+import profileImg from '../assets/sidenav/profile.png'
 
 
 const SideBox = styled.div`
@@ -18,7 +22,11 @@ const SideBox = styled.div`
 const LogoBox = styled.div`
   width : 100%;
   height : 9%;
-  background-color : yellow;
+  background-color : lightcoral;
+  display : flex;
+  align-items : center;
+  justify-content : space-between;
+  cursor: pointer;
 `
 
 const ListBox = styled.div`
@@ -37,8 +45,8 @@ const List = styled.div`
   align-items : center;
   color : white;
   font-size : 1rem;
-  background-color : #083B51;
-  opacity : 65%;
+  background-color: ${(props) => (props.active ? "#083B51" : "#005999")};
+  opacity : 90%;
   /* border-radius : 0.5rem; */
   width : 100%;
   height : 14%;
@@ -47,24 +55,89 @@ const List = styled.div`
 
 `
 const UserInfoBox = styled.div`
-  background-color : lightblue;
+  display : flex;
+  align-items : center;
+  /* background-color : lightblue; */
   width : 100%;
-  height : 15%;
+  height : 10%;
+  margin-bottom : 3rem;
+  justify-content : space-between;
+`
+
+const LogoImg = styled.img`
+  margin-left : 0.3rem;
+  /* background-color : red; */
+  width : 35%;
+  height : 75%;  
+`
+
+const LogoTitle = styled.div`
+  display : flex;
+  justify-content : left;
+  align-items : center;
+  /* background-color : blue; */
+  width : 55%;
+  font-size : 1.5rem;
+  color : white;
+  height : 80%;
+  margin-right : 0.3rem; 
+`
+const ProfileImg = styled.img`
+  /* background-color : red; */
+  width : 28%;
+  height : 60%;
+  margin-left : 1rem;
+
+`
+
+const ProfileName = styled.div`
+  /* background-color : blue; */
+  width : 55%;
+  height : 70%;
+  font-size : 1.5rem;
+  color : white;
+  display: flex;
+  align-items : center;
+  justify-content : left;
+
+
+
+  
 `
 
 const SideNav = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const gotoManageReport = () => {
+    navigate('/manage-report')
+  };
+
+  const gotoManageProcess = () => {
+    navigate('/manage-process')
+  };
+
+  const gotoManageDone = () => {
+    navigate('/manage-done')
+  };
+
+  const gotoModeSelect = () => {
+    navigate('/mode');
+  }
   return (
     <SideBox>
       <LogoBox>
-        로고
+        <LogoImg src={logoImg}></LogoImg>
+        <LogoTitle onClick={gotoModeSelect}>POPPY</LogoTitle>
       </LogoBox>
       <ListBox>
-        <List>신고내역</List>
-        <List>처리내역</List>
-        <List>완료내역</List> 
+        <List onClick={gotoManageReport} active={location.pathname === "/manage-report"}>신고내역</List>
+        <List onClick={gotoManageProcess} active={location.pathname === "/manage-process"}>처리내역</List>
+        <List onClick={gotoManageDone} active={location.pathname === "/manage-done"}>완료내역</List> 
       </ListBox>
       <UserInfoBox>
-          유저정보
+        <ProfileImg src={profileImg}></ProfileImg>
+        <ProfileName>김싸피</ProfileName>
       </UserInfoBox>
 
     </SideBox>

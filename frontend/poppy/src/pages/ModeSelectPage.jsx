@@ -62,7 +62,7 @@ const ModeSelectPage = () => {
   const navigate = useNavigate();
   
   const gotoManagePothole = () => {
-    navigate('/manage-pothole')
+    navigate('/manage-report')
   }
 
   const gotoMangeCompensation = () => {

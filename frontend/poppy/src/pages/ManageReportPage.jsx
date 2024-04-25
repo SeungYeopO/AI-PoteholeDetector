@@ -27,7 +27,7 @@ const TimeArea = styled.div`
   align-items : center;  
 `
 const GridArea = styled.div`
-  /* margin-top : 1rem; */
+  margin-top : 0.8rem;
   background-color : white;
   width : 100%;
   height : 87%;
@@ -197,22 +197,25 @@ const TableCell2 = styled.td`
   border: 1px solid #dddddd;
 `
 const PrevBtn = styled.button`
+  cursor: pointer;
   
 `
 const PageBtn =styled.button`
+ cursor: pointer;
   
 `
 const NextBtn = styled.button`
+ cursor: pointer;
   
 `
 const PageBtnArea = styled.div`
+ cursor: pointer;
   display : flex;
   justify-content : center;
   align-items : center;
 `
 
 const PageNumArea = styled.div`
-  
 `
 
 const PageText = styled.div`
@@ -221,7 +224,7 @@ const PageText = styled.div`
   align-items : center;
   
 `
-  const ManagePotholePage = () => {
+  const ManageReportPage = () => {
   const navigate = useNavigate();
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
@@ -387,4 +390,4 @@ const PageText = styled.div`
   );
 };
 
-export default ManagePotholePage;
+export default ManageReportPage;
