@@ -1,52 +1,73 @@
 package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.Manager;
-import com.h2o.poppy.repository.ManagerRepository;
-import org.springframework.http.HttpStatus;
+import com.h2o.poppy.model.manager.ManagerDto;
+import com.h2o.poppy.service.ManagerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/managers")
+@RequestMapping("/manager")
 public class ManagerController {
 
-    private final ManagerRepository managerRepository;
+    private final ManagerService managerService;
 
-    public ManagerController(ManagerRepository managerRepository){
-        this.managerRepository = managerRepository;
-        managerRepository.saveAll(List.of(
-                new Manager("samsung", "1", "황유경", "01012345678"),
-                new Manager("dlek567", "2", "유명렬", "01090123456")
-        ));
+    @Autowired
+    public ManagerController(ManagerService managerService) {
+        this.managerService = managerService;
     }
 
+    //전체 유저 읽기
     @GetMapping
-    public Iterable<Manager> getManagers() {
-        return managerRepository.findAll();
+    public List<ManagerDto> getAllManager() {
+        return managerService.getAllManager();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Manager> getManagerById(@PathVariable Long id){
-        return managerRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // 유저 1명 정보 보기
+    @GetMapping("/{managerPk}")
+    public ResponseEntity<Manager> getIdManager(@PathVariable Long managerPk) {
+        Manager manager = managerService.getIdManager(managerPk);
+        return ResponseEntity.ok(manager);
     }
 
-    @PostMapping
-    public Manager postManager(@RequestBody Manager manager){
-        return managerRepository.save(manager);
+    // 아이디 중복 검사
+    @PostMapping("/DuplicateId")
+    public boolean DuplicateId(@RequestBody ManagerDto data) {
+        boolean result = managerService.duplicateId(data.getLoginId());
+        return result;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteManager(@PathVariable Long id) {
-        return managerRepository.findById(id)
-                .map(manager -> {
-                    managerRepository.delete(manager);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    // 쓰기
+    @PostMapping("/save")
+    public long saveData(@RequestBody Manager data) {
+        long result = managerService.saveData(data);
+        return result;
     }
+
+
+    //수정
+    @PutMapping("/renew")
+    public int updateData(@RequestBody ManagerDto data) {
+        int result = managerService.updateData(data);
+        return result;
+        // 1 이면 2개다 수정 2 이면 비번만 3이면 전번만 0이면 아무것도 안바꿈
+    }
+
+    //삭제
+    @DeleteMapping("/{managerPk}")
+    public boolean deleteData(@PathVariable Long managerPk) {
+        boolean result = managerService.deleteData(managerPk);
+        return result;
+    }
+
+    @PostMapping("/login")
+    public long login(@RequestBody ManagerDto data) {
+        long result = managerService.login(data);
+        return result;
+    }
+
 }
+
