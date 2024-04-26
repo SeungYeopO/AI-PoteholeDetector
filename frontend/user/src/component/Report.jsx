@@ -6,7 +6,7 @@ function Report() {
   return (
     <div className="player-wrapper">
       <ReactPlayer
-        url="https://d1vcrv9kpqlkt7.cloudfront.net/20240425_175453/index.m3u8"
+        url="https://d1vcrv9kpqlkt7.cloudfront.net/20240426_094452/index.m3u8"
         playing
         controls
         width="100%"
