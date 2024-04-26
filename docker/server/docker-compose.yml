@@ -1,0 +1,25 @@
+services:
+  server:
+    image: h2o_server
+    container_name: server
+    build:
+      context: ../../backend/poppy
+    ports:
+      - "8081:8081"
+    networks:
+      - mariadb_h2o_network
+
+#  client:
+#    image: h2o_client
+#    container_name: client
+#    build:
+#      context: ./frontend
+#    ports:
+#      - "3000:3000"
+
+#volumes:
+#  mariadb_data:
+
+networks:
+  mariadb_h2o_network:
+    external: true
