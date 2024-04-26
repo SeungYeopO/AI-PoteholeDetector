@@ -37,7 +37,7 @@ pipeline {
 def dockerComposeUp(service = null) {
     script {
         if (service != null) {
-            sh "docker-compose -f ./docker/$service/docker-compose.yml up -d --build $service"
+            sh "docker-compose -f ../docker/$service/docker-compose.yml up -d --build $service"
         } else {
             sh "docker-compose up -d --build"
         }
@@ -47,7 +47,7 @@ def dockerComposeUp(service = null) {
 def dockerComposeDown(service = null) {
     script {
         if (service != null) {
-            sh "docker-compose -f ./docker/$service/docker-compose.yml down $service"
+            sh "docker-compose -f ../docker/$service/docker-compose.yml down $service"
         } else {
             sh "docker-compose down"
         }
