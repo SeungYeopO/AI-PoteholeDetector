@@ -13,3 +13,14 @@ services:
       context: ./backend/poppy
     ports:
       - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/poppy
+      SPRING_DATASOURCE_USERNAME: h2o
+      SPRING_DATASOURCE_PASSWORD: s10p31c106
+    networks:
+      - h2o-network
+    restart: always
+
+networks:
+  h2o-network:
+    driver: bridge
