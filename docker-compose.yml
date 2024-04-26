@@ -2,12 +2,12 @@ version: '3.8'
 services:
   mariadb:
     image: mariadb:latest
-    container_name: mariadb-container
+    container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: poppy
-    volumes:
-      - mariadb_data:/var/lib/mysql
+#    volumes:
+#      - mariadb_data:/var/lib/mysql
     networks:
       - h2o-network
     restart: always
@@ -42,5 +42,5 @@ networks:
   h2o-network:
     driver: bridge
 
-volumes:
-  mariadb_data:
+#volumes:
+#  mariadb_data:

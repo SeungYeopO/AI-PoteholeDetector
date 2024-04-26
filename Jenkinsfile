@@ -9,8 +9,8 @@ pipeline {
                         dockerComposeDown('client')
                         dockerComposeUp('client')
                     } else if (env.BRANCH_NAME == 'server') {
-                        dockerComposeDown('server')
-                        dockerComposeUp('server')
+                        dockerComposeDown('server mariadb')
+                        dockerComposeUp('server mariadb')
                     } else if (env.BRANCH_NAME == 'develop') {
                         dockerComposeDown()
                         dockerComposeUp()
