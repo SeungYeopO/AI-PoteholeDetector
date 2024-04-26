@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: poppy
+#    volumes:
+#      - mariadb_data:/var/lib/mysql
+    networks:
+      - h2o-network
+    restart: always
+
+  server:
+    image: h2o_server
+    container_name: server
+    build:
+      context: ./backend/poppy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/db_name
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+    networks:
+      - h2o-network
+    restart: always
+
+  client:
+    image: h2o_client
+    container_name: client
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - h2o-network
+    restart: always
+
+networks:
+  h2o-network:
+    driver: bridge
+
+#volumes:
+#  mariadb_data:
