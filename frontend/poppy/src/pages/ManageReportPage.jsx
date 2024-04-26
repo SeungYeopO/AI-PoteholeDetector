@@ -333,7 +333,6 @@ const PageText = styled.div`
                 </NextBtn>
               </PageBtnArea>
               <PageNumArea>
-
               </PageNumArea>
           <PageText>
             페이지: {currentPage} / {totalPages}
