@@ -1,34 +1,68 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./component/AuthContext";
 import Map from "./component/Map";
 import Report from "./component/Report";
+import Login from "./component/Login";
+import SignUp from "./component/SignUp";
+import Navbar from "./component/Navbar";
+import { useAuth } from "./component/AuthContext";
 import "./App.css";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <div className="content">
+    <AuthProvider>
+      <Router>
+        <div className="App">
           <Routes>
-            <Route path="/" exact element={<Map />} />
-            <Route path="/report" exact element={<Report />} />
+            <Route path="/" element={<MainScreen />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/SignUp" element={<SignUp />} />
+            <Route path="/map" element={<Map />} /> // Map 컴포넌트는 자체적으로
+            로그인 확인
+            <Route path="/report" element={<Report />} /> // Report 컴포넌트도
+            자체적으로 로그인 확인
           </Routes>
+          <NavbarWithAuth />
         </div>
-        <Navbar />
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
-function Navbar() {
+function MainScreen() {
+  const { user } = useAuth();
+  console.log(user);
+  if (user) {
+    return <Navigate to="/Map" />;
+  }
+
   return (
-    <div className="navbar">
-      <Link to="/">홈</Link>
-      <Link to="/report">신고하기</Link>
-      <Link to="/reports">신고목록</Link>
-      <Link to="/blackbox">블랙박스</Link>
+    <div className="main-screen">
+      <h1>환영합니다</h1>
+      <Link to="/login">
+        <button>로그인</button>
+      </Link>
+      <Link to="/SignUp">
+        <button>회원가입</button>
+      </Link>
     </div>
   );
+}
+
+function NavbarWithAuth() {
+  const { user } = useAuth();
+  if (!user) {
+    return null;
+  }
+
+  return <Navbar />;
 }
 
 export default App;

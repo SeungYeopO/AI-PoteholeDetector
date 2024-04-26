@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import POISearch from "./POISearch";
 import SearchResults from "./SearchResults";
+import { useAuth } from "./AuthContext";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
 
 let resultMarkerArr = [];
 let resultdrawArr = [];
 
-const startX = 126.98217734415019;
-const startY = 37.56468648536046;
+const startX = 126.80821037027867;
+const startY = 35.20233955515068;
 
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -15,6 +18,11 @@ function Map() {
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
   useEffect(() => {
     const mapContainerId = "TMapApp";
@@ -39,10 +47,10 @@ function Map() {
 
       // 맵 새로 생성
       window.map = new Tmapv2.Map(mapContainerId, {
-        center: new Tmapv2.LatLng(37.566481622437934, 126.98502302169841),
+        center: new Tmapv2.LatLng(35.20233955515068, 126.80821037027867),
         width: "100%",
         height: "100%",
-        zoom: 19,
+        zoom: 16,
       });
     };
 
@@ -74,8 +82,6 @@ function Map() {
   const handleLocationSelect = (lat, lng) => {
     const epsg3857 = new Tmapv2.Point(lng, lat);
     const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
-    const startX = 126.98217734415019; // 시작점 경도
-    const startY = 37.56468648536046;
     const endX = wgs84._lng; // 도착점 경도
     const endY = wgs84._lat; // 도착점 위도
 
@@ -90,12 +96,12 @@ function Map() {
         tollgateFareOption: 16,
         roadType: 32,
         directionOption: 0,
-        endX: endX,
-        endY: endY,
+        endX: startX,
+        endY: startY,
         endRpFlag: "G",
         reqCoordType: "WGS84GEO",
-        startX: startX,
-        startY: startY,
+        startX: endX,
+        startY: endY,
         gpsTime: "20191125153000",
         speed: 10,
         uncetaintyP: 1,
@@ -112,6 +118,7 @@ function Map() {
         sort: "index",
       }),
     };
+
     resettingMap();
     const midPoint = updateMapCenterAndZoom(startY, startX, endY, endX);
     fetch(
@@ -141,6 +148,24 @@ function Map() {
       })
       .catch((err) => console.error(err));
 
+    async function marker() {
+      try {
+        const response = await axios.get("../../data/pothole.json");
+
+        response.data.forEach((element) => {
+          const latitude = element.latitude;
+          const longitude = element.longitude;
+          new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(latitude, longitude),
+            icon: "../img/free-icon-pothole-10392295.png",
+            iconSize: new Tmapv2.Size(24, 24),
+            map: map,
+          });
+        });
+      } catch (error) {}
+    }
+
+    marker();
     setShowResults(false);
   };
   function simpleDistance(lat1, lon1, lat2, lon2) {
