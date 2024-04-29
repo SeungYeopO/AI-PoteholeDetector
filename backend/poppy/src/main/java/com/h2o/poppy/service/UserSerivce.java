@@ -41,8 +41,6 @@ public class UserSerivce {
         userDto.setPassword(user.getPassword());
         userDto.setUserName(user.getUserName());
         userDto.setPhoneNumber(user.getPhoneNumber());
-        userDto.setUsersSerials(user.getUsersSerials());
-        userDto.setAccidentReport(user.getAccidentReport());
         return userDto;
     }
 
