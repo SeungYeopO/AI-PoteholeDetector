@@ -39,14 +39,14 @@ public class UserController {
     }
 
     // 아이디 중복 검사
-    @PostMapping("/DuplicateId")
+    @PostMapping("/duplicate-id")
     public boolean DuplicateId(@RequestBody UserDto data) {
         boolean result = userService.duplicateId(data.getLoginId());
         return result;
     }
 
     // 쓰기
-    @PostMapping("/save")
+    @PostMapping()
     public long saveData(@RequestBody User data) {
         long result = userService.saveData(data);
         return result;
@@ -54,7 +54,7 @@ public class UserController {
 
 
     //수정
-    @PutMapping("/renew")
+    @PutMapping()
     public int updateData(@RequestBody UserDto data) {
         int result = userService.updateData(data);
         return result;

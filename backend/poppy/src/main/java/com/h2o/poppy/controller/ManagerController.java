@@ -34,14 +34,14 @@ public class ManagerController {
     }
 
     // 아이디 중복 검사
-    @PostMapping("/DuplicateId")
+    @PostMapping("/duplicate-id")
     public boolean DuplicateId(@RequestBody ManagerDto data) {
         boolean result = managerService.duplicateId(data.getLoginId());
         return result;
     }
 
     // 쓰기
-    @PostMapping("/save")
+    @PostMapping()
     public long saveData(@RequestBody Manager data) {
         long result = managerService.saveData(data);
         return result;
@@ -49,7 +49,7 @@ public class ManagerController {
 
 
     //수정
-    @PutMapping("/renew")
+    @PutMapping()
     public int updateData(@RequestBody ManagerDto data) {
         int result = managerService.updateData(data);
         return result;
