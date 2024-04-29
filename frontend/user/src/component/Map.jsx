@@ -315,7 +315,7 @@ function Map() {
       >
         <img
           src="../public/img/center.png"
-          style={{ width: "30px", height: "30px", border_radius: "15px" }}
+          style={{ width: "50px", height: "50px" }}
         />
       </button>
       <div
