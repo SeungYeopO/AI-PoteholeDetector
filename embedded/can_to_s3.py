@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cv2
 import boto3
 import subprocess
@@ -17,20 +18,24 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 FFMPEG_PATH = os.getenv("FFMPEG_PATH")
 
 def capture_video(duration):
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
+    print(duration)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    
 
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    print(f"Applied Resolution: {width}x{height}")
+    print(width,height)
+    print(cv2.CAP_PROP_FPS)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     filename = datetime.now().strftime("%Y%m%d_%H%M%S") + ".mp4"
-    out = cv2.VideoWriter(filename, fourcc, 29.0, (width, height))
+    out = cv2.VideoWriter(filename, fourcc, 30, (width, height))
 
     start_time = datetime.now()
     while (datetime.now() - start_time).seconds < duration:
@@ -47,7 +52,7 @@ def convert_to_hls(input_file):
     output_dir = input_file.rsplit('.', 1)[0]
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    subprocess.run([
+    subprocess.call([
         FFMPEG_PATH,
         '-i', input_file,
         '-profile:v', 'baseline',
@@ -69,12 +74,11 @@ def upload_to_s3(hls_folder, bucket_name, s3_folder):
                           )
     for file_path in Path(hls_folder).glob('**/*'):
         if file_path.is_file():
-            s3_key = f"{s3_folder}/{file_path.name}"
+            s3_key = "{s3_folder}/{file_path.name}"
             client.upload_file(
                 str(file_path), BUCKET_NAME, s3_key,
                 ExtraArgs={'ContentType': 'application/x-mpegURL' if file_path.suffix == '.m3u8' else 'video/MP2T'}
             )
-    print(f"Files uploaded successfully to folder: {s3_folder}")
 
 if __name__ == "__main__":
     video_file = capture_video(10)

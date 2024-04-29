@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import POISearch from "./POISearch";
 import SearchResults from "./SearchResults";
@@ -9,8 +9,10 @@ import axios from "axios";
 let resultMarkerArr = [];
 let resultdrawArr = [];
 
-const startX = 126.80821037027867;
-const startY = 35.20233955515068;
+let startX = 126.98702028;
+let startY = 37.5652045;
+
+let map;
 
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -18,6 +20,12 @@ function Map() {
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [destinationSelected, setDestinationSelected] = useState(false);
+  const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
+  const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
+  const [mapZoom, setMapZoom] = useState(16);
+  const mapContainerId = "TMapApp";
+
   const { user } = useAuth();
 
   if (!user) {
@@ -25,45 +33,94 @@ function Map() {
   }
 
   useEffect(() => {
-    const mapContainerId = "TMapApp";
-    const loadScript = () => {
-      if (!window.Tmapv2) {
-        const script = document.createElement("script");
-        script.src = "https://apiurl/to/tmapv2";
-        script.onload = () => {
-          initTmap(); // 스크립트 로드 후 맵 초기화
-        };
-        document.head.appendChild(script);
-      } else {
-        initTmap(); // 스크립트가 이미 로드된 경우 바로 맵 초기화
-      }
-    };
+    let watchId; // watchPosition의 ID를 저장할 변수
 
-    const initTmap = () => {
+    const initializeMap = (latitude, longitude) => {
       const container = document.getElementById(mapContainerId);
       if (container) {
         container.innerHTML = ""; // 컨테이너 비우기
       }
 
       // 맵 새로 생성
-      window.map = new Tmapv2.Map(mapContainerId, {
-        center: new Tmapv2.LatLng(35.20233955515068, 126.80821037027867),
+      map = new Tmapv2.Map(mapContainerId, {
+        center: new Tmapv2.LatLng(latitude, longitude),
         width: "100%",
         height: "100%",
-        zoom: 16,
+        zoom: mapZoom,
+      });
+
+      // 처음 마커 생성
+      userMarkerRef.current = new Tmapv2.Marker({
+        position: new Tmapv2.LatLng(latitude, longitude),
+        icon: "../img/icon2.png",
+        iconSize: new Tmapv2.Size(32, 32),
+        map: map,
       });
     };
 
-    loadScript();
-
-    // 컴포넌트 언마운트 시 맵 인스턴스 정리
-    return () => {
-      const container = document.getElementById(mapContainerId);
-      if (container) {
-        container.innerHTML = ""; // 컨테이너를 비우면 맵도 제거됨
+    const loadScriptAndInitializeMap = () => {
+      if (!window.Tmapv2) {
+        const script = document.createElement("script");
+        script.src = "https://apiurl/to/tmapv2";
+        script.onload = () => {
+          getCurrentLocation(); // 스크립트 로드 후 현재 위치 가져오기
+        };
+        document.head.appendChild(script);
+      } else {
+        getCurrentLocation(); // 스크립트가 이미 로드된 경우 현재 위치 가져오기
       }
     };
-  }, []); // 종속성 배열을 빈 배열로 설정하여 컴포넌트 마운트 시 한 번만 실행
+
+    const getCurrentLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+
+          initializeMap(latitude, longitude); // 현재 위치를 기반으로 맵 초기화
+          watchUserPosition(); // 위치 감시 시작
+        },
+        (error) => {
+          console.error("Error getting initial geolocation:", error);
+        }
+      );
+    };
+
+    const watchUserPosition = () => {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          startY = latitude;
+          startX = longitude;
+          updateMarkerPosition(latitude, longitude);
+        },
+        (error) => {
+          console.error("Error getting geolocation:", error);
+        }
+      );
+    };
+
+    const updateMarkerPosition = (latitude, longitude) => {
+      // 기존 마커가 있다면 제거
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setMap(null);
+      }
+
+      // 새로운 마커 생성
+      userMarkerRef.current = new Tmapv2.Marker({
+        position: new Tmapv2.LatLng(latitude, longitude),
+        icon: "../img/icon2.png",
+        iconSize: new Tmapv2.Size(32, 32),
+        map: map,
+      });
+    };
+
+    loadScriptAndInitializeMap();
+
+    // 컴포넌트 언마운트 시 맵 인스턴스 정리 및 위치 감시 중지
+    return () => {
+      navigator.geolocation.clearWatch(watchId); // 위치 감시 중지
+    };
+  }, []);
 
   const handleMapClick = () => {
     // SearchResults 컴포넌트가 열려있으면 닫음
@@ -77,6 +134,11 @@ function Map() {
       await POISearch(searchQuery, setSearchResults, startY, startX);
       setShowResults(true);
     }
+  };
+
+  const centerMapOnUser = () => {
+    const initialPosition = new Tmapv2.LatLng(startY, startX);
+    map.setCenter(initialPosition);
   };
 
   const handleLocationSelect = (lat, lng) => {
@@ -96,12 +158,12 @@ function Map() {
         tollgateFareOption: 16,
         roadType: 32,
         directionOption: 0,
-        endX: startX,
-        endY: startY,
+        endX: endX,
+        endY: endY,
         endRpFlag: "G",
         reqCoordType: "WGS84GEO",
-        startX: endX,
-        startY: endY,
+        startX: startX,
+        startY: startY,
         gpsTime: "20191125153000",
         speed: 10,
         uncetaintyP: 1,
@@ -167,6 +229,7 @@ function Map() {
 
     marker();
     setShowResults(false);
+    setDestinationSelected(true);
   };
   function simpleDistance(lat1, lon1, lat2, lon2) {
     const latDiff = lat2 - lat1;
@@ -194,8 +257,8 @@ function Map() {
     const distance = simpleDistance(startLat, startLng, endLat, endLng);
     const zoomLevel = getZoomLevel(distance);
     console.log(distance);
-    window.map.setCenter(new Tmapv2.LatLng(midLat, midLng));
-    window.map.setZoom(zoomLevel);
+    map.setCenter(new Tmapv2.LatLng(midLat, midLng));
+    map.setZoom(zoomLevel);
 
     const startMarker = new Tmapv2.Marker({
       position: new Tmapv2.LatLng(startLat, startLng),
@@ -246,6 +309,15 @@ function Map() {
   return (
     <div id="mapContainer" style={{ position: "relative", height: "100%" }}>
       <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
+      <button
+        onClick={centerMapOnUser}
+        style={{ position: "absolute", bottom: "10px", left: "10px" }}
+      >
+        <img
+          src="../public/img/center.png"
+          style={{ width: "30px", height: "30px", border_radius: "15px" }}
+        />
+      </button>
       <div
         style={{
           position: "absolute",

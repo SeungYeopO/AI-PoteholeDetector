@@ -9,6 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "proxy": "https://k10c106.p.ssafy.io:8080",
   "dependencies": {
     "axios": "^1.6.8",
     "proj4": "^2.11.0",
