@@ -11,29 +11,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserSerivce {
+public class UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserSerivce(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    // 전체 get
-    public List<UserDto> getAllUser() {
-        List<User> getUser = userRepository.findAll();
-        return getUser.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    // 1인 get
-    public User getIdUser(Long userPk) {
-        Optional<User> optionalUser = userRepository.findById(userPk);
-        return optionalUser.orElse(null);
-    }
-
     private UserDto convertToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setUserPk(user.getUserPk());
@@ -42,6 +22,22 @@ public class UserSerivce {
         userDto.setUserName(user.getUserName());
         userDto.setPhoneNumber(user.getPhoneNumber());
         return userDto;
+    }
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    // 전체 get
+    public List<User> getAllUser() {
+        return userRepository.findAll();
+    }
+
+    // 1인 get
+    public User getIdUser(Long userPk) {
+        Optional<User> optionalUser = userRepository.findById(userPk);
+        return optionalUser.orElse(null);
     }
 
     public boolean duplicateId(String loginId) {
@@ -70,22 +66,22 @@ public class UserSerivce {
 
     // 수정
     public int updateData(UserDto data) {
-        Long userpk = data.getUserPk();
+        Long userPk = data.getUserPk();
         String replacePassword = data.getPassword();
         String replacePhoneNumber = data.getPhoneNumber();
         int state = 0;
         try {
             if (replacePassword != null && replacePhoneNumber != null) {
                 // originPassword와 originPhoneNumber가 모두 null이 아닌 경우에 대한 처리
-                userRepository.updatePassWord(userpk, replacePassword);
-                userRepository.updatePhoneNumber(userpk, replacePhoneNumber);
+                userRepository.updatePassWord(userPk, replacePassword);
+                userRepository.updatePhoneNumber(userPk, replacePhoneNumber);
                 state = 1;
             } else if (replacePassword != null) {
-                userRepository.updatePassWord(userpk, replacePassword);
+                userRepository.updatePassWord(userPk, replacePassword);
                 state = 2;
 
             } else if (replacePhoneNumber != null) {
-                userRepository.updatePhoneNumber(userpk, replacePhoneNumber);
+                userRepository.updatePhoneNumber(userPk, replacePhoneNumber);
                 state = 3;
             }
             return state;
@@ -109,13 +105,10 @@ public class UserSerivce {
     public long login(UserDto data) {
         String loginId = data.getLoginId();
         String loginPassword = data.getPassword();
-        User userid = userRepository.findByLoginId(loginId);
-        User userPassword = userRepository.findByPassword(loginPassword);
+        User user = userRepository.findByLoginId(loginId);
 
-        if (userid != null && userPassword != null) {
-            User info = userRepository.findUserPkByLoginId(loginId);
-            long userPk = info.getUserPk();
-            return userPk;
+        if (user != null && user.getPassword().equals(loginPassword)) {
+            return user.getUserPk();
         } else {
             return 0;
         }
