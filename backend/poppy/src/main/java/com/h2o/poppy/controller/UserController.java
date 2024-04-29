@@ -90,8 +90,17 @@ public class UserController {
 
     //삭제
     @DeleteMapping("/{userPk}")
-    public boolean deleteData(@PathVariable Long userPk) {
-        return userService.deleteData(userPk);
+    public Object deleteData(@PathVariable Long userPk) {
+        boolean result = userService.deleteData(userPk);
+        @Getter
+        class deleteDataResponse{
+            private final boolean result;
+
+            deleteDataResponse(boolean result){
+                this.result = result;
+            }
+        }
+        return new deleteDataResponse(result);
     }
 
     @PostMapping("/login")
