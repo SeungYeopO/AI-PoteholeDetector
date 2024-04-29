@@ -2,6 +2,7 @@ package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.User;
 import com.h2o.poppy.model.user.UserDto;
+import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.service.UserSerivce;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,12 @@ public class UserController {
     private final UserSerivce userService;
 
     @Autowired
-    public UserController(UserSerivce userService) {
+    public UserController(UserSerivce userService, UserRepository userRepository) {
         this.userService = userService;
+        userRepository.saveAll(List.of(
+                new User("ssafy", "1", "오승엽", "01012345678"),
+                new User("dlek567", "2", "유명렬", "01090123456")
+        ));
     }
 
     //전체 유저 읽기

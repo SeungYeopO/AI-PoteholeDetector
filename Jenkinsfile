@@ -10,6 +10,8 @@ pipeline {
                         dockerComposeUp('client')
                     } else if (env.BRANCH_NAME == 'server') {
                         dockerComposeDown('server')
+                        dockerComposeDown('mariadb')
+                        dockerComposeUp('mariadb')
                         dockerComposeUp('server')
                     } else if (env.BRANCH_NAME == 'develop') {
                         dockerComposeDown()

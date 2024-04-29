@@ -23,8 +23,8 @@ services:
       - mariadb
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/poppy
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_DATASOURCE_USERNAME=h2o
+      - SPRING_DATASOURCE_PASSWORD=s10p31c106
     restart: always
 
 #  client:
