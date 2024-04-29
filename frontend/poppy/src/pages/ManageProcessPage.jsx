@@ -171,6 +171,7 @@ const Info = styled.div`
   justify-content : center;
   align-items : center;
   font-size : 1.3rem;
+  color : ${(props) => props.color || 'black'};
 
 `
 const SortInfo = styled.div`
@@ -359,7 +360,14 @@ const ManageProcessPage = () => {
   const endIndex = Math.min(startIndex + itemsPerPage, data.length);
   const currentData = data.slice(startIndex, endIndex);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-
+  const [selectedList, setSelectedList] = useState(null);
+  const [randomCompany, setRandomCompany] = useState('');
+  const company = ['아무건설', '싸피건설', '삼성건설', '난몰라건설', '뭐라해건설'];
+  const currentDate = new Date();
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('');
+  const [color, setColor] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -372,7 +380,7 @@ const ManageProcessPage = () => {
         }
         const jsonData = await response.json();
         console.log('데이터', jsonData);
-        setData(jsonData);
+        setData(jsonData); 
         console.log(Math.ceil(jsonData.length / itemsPerPage))
         setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
       } catch (error) {
@@ -385,22 +393,55 @@ const ManageProcessPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try{
+      try {
         const response = await fetch(
           '/data/regiondata.json'
         );
-        if(!response.ok) {
+        if (!response.ok) {
           throw new Error('일단 try는 돌았음');
         }
         const jsonData = await response.json();
         console.log(jsonData);
         setAreas(jsonData);
-      } catch(error){
+        
+        const startDate = new Date(currentDate.getTime());
+        addRandomDays(startDate, 2, 5);
+        const endDate = new Date(startDate.getTime());
+        addRandomDays(endDate, 7, 10);
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+        setStartDate(formattedStartDate);
+        setEndDate(formattedEndDate);
+  
+        let st = '';
+        let stcolor = '';
+        if (currentDate < startDate) {
+          st = '공사 대기';
+          stcolor = '#F6AA16';
+        } else if (currentDate >= startDate && currentDate < endDate) {
+          st = '공사 중';
+          stcolor = 'green';
+        } else {
+          st = '공사 지연';
+          stcolor = 'red';
+        }
+
+        setStatus(st);
+        setColor(stcolor);
+
+        console.log('현재 날짜:', currentDate);
+        console.log('공사 시작일:', formattedStartDate);
+        console.log('공사 완료일:', formattedEndDate);
+        console.log('상태:', status);
+
+      } catch(error) {
         console.log('에러발생', error);
       }
     };
+    
     fetchData();
-  },[]);
+  }, []);
+
 
 
   const modalOpen = () => {
@@ -431,6 +472,7 @@ const ManageProcessPage = () => {
     console.log('하위지역',sub);
     setSubAreas(sub);
     setSelectedDistrict("");
+
   }
 
   const handleDistrictSelect = (event) => {
@@ -454,11 +496,25 @@ const ManageProcessPage = () => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
   }
+  
+  const addRandomDays = (date, minDays, maxDays) => {
+    const randomDays = Math.floor(Math.random() * (maxDays - minDays + 1))+ minDays;
+    date.setDate(date.getDate() + randomDays);
+  };
+  
+
+
 
   const handleListClick = (item) => {
     setIsInfoModalOpen(true);
-    console.log(item)
+    console.log(item);
+    setSelectedList(item);
+    const value = company[Math.floor(Math.random() * company.length)];
+    console.log(value);
+    setRandomCompany(value);
+  
   }
+
 
   const closeModal = () => {
     setIsInfoModalOpen(false);
@@ -516,7 +572,7 @@ const ManageProcessPage = () => {
               </ListHeader>
             {currentData && currentData.map((item, index) => (
               <Lists key={index} onClick={()=> handleListClick(item)}>
-              <Info>{item.state}</Info>
+              {status && (<Info color={color}>{status}</Info>)}
                 <Info width="48%">{item.reportLocation}</Info>
                 <Info width="20%">{item.reportTime}</Info>
                 <Info>김싸피</Info>
@@ -551,7 +607,7 @@ const ManageProcessPage = () => {
             <Calender onChange={handleDdateClick}  />
         </CalenderModal>
       )}
-      {isInfoModalOpen && (<ListDetailModal>
+      {startDate&&randomCompany&&selectedList&&isInfoModalOpen && (<ListDetailModal>
       <ModalHeader>
             <ModalTitle>세부 신고 내역</ModalTitle>
             <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
@@ -559,35 +615,35 @@ const ManageProcessPage = () => {
           <ModalContent>
             <ModalContentBox>
               <ModalContainer>
-                  <ModalImg ></ModalImg>
+                  <ModalImg src={selectedList.potholeImg}></ModalImg>
                     <ModalTable>
                         <TableRow>
-                          <TableCell1>신고위치</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell1>담당자명</TableCell1>
+                          <TableCell2>김싸피</TableCell2>
                         </TableRow>
                         <TableRow>
-                          <TableCell1>신고자</TableCell1>
-                          <TableCell2>김나나</TableCell2>
+                          <TableCell1>신고위치</TableCell1>
+                          <TableCell2>{selectedList.reportLocation}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>신고시각</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell2>{selectedList.reportTime}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>담당부서</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell2>아직모름(백에서처리)</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>시공업체</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell2>{randomCompany}</TableCell2>
                         </TableRow>
                         <TableRow>
-                          <TableCell1>공사예정일</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell1>시작예정일</TableCell1>
+                          <TableCell2>{startDate}</TableCell2>
                         </TableRow>
                         <TableRow>
-                          <TableCell1>공사완료일</TableCell1>
-                          <TableCell2></TableCell2>
+                          <TableCell1>완료예정일</TableCell1>
+                          <TableCell2>{endDate}</TableCell2>
                         </TableRow>
                     </ModalTable>
               </ModalContainer>
@@ -598,9 +654,8 @@ const ManageProcessPage = () => {
                 {/* 처음에 들어오면 모두 공사대기, 공사예정일/완료일 랜덤으로 설정한다음에 */}
                 {/* 그냥 시간 지나가면 공사중으로 바뀌고, 완료버튼을 누르면 완료내역으로 가기 */}
                 {/* 완료일보다 공사완료버튼을 누른게 더 이후라면 몇일 지연됐는지 보여주면 될듯? (미정) */}
-
-
                 <ModalBtn>공사완료</ModalBtn>
+                {/* 공사완료 여부 바꿔주는 api 요청 */}
               </BtnArea>
             </BtnBox>
           </ModalContent>

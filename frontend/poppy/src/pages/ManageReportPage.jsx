@@ -266,7 +266,7 @@ const PageText = styled.div`
       setCurrentDateTime(new Date())
     }, 1000);
     return () => clearInterval(intervalId);
-  }, []); 
+  }, [data]); 
 
 
 
@@ -378,6 +378,8 @@ const PageText = styled.div`
               <BtnArea>
                 {/*각 버튼 클릭시 백에 요청할거 정해지면 추가 */}
                 <Btn onClick={gotoProcess}>공사요청</Btn>
+                {/* 공사요청 시 랜덤으로 시작일, 예정일 보내주는걸로 api 요청 */}
+                
                 <Btn>반려</Btn>
               </BtnArea>
             </BtnBox>

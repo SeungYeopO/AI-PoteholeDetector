@@ -66,7 +66,7 @@ const ModeSelectPage = () => {
   }
 
   const gotoMangeCompensation = () => {
-    navigate('/manage-compensation')
+    navigate('/compensation-report')
   }
 
   return (
