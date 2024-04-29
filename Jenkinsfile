@@ -10,8 +10,6 @@ pipeline {
                         dockerComposeUp('client')
                     } else if (env.BRANCH_NAME == 'server') {
                         dockerComposeDown('server')
-                        dockerComposeDown('mariadb')
-                        dockerComposeUp('mariadb')
                         dockerComposeUp('server')
                     } else if (env.BRANCH_NAME == 'develop') {
                         dockerComposeDown()
@@ -37,7 +35,7 @@ pipeline {
 def dockerComposeUp(service = null) {
     script {
         if (service != null) {
-            sh "docker-compose -f ./docker/$service/docker-compose.yml up -d --build $service"
+            sh "docker-compose up -d --build $service"
         } else {
             sh "docker-compose up -d --build"
         }
@@ -47,7 +45,7 @@ def dockerComposeUp(service = null) {
 def dockerComposeDown(service = null) {
     script {
         if (service != null) {
-            sh "docker-compose -f ./docker/$service/docker-compose.yml down $service"
+            sh "docker-compose down $service"
         } else {
             sh "docker-compose down"
         }

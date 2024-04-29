@@ -1,71 +1,73 @@
 package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.User;
-import com.h2o.poppy.repository.UserRepository;
-import org.springframework.http.HttpStatus;
+import com.h2o.poppy.model.user.UserDto;
+import com.h2o.poppy.service.UserSerivce;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserSerivce userService;
 
-    public UserController(UserRepository userRepository){
-        this.userRepository = userRepository;
-        userRepository.saveAll(List.of(
-                new User("ssafy", "1", "오승엽", "01012345678"),
-                new User("dlek567", "2", "유명렬", "01090123456")
-        ));
+    @Autowired
+    public UserController(UserSerivce userService) {
+        this.userService = userService;
     }
 
+    //전체 유저 읽기
     @GetMapping
-    public Iterable<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUser() {
+        return userService.getAllUser();
     }
 
+    // 유저 1명 정보 보기
     @GetMapping("/{userPk}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userPk){
-        Optional<User> user = userRepository.findById(userPk);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<User> getIduser(@PathVariable Long userPk) {
+        User user = userService.getIdUser(userPk);
+        return ResponseEntity.ok(user);
     }
 
-    @PatchMapping("/{userPk}")
-    public ResponseEntity<User> updateUserPartially(@PathVariable Long userPk, @RequestBody Map<String, Object> updates) {
-        return userRepository.findById(userPk)
-                .map(user -> {
-                    if (updates.containsKey("password")) {
-                        user.setPassword((String) updates.get("password"));
-                    }
-                    if (updates.containsKey("phoneNumber")) {
-                        user.setPhoneNumber((String) updates.get("phoneNumber"));
-                    }
-                    // 추가적으로 업데이트할 필드를 여기에 넣습니다.
-
-                    User updatedUser = userRepository.save(user);
-                    return ResponseEntity.ok(updatedUser);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    // 아이디 중복 검사
+    @PostMapping("/DuplicateId")
+    public boolean DuplicateId(@RequestBody UserDto data) {
+        boolean result = userService.duplicateId(data.getLoginId());
+        return result;
     }
 
-    @PostMapping
-    public User postUser(@RequestBody User user){
-        return userRepository.save(user);
+    // 쓰기
+    @PostMapping("/save")
+    public long saveData(@RequestBody User data) {
+        long result = userService.saveData(data);
+        return result;
     }
 
+
+    //수정
+    @PutMapping("/renew")
+    public int updateData(@RequestBody UserDto data) {
+        int result = userService.updateData(data);
+        return result;
+        // 1 이면 2개다 수정 2 이면 비번만 3이면 전번만 0이면 아무것도 안바꿈
+    }
+
+    //삭제
     @DeleteMapping("/{userPk}")
-    public ResponseEntity<?> deleteCoffee(@PathVariable Long userPk) {
-        return userRepository.findById(userPk)
-                .map(user -> {
-                    userRepository.delete(user);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public boolean deleteData(@PathVariable Long userPk) {
+        boolean result = userService.deleteData(userPk);
+        return result;
+    }
+
+    @PostMapping("/login")
+    public long login(@RequestBody UserDto data) {
+        long result = userService.login(data);
+        return result;
     }
 
 }
+
