@@ -43,13 +43,13 @@ public class UserController {
     public Object DuplicateId(@RequestBody UserDto data) {
         boolean result = userService.duplicateId(data.getLoginId());
         @Getter
-        class duplicateIdResponse {
+        class DuplicateIdResponse {
             private final boolean result;
-            duplicateIdResponse(boolean result) {
+            DuplicateIdResponse(boolean result) {
                 this.result = result;
             }
         }
-        return new duplicateIdResponse(result);
+        return new DuplicateIdResponse(result);
     }
 
     // 쓰기
@@ -93,29 +93,29 @@ public class UserController {
     public Object deleteData(@PathVariable Long userPk) {
         boolean result = userService.deleteData(userPk);
         @Getter
-        class deleteDataResponse{
+        class DeleteDataResponse{
             private final boolean result;
 
-            deleteDataResponse(boolean result){
+            DeleteDataResponse(boolean result){
                 this.result = result;
             }
         }
-        return new deleteDataResponse(result);
+        return new DeleteDataResponse(result);
     }
 
     @PostMapping("/login")
     public Object login(@RequestBody UserDto data) {
         long userPk = userService.login(data);
         @Getter
-        class loginResponse {
+        class LoginResponse {
             private final boolean result;
             private final long userPk;
-            loginResponse(long userPk){
+            LoginResponse(long userPk){
                 this.userPk = userPk;
                 this.result = userPk != 0;
             }
         }
-        return new loginResponse(userPk);
+        return new LoginResponse(userPk);
     }
 }
 
