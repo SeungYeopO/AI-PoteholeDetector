@@ -33,7 +33,7 @@ public class AccidentReportController {
     @PostMapping()
     public Object saveData(@RequestBody AccidentReportDto data) {
 
-        AccidentReport result = accidentReportService.saveData(data);
+        AccidentReportDto result = accidentReportService.saveData(data);
         boolean success;
 
         if(result!=null)success=true;
@@ -43,8 +43,8 @@ public class AccidentReportController {
         @Getter
         class SaveResponse {
             private final boolean success;
-            private final AccidentReport result;
-            SaveResponse(boolean success, AccidentReport result) {
+            private final AccidentReportDto result;
+            SaveResponse(boolean success, AccidentReportDto result) {
                 this.success = success;
                 this.result = result;
             }
