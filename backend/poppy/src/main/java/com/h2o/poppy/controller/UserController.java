@@ -3,13 +3,11 @@ package com.h2o.poppy.controller;
 import com.h2o.poppy.entity.*;
 import com.h2o.poppy.model.user.UserDto;
 import com.h2o.poppy.repository.*;
-import com.h2o.poppy.service.AccidentReportService;
-import com.h2o.poppy.service.SerialListService;
 import com.h2o.poppy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import lombok.Getter;
 import java.util.List;
 import java.util.Date;
 
@@ -17,7 +15,7 @@ import java.util.Date;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserSerivce userService;
+    private final UserService userService;
     private final ManagerRepository managerRepository;
     private final SerialListService serialListService;
     private final SerialListRepository serialListRepository;
@@ -28,7 +26,7 @@ public class UserController {
     private final BlackboxVideoMetadataRepository blackboxVideoMetadataRepository;
 
     @Autowired
-    public UserController(UserSerivce userService, UserRepository userRepository,
+    public UserController(UserService userService, UserRepository userRepository,
             AccidentReportService accidentReportService, AccidentReportRepository accidentReportRepository,
             PotholeRepository potholeRepository, BlackboxVideoMetadataRepository blackboxVideoMetadataRepository,
             SerialListService serialListService, SerialListRepository serialListRepository,
@@ -103,13 +101,14 @@ public class UserController {
     public Object DuplicateId(@RequestBody UserDto data) {
         boolean result = userService.duplicateId(data.getLoginId());
         @Getter
-        class DuplicateIdResponse {
+        class duplicateIdResponse {
             private final boolean result;
-            DuplicateIdResponse(boolean result) {
+
+            duplicateIdResponse(boolean result) {
                 this.result = result;
             }
         }
-        return new DuplicateIdResponse(result);
+        return new duplicateIdResponse(result);
     }
 
     // 쓰기
@@ -151,31 +150,23 @@ public class UserController {
 
     // 삭제
     @DeleteMapping("/{userPk}")
-    public Object deleteData(@PathVariable Long userPk) {
-        boolean result = userService.deleteData(userPk);
-        @Getter
-        class DeleteDataResponse{
-            private final boolean result;
-
-            DeleteDataResponse(boolean result){
-                this.result = result;
-            }
-        }
-        return new DeleteDataResponse(result);
+    public boolean deleteData(@PathVariable Long userPk) {
+        return userService.deleteData(userPk);
     }
 
     @PostMapping("/login")
     public Object login(@RequestBody UserDto data) {
         long userPk = userService.login(data);
         @Getter
-        class LoginResponse {
+        class loginResponse {
             private final boolean result;
             private final long userPk;
-            LoginResponse(long userPk){
+
+            loginResponse(long userPk) {
                 this.userPk = userPk;
                 this.result = userPk != 0;
             }
         }
-        return new LoginResponse(userPk);
+        return new loginResponse(userPk);
     }
 }
