@@ -17,16 +17,18 @@ public class AccidentReportDto {
     private Long userPk;
     private Long potholePk;
     private Long videoPk;
+    private String reportName;
     private String reportContent;
     private Boolean isProcess;
 
     // Constructors
 
-    public AccidentReportDto(Long reportPk, Long userPk, Long potholePk, Long videoPk, String reportContent, Boolean isProcess) {
+    public AccidentReportDto(Long reportPk, Long userPk, Long potholePk, Long videoPk, String reportContent, String reportName, Boolean isProcess) {
         this.reportPk = reportPk;
         this.userPk = userPk;
         this.potholePk = potholePk;
         this.videoPk = videoPk;
+        this.reportName = reportName;
         this.reportContent = reportContent;
         this.isProcess = isProcess;
     }

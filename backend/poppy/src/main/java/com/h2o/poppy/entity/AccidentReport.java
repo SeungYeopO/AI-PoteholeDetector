@@ -27,6 +27,9 @@ public class AccidentReport {
     @JoinColumn(name = "video_pk", nullable = false)
     private BlackboxVideoMetadata videoPk;
 
+    @Column(name = "report_name", length = 255)
+    private String reportName;
+
     @Column(name = "report_content", length = 255)
     private String reportContent;
 
@@ -37,10 +40,11 @@ public class AccidentReport {
     public AccidentReport() {
     }
 
-    public AccidentReport(User userPk, Pothole potholePk, BlackboxVideoMetadata videoPk, String reportContent, Boolean isProcess) {
+    public AccidentReport(User userPk, Pothole potholePk, BlackboxVideoMetadata videoPk, String reportContent,String reportName, Boolean isProcess) {
         this.userPk = userPk;
         this.potholePk = potholePk;
         this.videoPk = videoPk;
+        this.reportName = reportName;
         this.reportContent = reportContent;
         this.isProcess = isProcess;
     }

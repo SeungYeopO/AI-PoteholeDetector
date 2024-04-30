@@ -37,6 +37,7 @@ public class AccidentReportService {
             long potholePk = data.getPotholePk();
             long blackboxVideoMetadataPk = data.getVideoPk();
             String context = data.getReportContent();
+            String name = data.getReportName();
             boolean is_process = data.getIsProcess();
 
             User user = userRepository.findById(userPk).orElse(null);
@@ -44,7 +45,7 @@ public class AccidentReportService {
             BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
             System.out.println(blackboxVideoMetadata);
             if (user != null && pothole != null && blackboxVideoMetadata != null) {
-                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, is_process);
+                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, name, context, is_process);
                 accidentReportRepository.save(accidentReport);
                 return accidentReport;
             } else {
