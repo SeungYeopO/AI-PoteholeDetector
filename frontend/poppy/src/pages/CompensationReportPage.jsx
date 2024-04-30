@@ -304,6 +304,7 @@ const ReturnModalContent = styled.div`
   /* background-color : blue; */
 `
 const Btn2 = styled.div`
+  cursor: pointer;
   background-color : black;
   width : 20%;
   height : 90%;
@@ -327,17 +328,24 @@ const TitleInput = styled.input`
   &::placeholder {
     color: #898787;
     font-family : 'BlackHanSans';
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 300;
   }
 `
-const ContentInput = styled.input`
+const ContentInput = styled.textarea`
   width: 90%;
   height: 90%;
   border: none;
   background-color: #e6e2e2;
-  text-align: left; 
-  overflow-wrap: break-word;
+  font-family : 'BlackHanSans';
+  font-size : 1.1rem;
+  text-indent : 0.4rem;
+  &::placeholder {
+    color: #898787;
+    font-family : 'BlackHanSans';
+    font-size: 1.2rem;
+    font-weight: 300;
+  }
 `
 const CompensationReportPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -352,6 +360,8 @@ const CompensationReportPage = () => {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedList, setSelectedList] = useState(null);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [returnTitle, setReturnTitle] = useState('');
+  const [returnContent, setReturnContent] = useState('');
 
 
   const formatDate = (date) => {
@@ -423,7 +433,17 @@ const CompensationReportPage = () => {
   const openReturnModalOpen = () => {
     setIsReturnModalOpen(true);
   }
+  
+  const handleReturnTitle = (event) => {
+    console.log(event.target.value);
+    setReturnTitle(event.target.value);
+  }
 
+  const handleReturnContent = (event) => {
+    console.log(event.target.value);
+    setReturnContent(event.target.value);
+
+  }
   return (
     <Background>
         <SideNav />
@@ -441,12 +461,12 @@ const CompensationReportPage = () => {
           <SortedList>
                 <ListHeader>
                   <Info>순번</Info>
-                  <Info width="48%">신고위치</Info>
+                  <Info width="48%">제목</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
               {currentData && currentData.map((item, index) => (
                 <Lists key={index} onClick={()=> handleListClick(item)}>
-                  <Info>공사완료</Info>
+                  <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
                   <Info width="48%">{item.title}</Info>
                   <Info width="20%">{item.date}</Info>
                 </Lists>
@@ -510,10 +530,10 @@ const CompensationReportPage = () => {
           </ModalHeader>
           <ModalContent marginTop = "0rem" height="70%">
             <ReturnModalTitle>
-              <TitleInput placeholder="제목을 작성하세요"></TitleInput>
+              <TitleInput onChange={handleReturnTitle} placeholder="제목을 입력하세요"></TitleInput>
             </ReturnModalTitle>
             <ReturnModalContent>
-              <ContentInput></ContentInput>
+              <ContentInput onChange={handleReturnContent} placeholder="내용을 입력하세요"></ContentInput>
             </ReturnModalContent>
           </ModalContent>
           <BtnArea2 height="17%">
