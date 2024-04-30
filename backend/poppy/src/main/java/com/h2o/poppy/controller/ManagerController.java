@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/manager")
+@RequestMapping("/managers")
 public class ManagerController {
 
     private final ManagerService managerService;
@@ -41,7 +41,7 @@ public class ManagerController {
     }
 
     // 쓰기
-    @PostMapping()
+    @PostMapping
     public long saveData(@RequestBody Manager data) {
         long result = managerService.saveData(data);
         return result;
@@ -49,7 +49,7 @@ public class ManagerController {
 
 
     //수정
-    @PutMapping()
+    @PutMapping
     public int updateData(@RequestBody ManagerDto data) {
         int result = managerService.updateData(data);
         return result;
