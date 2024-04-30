@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private UserDto convertToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setUserPk(user.getUserPk());
@@ -30,8 +31,11 @@ public class UserService {
     }
 
     // 전체 get
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUser() {
+        List<User> getUser = userRepository.findAll();
+        return getUser.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // 1인 get

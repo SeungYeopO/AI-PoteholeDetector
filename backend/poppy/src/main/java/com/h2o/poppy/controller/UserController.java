@@ -4,7 +4,6 @@ import com.h2o.poppy.entity.User;
 import com.h2o.poppy.model.user.UserDto;
 import com.h2o.poppy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import java.util.List;
@@ -22,7 +21,7 @@ public class UserController {
 
     // 전체 유저 읽기
     @GetMapping
-    public List<User> getAllUser() {
+    public List<UserDto> getAllUser() {
         return userService.getAllUser();
     }
 
@@ -47,7 +46,7 @@ public class UserController {
         return new duplicateIdResponse(result);
     }
 
-    // 쓰기
+    // 유저 회원가입
     @PostMapping
     public Object saveData(@RequestBody User data) {
         long userPk = userService.saveData(data);
@@ -83,8 +82,18 @@ public class UserController {
 
     // 삭제
     @DeleteMapping("/{userPk}")
-    public boolean deleteData(@PathVariable Long userPk) {
-        return userService.deleteData(userPk);
+    public Object deleteData(@PathVariable Long userPk) {
+        boolean result = userService.deleteData(userPk);
+
+        @Getter
+        class DeleteDataResponse {
+            private final boolean result;
+
+            DeleteDataResponse(boolean result){
+                this.result = result;
+            }
+        }
+        return new DeleteDataResponse(result);
     }
 
     // 로그인

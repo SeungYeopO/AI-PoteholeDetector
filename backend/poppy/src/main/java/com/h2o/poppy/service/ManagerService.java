@@ -15,6 +15,16 @@ public class ManagerService {
 
     private final ManagerRepository managerRepository;
 
+    private ManagerDto convertToDto(Manager manager) {
+        ManagerDto managerDto = new ManagerDto();
+        managerDto.setManagerPk(manager.getManagerPk());
+        managerDto.setLoginId(manager.getLoginId());
+        managerDto.setPassword(manager.getPassword());
+        managerDto.setManagerName(manager.getManagerName());
+        managerDto.setPhoneNumber(manager.getPhoneNumber());
+        return managerDto;
+    }
+
     @Autowired
     public ManagerService(ManagerRepository managerRepository) {
         this.managerRepository = managerRepository;
@@ -32,16 +42,6 @@ public class ManagerService {
     public Manager getIdManager(Long managerPk) {
         Optional<Manager> optionalManager = managerRepository.findById(managerPk);
         return optionalManager.orElse(null);
-    }
-
-    private ManagerDto convertToDto(Manager manager) {
-        ManagerDto managerDto = new ManagerDto();
-        managerDto.setManagerPk(manager.getManagerPk());
-        managerDto.setLoginId(manager.getLoginId());
-        managerDto.setPassword(manager.getPassword());
-        managerDto.setManagerName(manager.getManagerName());
-        managerDto.setPhoneNumber(manager.getPhoneNumber());
-        return managerDto;
     }
 
     public boolean duplicateId(String loginId) {
