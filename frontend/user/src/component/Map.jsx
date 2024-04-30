@@ -235,7 +235,6 @@ function Map() {
   };
 
   const handleLocationSelect = (lat, lng, convertRequired) => {
-    console.log(lat, lng);
     let endX, endY;
     if (!convertRequired) {
       const epsg3857 = new Tmapv2.Point(lng, lat);
@@ -243,8 +242,8 @@ function Map() {
       endX = wgs84._lng; // 도착점 경도
       endY = wgs84._lat; // 도착점 위도
     } else {
-      endX = lng; // 도착점 경도
-      endY = lat; // 도착점 위도
+      endX = parseFloat(lng); // 도착점 경도
+      endY = parseFloat(lat); // 도착점 위도
     }
 
     const options = {
@@ -282,6 +281,7 @@ function Map() {
     };
 
     resettingMap();
+    console.log(typeof endX, typeof endY);
     const midPoint = updateMapCenterAndZoom(startY, startX, endY, endX);
     fetch(
       "https://apis.openapi.sk.com/tmap/routes?version=1&callback=function",
@@ -341,7 +341,7 @@ function Map() {
   function getZoomLevel(distance) {
     if (distance < 0.02) return 15; // 2km 미만
     else if (distance < 0.05) return 14; // 5km 미만
-    else if (distance < 0.1) return 12.8; // 10km 미만
+    else if (distance < 0.1) return 13; // 10km 미만
     else if (distance < 0.2) return 12; // 20km 미만
     else if (distance < 0.4) return 11; // 40km 미만
     else if (distance < 0.8) return 10; // 80km 미만
@@ -357,6 +357,7 @@ function Map() {
     const distance = simpleDistance(startLat, startLng, endLat, endLng);
     const zoomLevel = getZoomLevel(distance);
     console.log(distance);
+    console.log(startLat, startLng, endLat, endLng);
     mapRef.current.setCenter(new Tmapv2.LatLng(midLat, midLng));
     mapRef.current.setZoom(zoomLevel);
 
