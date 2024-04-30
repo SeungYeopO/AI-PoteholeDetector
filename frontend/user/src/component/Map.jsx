@@ -3,7 +3,8 @@ import { useMediaQuery } from "react-responsive";
 import POISearch from "./POISearch";
 import SearchResults from "./SearchResults";
 import { useAuth } from "./AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import LocationModal from "./LocationModal.jsx";
 import axios from "axios";
 
 let resultMarkerArr = [];
@@ -21,11 +22,18 @@ function Map() {
   const [showResults, setShowResults] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [destinationSelected, setDestinationSelected] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [locationName, setLocationName] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLat, setSeletedLat] = useState(false);
+  const [selectedLng, setSeletedLng] = useState(false);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
   const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
   const [mapZoom, setMapZoom] = useState(16);
   const mapContainerId = "TMapApp";
-
+  const location = useLocation();
   const { user } = useAuth();
 
   if (!user) {
@@ -34,19 +42,37 @@ function Map() {
 
   useEffect(() => {
     let watchId; // watchPosition의 ID를 저장할 변수
-
     const initializeMap = (latitude, longitude) => {
       const container = document.getElementById(mapContainerId);
-      if (container) {
-        container.innerHTML = ""; // 컨테이너 비우기
+      if (!container) {
+        console.error("Map container not found");
+        return;
       }
 
+      // 기존 맵 인스턴스가 있고, 정상적으로 파괴 가능한지 확인
+      if (mapRef.current) {
+        try {
+          mapRef.current.destroy();
+        } catch (error) {
+          console.error("Failed to destroy old map instance:", error);
+        }
+        mapRef.current = null; // 참조 초기화
+      }
       // 맵 새로 생성
-      map = new Tmapv2.Map(mapContainerId, {
+      mapRef.current = new Tmapv2.Map(mapContainerId, {
         center: new Tmapv2.LatLng(latitude, longitude),
         width: "100%",
         height: "100%",
         zoom: mapZoom,
+      });
+
+      mapRef.current.addListener("click", async (evt) => {
+        const latLng = evt.latLng;
+        const lat = latLng.lat();
+        const lng = latLng.lng();
+
+        // 여기에서 검색 함수를 호출하고 결과를 모달로 표시
+        await reverseGeocode(lat, lng);
       });
 
       // 처음 마커 생성
@@ -54,7 +80,7 @@ function Map() {
         position: new Tmapv2.LatLng(latitude, longitude),
         icon: "../img/icon2.png",
         iconSize: new Tmapv2.Size(32, 32),
-        map: map,
+        map: mapRef.current,
       });
     };
 
@@ -71,7 +97,53 @@ function Map() {
       }
     };
 
+    const reverseGeocode = async (lat, lon) => {
+      const appKey = "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5"; // Replace with your actual appKey
+      const url = `https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat=${lat}&lon=${lon}&coordType=WGS84GEO&addressType=A04&newAddressExtend=Y`;
+      let target;
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            accept: "application/json",
+            appKey: appKey,
+          },
+        });
+
+        target = response.data.addressInfo.fullAddress;
+
+        try {
+          const response2 = await axios.get(
+            `https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword=${encodeURIComponent(
+              target
+            )}&searchType=all&searchtypCd=A&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&page=1&count=20&multiPoint=N&poiGroupYn=N`,
+            {
+              headers: {
+                accept: "application/json",
+                appKey: appKey,
+              },
+            }
+          );
+
+          setShowModal(true);
+          setLocationName(response2.data.searchPoiInfo.pois.poi[0].name);
+          setSeletedLat(response2.data.searchPoiInfo.pois.poi[0].frontLat);
+          setSeletedLng(response2.data.searchPoiInfo.pois.poi[0].frontLon);
+        } catch (error) {}
+      } catch (error) {
+        console.error("Reverse Geocoding failed:", error);
+      }
+    };
+
+    const closeModal = () => {
+      setModalOpen(false); // 모달 닫기
+    };
+
     const getCurrentLocation = () => {
+      const options = {
+        timeout: 10000, // 10 seconds
+        maximumAge: 60000, // 1 minute
+      };
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -81,7 +153,9 @@ function Map() {
         },
         (error) => {
           console.error("Error getting initial geolocation:", error);
-        }
+          initializeMap(startY, startX); // 오류 시 기본 위치 사용
+        },
+        options
       );
     };
 
@@ -91,6 +165,7 @@ function Map() {
           const { latitude, longitude } = position.coords;
           startY = latitude;
           startX = longitude;
+
           updateMarkerPosition(latitude, longitude);
         },
         (error) => {
@@ -110,7 +185,7 @@ function Map() {
         position: new Tmapv2.LatLng(latitude, longitude),
         icon: "../img/icon2.png",
         iconSize: new Tmapv2.Size(32, 32),
-        map: map,
+        map: mapRef.current,
       });
     };
 
@@ -118,9 +193,12 @@ function Map() {
 
     // 컴포넌트 언마운트 시 맵 인스턴스 정리 및 위치 감시 중지
     return () => {
-      navigator.geolocation.clearWatch(watchId); // 위치 감시 중지
+      if (window.Tmapv2 && mapRef.current) {
+        mapRef.current.destroy();
+        mapRef.current = null;
+      }
     };
-  }, []);
+  }, [location.key]); // location.key 변경에 의존
 
   const handleMapClick = () => {
     // SearchResults 컴포넌트가 열려있으면 닫음
@@ -131,21 +209,43 @@ function Map() {
 
   const handleSearch = async () => {
     if (searchQuery) {
-      await POISearch(searchQuery, setSearchResults, startY, startX);
+      await POISearch(searchQuery, setSearchResults, startX, startY);
       setShowResults(true);
+      setSearchQuery("");
+      setSearchPerformed(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   const centerMapOnUser = () => {
     const initialPosition = new Tmapv2.LatLng(startY, startX);
-    map.setCenter(initialPosition);
+    mapRef.current.setCenter(initialPosition);
   };
 
-  const handleLocationSelect = (lat, lng) => {
-    const epsg3857 = new Tmapv2.Point(lng, lat);
-    const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
-    const endX = wgs84._lng; // 도착점 경도
-    const endY = wgs84._lat; // 도착점 위도
+  const handleBack = () => {
+    resettingMap(); // 모든 마커와 경로 초기화
+    setShowResults(false); // 검색 결과 숨김
+    setSelectedRoute(null); // 선택된 경로 정보 초기화
+    centerMapOnUser(); // 사용자 위치로 맵 중심 이동
+    setSearchPerformed(false);
+    mapRef.current.setZoom(16);
+  };
+
+  const handleLocationSelect = (lat, lng, convertRequired) => {
+    console.log(lat, lng);
+    let endX, endY;
+    if (!convertRequired) {
+      const epsg3857 = new Tmapv2.Point(lng, lat);
+      const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
+      endX = wgs84._lng; // 도착점 경도
+      endY = wgs84._lat; // 도착점 위도
+    } else {
+      endX = lng; // 도착점 경도
+      endY = lat; // 도착점 위도
+    }
 
     const options = {
       method: "POST",
@@ -241,7 +341,7 @@ function Map() {
   function getZoomLevel(distance) {
     if (distance < 0.02) return 15; // 2km 미만
     else if (distance < 0.05) return 14; // 5km 미만
-    else if (distance < 0.1) return 13; // 10km 미만
+    else if (distance < 0.1) return 12.8; // 10km 미만
     else if (distance < 0.2) return 12; // 20km 미만
     else if (distance < 0.4) return 11; // 40km 미만
     else if (distance < 0.8) return 10; // 80km 미만
@@ -257,21 +357,21 @@ function Map() {
     const distance = simpleDistance(startLat, startLng, endLat, endLng);
     const zoomLevel = getZoomLevel(distance);
     console.log(distance);
-    map.setCenter(new Tmapv2.LatLng(midLat, midLng));
-    map.setZoom(zoomLevel);
+    mapRef.current.setCenter(new Tmapv2.LatLng(midLat, midLng));
+    mapRef.current.setZoom(zoomLevel);
 
     const startMarker = new Tmapv2.Marker({
       position: new Tmapv2.LatLng(startLat, startLng),
       icon: "../img/start.png",
       iconSize: new Tmapv2.Size(64, 64),
-      map: map,
+      map: mapRef.current,
     });
 
     const endMarker = new Tmapv2.Marker({
       position: new Tmapv2.LatLng(endLat, endLng),
       icon: "../img/end.png",
       iconSize: new Tmapv2.Size(64, 64),
-      map: map,
+      map: mapRef.current,
     });
 
     resultMarkerArr.push(startMarker);
@@ -288,7 +388,7 @@ function Map() {
         path: filteredPoints,
         strokeColor: lineColor,
         strokeWeight: 6,
-        map: map,
+        map: mapRef.current,
       });
       resultdrawArr.push(polyline);
     }
@@ -309,14 +409,28 @@ function Map() {
   return (
     <div id="mapContainer" style={{ position: "relative", height: "100%" }}>
       <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
+      <div>
+        {locationName && (
+          <LocationModal
+            locationName={locationName}
+            latitude={selectedLat} // 예: 선택된 위치의 위도
+            longitude={selectedLng}
+            show={showModal}
+            onClose={handleCloseModal}
+            onStartRoute={handleLocationSelect}
+          />
+        )}
+      </div>
       <button
         onClick={centerMapOnUser}
-        style={{ position: "absolute", bottom: "10px", left: "10px" }}
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          zIndex: 1000,
+        }}
       >
-        <img
-          src="../public/img/center.png"
-          style={{ width: "50px", height: "50px" }}
-        />
+        <img src="/img/center.png" style={{ width: "50px", height: "50px" }} />
       </button>
       <div
         style={{
@@ -333,25 +447,26 @@ function Map() {
             padding: "10px 0",
           }}
         >
+          {searchPerformed && (
+            <button onClick={handleBack} style={{ marginLeft: "0px" }}>
+              뒤로 가기
+            </button>
+          )}
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
-              height: isMobile ? "40px" : "40px",
-              fontSize: isMobile ? "16px" : "18px",
+              height: "40px",
+              fontSize: "18px",
               flexGrow: 1,
-              marginRight: "8px",
+              marginRight: "0px",
             }}
             placeholder="장소 검색"
           />
           <button
             onClick={handleSearch}
-            style={{
-              height: isMobile ? "45px" : "40px",
-              fontSize: isMobile ? "16px" : "18px",
-              padding: "0 12px",
-            }}
+            style={{ height: "45px", fontSize: "18px", padding: "0 12px" }}
           >
             검색
           </button>
@@ -404,6 +519,7 @@ function Map() {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
+              zIndex: 1001,
             }}
           >
             <div>예상 시간: {Math.round(selectedRoute.time)} 분</div>

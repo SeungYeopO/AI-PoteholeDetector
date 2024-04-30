@@ -22,11 +22,12 @@ function SearchResults({ results, onSelectLocation }) {
     >
       <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
         {results.map((result, index) => {
-        
           return (
             <li
               key={index}
-              onClick={() => onSelectLocation(result.frontLat, result.frontLon)}
+              onClick={() =>
+                onSelectLocation(result.frontLat, result.frontLon, false)
+              }
               style={{
                 padding: "10px",
                 borderBottom: "1px solid #ccc",
