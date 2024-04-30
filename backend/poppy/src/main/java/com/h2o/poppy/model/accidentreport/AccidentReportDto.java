@@ -22,8 +22,9 @@ public class AccidentReportDto {
 
     // Constructors
 
-    public AccidentReportDto(Long reportPk, Long potholePk, Long videoPk, String reportContent, Boolean isProcess) {
+    public AccidentReportDto(Long reportPk, Long userPk, Long potholePk, Long videoPk, String reportContent, Boolean isProcess) {
         this.reportPk = reportPk;
+        this.userPk = userPk;
         this.potholePk = potholePk;
         this.videoPk = videoPk;
         this.reportContent = reportContent;
