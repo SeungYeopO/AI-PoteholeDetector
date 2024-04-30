@@ -313,6 +313,7 @@ function Map() {
     async function marker() {
       try {
         const response = await axios.get("../../data/pothole.json");
+        console.log(response);
 
         response.data.forEach((element) => {
           const latitude = element.latitude;
@@ -321,7 +322,7 @@ function Map() {
             position: new Tmapv2.LatLng(latitude, longitude),
             icon: "../img/free-icon-pothole-10392295.png",
             iconSize: new Tmapv2.Size(24, 24),
-            map: map,
+            map: mapRef.current,
           });
         });
       } catch (error) {}

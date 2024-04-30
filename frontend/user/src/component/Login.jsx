@@ -12,8 +12,8 @@ function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    // 로그인 API 요청을 여기에 작성
-    // 예: const response = await fetch('/api/login', { ... });
+    
+    
     const userPK = "your_userPK_from_server"; // 가정: 서버로부터 받은 userPK, 실제 API 응답을 사용해야 함
 
     login(userPK);
