@@ -31,7 +31,7 @@ public class AccidentReportService {
     }
 
 
-    public AccidentReport saveData(AccidentReportDto data) {
+    public AccidentReportDto saveData(AccidentReportDto data) {
         try {
             long userPk = data.getUserPk();
             long potholePk = data.getPotholePk();
@@ -45,16 +45,16 @@ public class AccidentReportService {
             BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
             System.out.println(blackboxVideoMetadata);
             if (user != null && pothole != null && blackboxVideoMetadata != null) {
-                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, name, context, is_process);
+                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, is_process);
                 accidentReportRepository.save(accidentReport);
-                return accidentReport;
+                return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,is_process);
             } else {
                 // handle case where user, pothole, or blackboxVideoMetadata is not found
                 return null;
             }
         } catch (Exception e) {
             // handle any exception that occurs during data processing
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
     }
