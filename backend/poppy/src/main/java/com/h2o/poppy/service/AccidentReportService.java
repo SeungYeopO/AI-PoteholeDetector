@@ -32,30 +32,35 @@ public class AccidentReportService {
 
 
     public AccidentReportDto saveData(AccidentReportDto data) {
-        try {
-            long userPk = data.getUserPk();
-            long potholePk = data.getPotholePk();
-            long blackboxVideoMetadataPk = data.getVideoPk();
-            String context = data.getReportContent();
-            String name = data.getReportName();
-            boolean is_process = data.getIsProcess();
+        try{
+            long reportPk = data.getReportPk();
+            return null;
+        }catch (Exception e){
+            try {
+                long userPk = data.getUserPk();
+                long potholePk = data.getPotholePk();
+                long blackboxVideoMetadataPk = data.getVideoPk();
+                String context = data.getReportContent();
+                String name = data.getReportName();
+                boolean is_process = data.getIsProcess();
 
-            User user = userRepository.findById(userPk).orElse(null);
-            Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
-            BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
-            System.out.println(blackboxVideoMetadata);
-            if (user != null && pothole != null && blackboxVideoMetadata != null) {
-                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, is_process);
-                accidentReportRepository.save(accidentReport);
-                return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,is_process);
-            } else {
-                // handle case where user, pothole, or blackboxVideoMetadata is not found
+                User user = userRepository.findById(userPk).orElse(null);
+                Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
+                BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
+                System.out.println(blackboxVideoMetadata);
+                if (user != null && pothole != null && blackboxVideoMetadata != null) {
+                    AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, is_process);
+                    accidentReportRepository.save(accidentReport);
+                    return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,is_process);
+                } else {
+                    // handle case where user, pothole, or blackboxVideoMetadata is not found
+                    return null;
+                }
+            } catch (Exception e1) {
+                // handle any exception that occurs during data processing
+                //e.printStackTrace();
                 return null;
             }
-        } catch (Exception e) {
-            // handle any exception that occurs during data processing
-            //e.printStackTrace();
-            return null;
         }
     }
 

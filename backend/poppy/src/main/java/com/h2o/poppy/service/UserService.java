@@ -58,13 +58,18 @@ public class UserService {
 
     // 삽입
     public long saveData(User data) {
-        long nowPk = 0;
         try {
-            userRepository.save(data);
-            nowPk = data.getUserPk();
-            return nowPk;
-        } catch (Exception e) {
+            long userPk = data.getUserPk();
             return 0;
+        }catch (Exception e){
+            try {
+                long nowPk = 0;
+                userRepository.save(data);
+                nowPk = data.getUserPk();
+                return nowPk;
+            } catch (Exception e1) {
+                return 0;
+            }
         }
     }
 
