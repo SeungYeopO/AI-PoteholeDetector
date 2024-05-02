@@ -68,7 +68,7 @@ public class Pothole implements Serializable {
     }
 
     // 매개변수를 모두 포함한 생성자
-    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state) {
+    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPothole = isPothole;
@@ -77,5 +77,8 @@ public class Pothole implements Serializable {
         this.street = street;
         this.detectedAt = detectedAt;
         this.state = state;
+        this.startAt = startAt;
+        this.expectAt = expectAt;
+        this.endAt = endAt;
     }
 }

@@ -19,6 +19,9 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     PotholeDto getPotholeByPotholeId(@Param("potholePk") Long potholeId);
 
 
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, pt.latitude, pt.longitude, pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE pt.state = :nowState and pt.isPothole = true")
+    List<PotholeDto> getPotholeByNowState(@Param("nowState") String nowState);
+
 //    @Transactional
 //    @Modifying
 //    @Query("UPDATE Pothole e SET e.isPothole = :newData WHERE e.potholePk = :potholePk")
@@ -28,5 +31,15 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
 //    @Modifying
 //    @Query("UPDATE Pothole e SET e.isRepair = :newData WHERE e.potholePk = :potholePk")
 //    int updateIsRepair(@Param("potholePk") long Pk, @Param("newData") boolean newValue);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Pothole e SET e.state = :newData WHERE e.potholePk = :potholePk")
+    int updateState(@Param("potholePk") long Pk, @Param("newData") String newValue);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Pothole e SET e.isPothole = false WHERE e.potholePk = :potholePk")
+    int updateIsPothole(@Param("potholePk") long Pk);
 
 }

@@ -28,7 +28,7 @@ public class PotholeDto {
         // 매개변수 없는 생성자 내용
     }
 
-    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole, Boolean isRepair,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt) {
+    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt) {
         this.potholePk = potholePk;
         this.latitude = latitude;
         this.longitude = longitude;
