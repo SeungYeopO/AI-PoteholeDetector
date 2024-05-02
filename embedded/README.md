@@ -39,3 +39,10 @@ manhole 데이터 Labeling 완성
 jetson nano yolov5세텅 완료
 
 공공단체에서 지원해준 포트홀 데이터 이미지 변환 코드 및 파일 커밋
+
+
+--------------------------------
+
+OSY - 2024/05/02
+
+yolov5 모델 jetson nano에 porting 성공
