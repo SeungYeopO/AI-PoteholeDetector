@@ -248,13 +248,15 @@ const CompensationDonePage = () => {
           <SortedList>
                 <ListHeader>
                   <Info>상태</Info>
-                  <Info width="48%">신고위치</Info>
+                  <Info width="48%">제목</Info>
+                  <Info width="20%">작성자</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
               {currentData && currentData.map((item, index) => (
                 <Lists key={index} onClick={()=> handleListClick(item)}>
                   <Info color={color}>{item.state}</Info>
                   <Info width="48%">{item.title}</Info>
+                  <Info width="20%">{item.writer}</Info>
                   <Info width="20%">{item.date}</Info>
                 </Lists>
               ))}

@@ -416,8 +416,8 @@ const ManageProcessPage = () => {
         let st = '';
         let stcolor = '';
         if (currentDate < startDate) {
-          st = '공사 대기';
-          stcolor = '#F6AA16';
+          st = '공사 중';
+          stcolor = 'black';
         } else if (currentDate >= startDate && currentDate < endDate) {
           st = '공사 중';
           stcolor = 'green';

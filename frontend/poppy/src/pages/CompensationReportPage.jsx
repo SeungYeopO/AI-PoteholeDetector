@@ -462,12 +462,14 @@ const CompensationReportPage = () => {
                 <ListHeader>
                   <Info>순번</Info>
                   <Info width="48%">제목</Info>
+                  <Info width="20%">작성자</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
               {currentData && currentData.map((item, index) => (
                 <Lists key={index} onClick={()=> handleListClick(item)}>
                   <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
                   <Info width="48%">{item.title}</Info>
+                  <Info width="20%">{item.writer}</Info>
                   <Info width="20%">{item.date}</Info>
                 </Lists>
               ))}

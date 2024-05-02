@@ -357,10 +357,10 @@ const PageText = styled.div`
                           <TableCell1>신고위치</TableCell1>
                           <TableCell2>{selectedGrid.reportLocation}</TableCell2>
                         </TableRow>
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell1>신고자</TableCell1>
                           <TableCell2>김나나</TableCell2>
-                        </TableRow>
+                        </TableRow> */}
                         <TableRow>
                           <TableCell1>신고시각</TableCell1>
                           <TableCell2>{selectedGrid.reportTime}</TableCell2>
