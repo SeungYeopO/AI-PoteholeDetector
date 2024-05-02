@@ -13,7 +13,7 @@ let resultdrawArr = [];
 let routeMarkers = [];
 let startX = 126.98702028;
 let startY = 37.5652045;
-
+let timeoutId;
 let map;
 
 function Map() {
@@ -30,6 +30,7 @@ function Map() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLat, setSeletedLat] = useState(false);
   const [selectedLng, setSeletedLng] = useState(false);
+  const [onRoute, setOnRoute] = useState(false);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
   const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
   const [mapZoom, setMapZoom] = useState(16);
@@ -37,9 +38,89 @@ function Map() {
   const location = useLocation();
   const { user } = useAuth();
 
+  const onRouteRef = useRef(onRoute);
+
   if (!user) {
     return <Navigate to="/login" />;
   }
+
+  useEffect(() => {
+    onRouteRef.current = onRoute; // onRoute 값이 변경될 때마다 ref 업데이트
+  }, [onRoute]);
+
+  // 현재 위치와 주어진 포인트 간의 거리 계산 함수 (단위: km)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // 지구 반지름(km)
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+  };
+
+  const checkCenterChange = async () => {
+    const currentCenter = mapRef.current.getCenter();
+    const distance = calculateDistance(
+      lastCenter.lat(),
+      lastCenter.lng(),
+      currentCenter.lat(),
+      currentCenter.lng()
+    );
+
+    // Ref를 사용하여 최신의 onRoute 값을 확인
+    if (distance > 0.1 && !onRouteRef.current) {
+      await loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
+      lastCenter = currentCenter; // 최신 중심으로 업데이트
+    }
+
+    timeoutId = setTimeout(checkCenterChange, 3000); // 3초 후 다시 확인
+  };
+
+  let potholeMarkers = [];
+
+  // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
+  const loadAndMarkPotholes = async (latitude, longitude) => {
+    if (!onRouteRef.current) {
+      try {
+        // 기존 마커 제거
+        potholeMarkers.forEach((marker) => marker.setMap(null));
+        potholeMarkers = []; // 마커 배열 초기화
+
+        const response = await axios.get("../../data/pothole.json");
+
+        const potholes = response.data.filter((pothole) => {
+          // 사용자 위치와 포트홀 위치 간 거리 계산
+          const distance = calculateDistance(
+            latitude,
+            longitude,
+            pothole.latitude,
+            pothole.longitude
+          );
+
+          return distance <= 0.5; // 0.5km 이내의 포트홀만 필터링
+        });
+
+        // 필터링된 포트홀에 대해 마커 생성
+        potholes.forEach((pothole) => {
+          const marker = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
+            icon: "../img/center.png", // 포트홀 아이콘 이미지 경로
+            iconSize: new Tmapv2.Size(24, 24),
+            map: mapRef.current,
+          });
+          potholeMarkers.push(marker); // 새 마커를 배열에 추가
+        });
+      } catch (error) {
+        console.error("Error loading pothole data:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     let watchId; // watchPosition의 ID를 저장할 변수
@@ -161,61 +242,6 @@ function Map() {
       );
     };
 
-    // 현재 위치와 주어진 포인트 간의 거리 계산 함수 (단위: km)
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-      const R = 6371; // 지구 반지름(km)
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = R * c;
-      return distance;
-    };
-
-    let potholeMarkers = [];
-
-    // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
-    const loadAndMarkPotholes = (latitude, longitude) => {
-      console.log(selectedRoute);
-      if (!selectedRoute) {
-        try {
-          // 기존 마커 제거
-          potholeMarkers.forEach((marker) => marker.setMap(null));
-          potholeMarkers = []; // 마커 배열 초기화
-
-          const response = axios.get("../../data/pothole.json");
-          const potholes = response.data.filter((pothole) => {
-            // 사용자 위치와 포트홀 위치 간 거리 계산
-            const distance = calculateDistance(
-              latitude,
-              longitude,
-              pothole.latitude,
-              pothole.longitude
-            );
-            return distance <= 0.2; // 0.5km 이내의 포트홀만 필터링
-          });
-
-          // 필터링된 포트홀에 대해 마커 생성
-          potholes.forEach((pothole) => {
-            const marker = new Tmapv2.Marker({
-              position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
-              icon: "../img/center.png", // 포트홀 아이콘 이미지 경로
-              iconSize: new Tmapv2.Size(24, 24),
-              map: mapRef.current,
-            });
-            potholeMarkers.push(marker); // 새 마커를 배열에 추가
-          });
-        } catch (error) {
-          console.error("Error loading pothole data:", error);
-        }
-      }
-    };
-
     const watchUserPosition = () => {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
@@ -233,7 +259,7 @@ function Map() {
       );
     };
 
-    const checkCenterChange = () => {
+    const checkCenterChange = async () => {
       const currentCenter = mapRef.current.getCenter();
       const distance = calculateDistance(
         lastCenter.lat(),
@@ -242,15 +268,16 @@ function Map() {
         currentCenter.lng()
       );
 
-      if (distance > 0.1) {
-        // 중심이 0.3km 이상 변경되었는지 확인
-        loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
+      if (distance > 0.1 && !onRoute) {
+        await loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
         lastCenter = currentCenter; // 최신 중심으로 업데이트
       }
+
+      timeoutId = setTimeout(checkCenterChange, 3000);
     };
 
     // 3초마다 맵의 중심이 변경되었는지 확인
-    setInterval(checkCenterChange, 3000);
+    timeoutId = setTimeout(checkCenterChange, 3000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -276,7 +303,7 @@ function Map() {
         mapRef.current = null;
       }
     };
-  }, [location.key]); // location.key 변경에 의존
+  }, []);
 
   const handleMapClick = () => {
     // SearchResults 컴포넌트가 열려있으면 닫음
@@ -307,12 +334,14 @@ function Map() {
     resettingMap(); // 모든 마커와 경로 초기화
     setShowResults(false); // 검색 결과 숨김
     setSelectedRoute(null); // 선택된 경로 정보 초기화
+    setOnRoute(false);
     centerMapOnUser(); // 사용자 위치로 맵 중심 이동
     setSearchPerformed(false);
     mapRef.current.setZoom(16);
   };
 
-  const handleLocationSelect = (lat, lng, convertRequired) => {
+  const handleLocationSelect = async (lat, lng, convertRequired) => {
+    resettingMap();
     let endX, endY;
     if (!convertRequired) {
       const epsg3857 = new Tmapv2.Point(lng, lat);
@@ -324,6 +353,12 @@ function Map() {
       endY = parseFloat(lat); // 도착점 위도
     }
 
+    setSearchPerformed(true);
+    setOnRoute(true);
+    console.log(onRoute);
+    onRouteRef.current = onRoute;
+
+    console.log(onRouteRef);
     const options = {
       method: "POST",
       headers: {
@@ -358,10 +393,9 @@ function Map() {
       }),
     };
 
-    resettingMap();
     console.log(typeof endX, typeof endY);
     const midPoint = updateMapCenterAndZoom(startY, startX, endY, endX);
-    fetch(
+    await fetch(
       "https://apis.openapi.sk.com/tmap/routes?version=1&callback=function",
       options
     )
@@ -393,7 +427,6 @@ function Map() {
         routeMarkers.forEach((marker) => marker.setMap(null));
         routeMarkers = [];
         const response = await axios.get("../../data/pothole.json");
-        console.log(response);
 
         response.data.forEach((element) => {
           const latitude = element.latitude;
@@ -438,8 +471,7 @@ function Map() {
     const midLng = (startLng + endLng) / 2;
     const distance = simpleDistance(startLat, startLng, endLat, endLng);
     const zoomLevel = getZoomLevel(distance);
-    console.log(distance);
-    console.log(startLat, startLng, endLat, endLng);
+
     mapRef.current.setCenter(new Tmapv2.LatLng(midLat, midLng));
     mapRef.current.setZoom(zoomLevel);
 
