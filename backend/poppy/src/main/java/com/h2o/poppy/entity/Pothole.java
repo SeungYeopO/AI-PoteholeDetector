@@ -32,9 +32,6 @@ public class Pothole implements Serializable {
     @Column(name = "is_pothole", nullable = true)
     private Boolean isPothole;
 
-    @Column(name = "is_repair", nullable = true)
-    private Boolean isRepair;
-
     @Column(name = "province", nullable = true, length = 10)
     private String province;
 
@@ -48,6 +45,21 @@ public class Pothole implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date detectedAt;
 
+    @Column(name = "state", nullable = true, length = 50)
+    private String state;
+
+    @Column(name = "start_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startAt;
+
+    @Column(name = "expect_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expectAt;
+
+    @Column(name = "end_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endAt;
+
     @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReports;
 
@@ -55,14 +67,15 @@ public class Pothole implements Serializable {
     public Pothole() {
     }
 
-    public Pothole(Double latitude, Double longitude, Boolean isPothole, Boolean isRepair, String province, String city, String street, Date detectedAt) {
+    // 매개변수를 모두 포함한 생성자
+    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPothole = isPothole;
-        this.isRepair = isRepair;
         this.province = province;
         this.city = city;
         this.street = street;
         this.detectedAt = detectedAt;
+        this.state = state;
     }
 }

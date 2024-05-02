@@ -47,8 +47,8 @@ public class DataLoader implements CommandLineRunner {
         Date date2 = new Date(2022 - 1900, 5, 46, 22, 30, 0); // 2022년 4월 25일 오후 2시 30분
 
         potholeRepository.saveAll(List.of(
-                new Pothole(35.202370, 126.810139, true, true, "광주광역시", "광산구", "하남산단6번로", date1),
-                new Pothole(37.501475, 127.039515, true, false, "서울특별시", "강남구", "테헤란로", date2)));
+                new Pothole(35.202370, 126.810139, true, "광주광역시", "광산구", "하남산단6번로", date1, "미확인"),
+                new Pothole(37.501475, 127.039515, true, "서울특별시", "강남구", "테헤란로", date2, "공사 대기")));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
@@ -70,7 +70,7 @@ public class DataLoader implements CommandLineRunner {
         BlackboxVideoMetadata BlackboxVideoMetadata2 = blackboxVideoMetadataRepository.findById(2L).orElse(null);
 
         accidentReportRepository.saveAll(List.of(
-                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "1번제목","광주신고함", true),
-                new AccidentReport(user2, pothole2, BlackboxVideoMetadata2, "2번제목","서울신고함", false)));
+                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "1번제목","광주신고함", date1, "미확인"),
+                new AccidentReport(user2, pothole2, BlackboxVideoMetadata2, "2번제목","서울신고함",date2,"접수중")));
     }
 }

@@ -43,7 +43,7 @@ public class PotholeController {
         return new getResponse(success,getAllPotholes);
     }
 
-    // 포트홀 1명 정보 보기
+    // 포트홀 1개 정보 보기
     @GetMapping("/{potholePk}")
     public Object getIdPothole(@PathVariable Long potholePk) {
 
