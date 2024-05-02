@@ -10,6 +10,7 @@ import axios from "axios";
 let resultMarkerArr = [];
 let resultdrawArr = [];
 
+let routeMarkers = [];
 let startX = 126.98702028;
 let startY = 37.5652045;
 
@@ -42,6 +43,7 @@ function Map() {
 
   useEffect(() => {
     let watchId; // watchPosition의 ID를 저장할 변수
+    let lastCenter;
     const initializeMap = (latitude, longitude) => {
       const container = document.getElementById(mapContainerId);
       if (!container) {
@@ -65,7 +67,7 @@ function Map() {
         height: "100%",
         zoom: mapZoom,
       });
-
+      lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
       mapRef.current.addListener("click", async (evt) => {
         const latLng = evt.latLng;
         const lat = latLng.lat();
@@ -159,10 +161,67 @@ function Map() {
       );
     };
 
+    // 현재 위치와 주어진 포인트 간의 거리 계산 함수 (단위: km)
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; // 지구 반지름(km)
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+      return distance;
+    };
+
+    let potholeMarkers = [];
+
+    // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
+    const loadAndMarkPotholes = (latitude, longitude) => {
+      console.log(selectedRoute);
+      if (!selectedRoute) {
+        try {
+          // 기존 마커 제거
+          potholeMarkers.forEach((marker) => marker.setMap(null));
+          potholeMarkers = []; // 마커 배열 초기화
+
+          const response = axios.get("../../data/pothole.json");
+          const potholes = response.data.filter((pothole) => {
+            // 사용자 위치와 포트홀 위치 간 거리 계산
+            const distance = calculateDistance(
+              latitude,
+              longitude,
+              pothole.latitude,
+              pothole.longitude
+            );
+            return distance <= 0.2; // 0.5km 이내의 포트홀만 필터링
+          });
+
+          // 필터링된 포트홀에 대해 마커 생성
+          potholes.forEach((pothole) => {
+            const marker = new Tmapv2.Marker({
+              position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
+              icon: "../img/center.png", // 포트홀 아이콘 이미지 경로
+              iconSize: new Tmapv2.Size(24, 24),
+              map: mapRef.current,
+            });
+            potholeMarkers.push(marker); // 새 마커를 배열에 추가
+          });
+        } catch (error) {
+          console.error("Error loading pothole data:", error);
+        }
+      }
+    };
+
     const watchUserPosition = () => {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          const center = mapRef.current.getCenter();
+
           startY = latitude;
           startX = longitude;
 
@@ -173,6 +232,25 @@ function Map() {
         }
       );
     };
+
+    const checkCenterChange = () => {
+      const currentCenter = mapRef.current.getCenter();
+      const distance = calculateDistance(
+        lastCenter.lat(),
+        lastCenter.lng(),
+        currentCenter.lat(),
+        currentCenter.lng()
+      );
+
+      if (distance > 0.1) {
+        // 중심이 0.3km 이상 변경되었는지 확인
+        loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
+        lastCenter = currentCenter; // 최신 중심으로 업데이트
+      }
+    };
+
+    // 3초마다 맵의 중심이 변경되었는지 확인
+    setInterval(checkCenterChange, 3000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -312,18 +390,21 @@ function Map() {
 
     async function marker() {
       try {
+        routeMarkers.forEach((marker) => marker.setMap(null));
+        routeMarkers = [];
         const response = await axios.get("../../data/pothole.json");
         console.log(response);
 
         response.data.forEach((element) => {
           const latitude = element.latitude;
           const longitude = element.longitude;
-          new Tmapv2.Marker({
+          const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(latitude, longitude),
             icon: "../img/free-icon-pothole-10392295.png",
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
+          routeMarkers.push(marker);
         });
       } catch (error) {}
     }
@@ -403,9 +484,15 @@ function Map() {
     // 기존 draw 삭제
     resultdrawArr.forEach((draw) => draw.setMap(null));
 
+    routeMarkers.forEach((marker) => marker.setMap(null));
     // 배열 초기화
     resultMarkerArr = [];
     resultdrawArr = [];
+    routeMarkers = [];
+  }
+
+  function hihihi() {
+    console.log(selectedRoute);
   }
 
   return (
@@ -551,6 +638,19 @@ function Map() {
               }}
             >
               안내 시작
+            </button>
+            <button
+              onClick={hihihi}
+              style={{
+                color: "black",
+                fontSize: "16px",
+                fontWeight: "bold",
+                border: "none",
+                padding: "20px 30px",
+                cursor: "pointer",
+              }}
+            >
+              bb
             </button>
           </div>
         </div>
