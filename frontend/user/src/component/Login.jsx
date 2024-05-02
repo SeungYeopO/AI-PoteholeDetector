@@ -1,6 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import axios from "axios";
+
+function Modal({ isOpen, onClose, children }) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{ background: "white", padding: 20 }}>
+        {children}
+        <button onClick={onClose}>닫기</button>
+      </div>
+    </div>
+  );
+}
 
 function Login() {
   const navigate = useNavigate();
@@ -9,15 +35,30 @@ function Login() {
   // 상태 추가: 사용자 아이디와 비밀번호를 저장합니다.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    
-    
-    const userPK = "your_userPK_from_server"; // 가정: 서버로부터 받은 userPK, 실제 API 응답을 사용해야 함
 
-    login(userPK);
-    navigate("/map");
+    const url = "/api/users/login";
+    const data = {
+      loginId: username,
+      password: password,
+    };
+
+    axios
+      .post(url, data)
+      .then((response) => response.data)
+      .then((response) => {
+        if (response.result == true) {
+          const userPK = response.userPk;
+          login(userPK);
+          navigate("/map");
+        } else if (response.result == false) {
+          setModalOpen(true);
+        }
+      })
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -43,6 +84,10 @@ function Login() {
       />
 
       <button type="submit">제출</button>
+
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+        로그인에 실패하였습니다.
+      </Modal>
     </form>
   );
 }

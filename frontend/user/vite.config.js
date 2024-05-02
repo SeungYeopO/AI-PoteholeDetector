@@ -38,4 +38,14 @@ export default defineConfig({
       // },
     }),
   ],
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://k10c106.p.ssafy.io",
+        changeOrigin: true,
+        secure: false,
+        //rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });

@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = (userInfo) => {
-    localStorage.setItem("user", JSON.stringify(userInfo)); // 로그인 정보를 로컬 스토리지에 저장
+    localStorage.setItem("user", userInfo); // 로그인 정보를 로컬 스토리지에 저장
     setUser(userInfo);
   };
 

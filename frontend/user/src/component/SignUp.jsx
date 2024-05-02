@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 function SignUp() {
   const [formData, setFormData] = useState({
     loginId: "",
@@ -8,6 +8,7 @@ function SignUp() {
     userName: "",
     phoneNumber: "",
   });
+  const [isIdDuplicate, setIsIdDuplicate] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,11 +19,53 @@ function SignUp() {
     }));
   };
 
+  const checkDuplicateId = () => {
+    const url = "/api/users/duplicate-id";
+    const data = {
+      loginId: formData.loginId,
+    };
+    axios
+      .post(url, data)
+      .then((response) => response.data)
+      .then((response) => {
+        if (response.result == true) {
+          setIsIdDuplicate(true);
+          alert("가능한 아이디");
+        } else {
+          alert("불가능");
+        }
+      })
+      .catch((error) => {
+        console.error("중복 검사 중 에러 발생:", error);
+        alert("중복 검사에 실패했습니다.");
+      });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("회원가입 정보:", formData);
-    // 회원가입 처리 로직을 여기에 추가하세요.
-    navigate("/"); // 회원가입 성공 후 홈 또는 로그인 페이지로 리디렉션
+
+    const url = "/api/users";
+    const data = {
+      loginId: loginId,
+      password: password,
+      userName: userName,
+      phoneNumber: phoneNumber,
+    };
+
+    axios
+      .post(url, data)
+      .then((response) => response.data)
+      .then((response) => {
+        console.log(response);
+        if (response.success == true) {
+          const userPK = response.userPk;
+          login(userPK);
+          navigate("/map");
+        } else if (response.success == false) {
+          setModalOpen(true);
+        }
+      })
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -39,6 +82,9 @@ function SignUp() {
             onChange={handleChange}
             required
           />
+          <button type="button" onClick={checkDuplicateId}>
+            중복 확인
+          </button>
         </div>
         <div className="form-group">
           <label htmlFor="password">비밀번호</label>
