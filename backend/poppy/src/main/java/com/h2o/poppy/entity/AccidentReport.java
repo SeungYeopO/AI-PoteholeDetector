@@ -49,7 +49,7 @@ public class AccidentReport {
     public AccidentReport() {
     }
 
-    public AccidentReport(User userPk, Pothole potholePk, BlackboxVideoMetadata videoPk, String reportContent,String reportName, Date reportDate, String state) {
+    public AccidentReport(User userPk, Pothole potholePk, BlackboxVideoMetadata videoPk, String reportContent,String reportName, Date reportDate, String state,String rejectionReason) {
         this.userPk = userPk;
         this.potholePk = potholePk;
         this.videoPk = videoPk;
@@ -57,6 +57,7 @@ public class AccidentReport {
         this.reportContent = reportContent;
         this.reportDate = reportDate;
         this.state = state;
+        this.rejectionReason = rejectionReason;
     }
 
 }

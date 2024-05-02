@@ -12,6 +12,7 @@ import com.h2o.poppy.model.accidentreport.AccidentReportDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -42,16 +43,18 @@ public class AccidentReportService {
                 long blackboxVideoMetadataPk = data.getVideoPk();
                 String context = data.getReportContent();
                 String name = data.getReportName();
-                boolean is_process = data.getIsProcess();
+                Date date = data.getReportDate();
+                String state = data.getState();
+                String rejectionReason = data.getRejectionReason();
 
                 User user = userRepository.findById(userPk).orElse(null);
                 Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
                 BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
                 System.out.println(blackboxVideoMetadata);
                 if (user != null && pothole != null && blackboxVideoMetadata != null) {
-                    AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, is_process);
+                    AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, date,state,rejectionReason);
                     accidentReportRepository.save(accidentReport);
-                    return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,is_process);
+                    return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,date,state,rejectionReason);
                 } else {
                     // handle case where user, pothole, or blackboxVideoMetadata is not found
                     return null;
