@@ -38,16 +38,25 @@ public class PotholeService {
 
     // 전체 get
     public List<PotholeDto> getAllPothole() {
-        List<Pothole> getPothole = potholeRepository.findAll();
-        return getPothole.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        try {
+            List<Pothole> getPothole = potholeRepository.findAll();
+            return getPothole.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+        }catch (Exception e){
+            return null;
+        }
     }
 
     // 1인 get
     public PotholeDto getIdPothole(Long potholePk) {
-        PotholeDto potholeDto = potholeRepository.getPotholeByPotholeId(potholePk);
-        return potholeDto;
+        try{
+            PotholeDto potholeDto = potholeRepository.getPotholeByPotholeId(potholePk);
+            return potholeDto;
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
 
