@@ -39,9 +39,9 @@ public class ManagerService {
     }
 
     // 1인 get
-    public Manager getIdManager(Long managerPk) {
+    public ManagerDto getIdManager(Long managerPk) {
         Optional<Manager> optionalManager = managerRepository.findById(managerPk);
-        return optionalManager.orElse(null);
+        return optionalManager.map(this::convertToDto).orElse(null);
     }
 
     public boolean duplicateId(String loginId) {

@@ -70,7 +70,7 @@ public class DataLoader implements CommandLineRunner {
         BlackboxVideoMetadata BlackboxVideoMetadata2 = blackboxVideoMetadataRepository.findById(2L).orElse(null);
 
         accidentReportRepository.saveAll(List.of(
-                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "1번제목","광주신고함", date1, "미확인","포트홀아님"),
+                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "1번제목","광주신고함", date1, "미확인",null),
                 new AccidentReport(user2, pothole2, BlackboxVideoMetadata2, "2번제목","서울신고함",date2,"접수중",null)));
     }
 }

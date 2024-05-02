@@ -2,11 +2,13 @@ package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.Manager;
 import com.h2o.poppy.model.manager.ManagerDto;
+import com.h2o.poppy.model.user.UserDto;
 import com.h2o.poppy.service.ManagerService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/managers")
@@ -27,7 +29,7 @@ public class ManagerController {
 
     // 매니저 1명 정보 보기
     @GetMapping("/{managerPk}")
-    public Manager getIdManager(@PathVariable Long managerPk) {
+    public ManagerDto getIdManager(@PathVariable Long managerPk) {
         return managerService.getIdManager(managerPk);
     }
 
@@ -66,24 +68,29 @@ public class ManagerController {
     }
 
     //수정
-    @PutMapping
-    public Object updateData(@RequestBody ManagerDto data) {
-        long managerPk = managerService.updateData(data);
+    @PutMapping("/{managerPk}")
+    public Object updateData(@PathVariable long managerPk, @RequestBody ManagerDto data) {
+        data.setManagerPk(managerPk);
+        ManagerDto managerDto = managerService.getIdManager(managerPk);
+        if(!Objects.equals(managerDto.getManagerName(), data.getManagerName())) {
+            return "invalid value";
+        }
+        int state = managerService.updateData(data);
         @Getter
         class UpdateDataResponse {
             private final boolean result;
 
-            UpdateDataResponse(long managerPk) {
-                this.result = managerPk != 0;
+            UpdateDataResponse(int state) {
+                this.result = state != 0;
             }
         }
-        return new UpdateDataResponse(managerPk);
+        return new UpdateDataResponse(state);
     }
 
     //삭제
     @DeleteMapping("/{managerPk}")
-    public Object deleteData(@PathVariable Long userPk) {
-        boolean result = managerService.deleteData(userPk);
+    public Object deleteData(@PathVariable Long managerPk) {
+        boolean result = managerService.deleteData(managerPk);
 
         @Getter
         class DeleteDataResponse {

@@ -8,6 +8,9 @@ import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
 
 @Entity
 @Table(name = "potholes")
@@ -23,11 +26,8 @@ public class Pothole implements Serializable {
     @Column(name = "pothole_pk", nullable = false, updatable = false)
     private Long potholePk;
 
-    @Column(name = "latitude", nullable = true)
-    private Double latitude;
-
-    @Column(name = "longitude", nullable = true)
-    private Double longitude;
+    @Column(name = "location", nullable = false)
+    private Geometry location;  // JTS의 Point 타입 사용
 
     @Column(name = "is_pothole", nullable = true)
     private Boolean isPothole;
@@ -69,8 +69,8 @@ public class Pothole implements Serializable {
 
     // 매개변수를 모두 포함한 생성자
     public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+        GeometryFactory geometryFactory = new GeometryFactory();
+        this.location = geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 경도, 위도 순서 주의
         this.isPothole = isPothole;
         this.province = province;
         this.city = city;

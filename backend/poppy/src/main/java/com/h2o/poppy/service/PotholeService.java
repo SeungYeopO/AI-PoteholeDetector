@@ -20,8 +20,8 @@ public class PotholeService {
     private PotholeDto convertToDto(Pothole pothole) {
         PotholeDto potholeDto = new PotholeDto();
         potholeDto.setPotholePk(pothole.getPotholePk());
-        potholeDto.setLatitude(pothole.getLatitude());
-        potholeDto.setLongitude(pothole.getLongitude());
+        potholeDto.setLatitude(pothole.getLocation().getCoordinate().getX());
+        potholeDto.setLongitude(pothole.getLocation().getCoordinate().getY());
         potholeDto.setIsPothole(pothole.getIsPothole());
         potholeDto.setProvince(pothole.getProvince());
         potholeDto.setCity(pothole.getCity());
