@@ -62,13 +62,19 @@ public class PotholeService {
 
     // 삽입
     public long saveData(Pothole data) {
-        long nowPk = 0;
-        try {
-            potholeRepository.save(data);
-            nowPk = data.getPotholePk();
-            return nowPk;
-        } catch (Exception e) {
+        try{
+            long potholePk = data.getPotholePk();
             return 0;
+        }
+        catch (Exception e){
+            try {
+                long nowPk = 0;
+                potholeRepository.save(data);
+                nowPk = data.getPotholePk();
+                return nowPk;
+            } catch (Exception e1) {
+                return 0;
+            }
         }
     }
 

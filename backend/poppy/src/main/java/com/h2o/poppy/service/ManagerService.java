@@ -58,13 +58,18 @@ public class ManagerService {
 
     // 삽입
     public long saveData(Manager data) {
-        long nowPk = 0;
-        try {
-            managerRepository.save(data);
-            nowPk = data.getManagerPk();
-            return nowPk;
-        } catch (Exception e) {
+        try{
+            long managerPk = data.getManagerPk();
             return 0;
+        }catch (Exception e){
+            try {
+                long nowPk = 0;
+                managerRepository.save(data);
+                nowPk = data.getManagerPk();
+                return nowPk;
+            } catch (Exception e1) {
+                return 0;
+            }
         }
     }
 
