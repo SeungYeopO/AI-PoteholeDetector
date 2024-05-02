@@ -85,19 +85,19 @@ public class PotholeController {
     }
 
     // 수정
-    @PutMapping
-    public Object updateData(@RequestBody PotholeDto data) {
-        long potholePk = potholeService.updateData(data);
-        @Getter
-        class UpdateDataResponse {
-            private final boolean result;
-
-            UpdateDataResponse(long potholePk) {
-                this.result = potholePk != 0;
-            }
-        }
-        return new UpdateDataResponse(potholePk);
-    }
+//    @PutMapping
+//    public Object updateData(@RequestBody PotholeDto data) {
+//        long potholePk = potholeService.updateData(data);
+//        @Getter
+//        class UpdateDataResponse {
+//            private final boolean result;
+//
+//            UpdateDataResponse(long potholePk) {
+//                this.result = potholePk != 0;
+//            }
+//        }
+//        return new UpdateDataResponse(potholePk);
+//    }
 
     // 삭제
     @DeleteMapping("/{potholePk}")
@@ -115,38 +115,4 @@ public class PotholeController {
         return new DeleteDataResponse(result);
     }
 
-
-
-//    private final PotholeRepository potholeRepository;
-//
-//    public PotholeController(PotholeRepository potholeRepository) {
-//        this.potholeRepository = potholeRepository;
-//    }
-//
-//    @GetMapping
-//    public Iterable<Pothole> getAllPotholes() {
-//        return potholeRepository.findAll();
-//    }
-//
-//    @GetMapping("/{potholePk}")
-//    public ResponseEntity<Pothole> getPotholeById(@PathVariable Long potholePk) {
-//        return potholeRepository.findById(potholePk)
-//                .map(ResponseEntity::ok)
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
-//
-//    @PostMapping
-//    public Pothole createPothole(@RequestBody Pothole pothole) {
-//        return potholeRepository.save(pothole);
-//    }
-//
-//    @DeleteMapping("/{potholePk}")
-//    public ResponseEntity<?> deletePothole(@PathVariable Long potholePk) {
-//        return potholeRepository.findById(potholePk)
-//                .map(pothole -> {
-//                    potholeRepository.delete(pothole);
-//                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-//                })
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
 }

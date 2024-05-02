@@ -15,18 +15,18 @@ import java.util.List;
 
 @Repository
 public interface PotholeRepository extends JpaRepository<Pothole, Long> {
-    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, pt.latitude, pt.longitude, pt.isPothole, pt.isRepair, pt.province,  pt.city, pt.street, pt.detectedAt) FROM Pothole pt WHERE pt.potholePk = :potholePk")
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, pt.latitude, pt.longitude, pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE pt.potholePk = :potholePk")
     PotholeDto getPotholeByPotholeId(@Param("potholePk") Long potholeId);
 
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Pothole e SET e.isPothole = :newData WHERE e.potholePk = :potholePk")
-    int updateIsPothole(@Param("potholePk") long Pk, @Param("newData") boolean newValue);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Pothole e SET e.isRepair = :newData WHERE e.potholePk = :potholePk")
-    int updateIsRepair(@Param("potholePk") long Pk, @Param("newData") boolean newValue);
+//    @Transactional
+//    @Modifying
+//    @Query("UPDATE Pothole e SET e.isPothole = :newData WHERE e.potholePk = :potholePk")
+//    int updateIsPothole(@Param("potholePk") long Pk, @Param("newData") boolean newValue);
+//
+//    @Transactional
+//    @Modifying
+//    @Query("UPDATE Pothole e SET e.isRepair = :newData WHERE e.potholePk = :potholePk")
+//    int updateIsRepair(@Param("potholePk") long Pk, @Param("newData") boolean newValue);
 
 }

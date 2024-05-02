@@ -16,26 +16,31 @@ public class PotholeDto {
     private Double latitude;
     private Double longitude;
     private Boolean isPothole;
-    private Boolean isRepair;
     private String province;
     private String city;
     private String street;
     private Date detectedAt;
-
+    private String state;
+    private Date startAt;
+    private Date expectAt;
+    private Date endAt;
     public PotholeDto() {
         // 매개변수 없는 생성자 내용
     }
 
-    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole, Boolean isRepair,String province, String city,String street,Date detectedAt) {
+    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole, Boolean isRepair,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt) {
         this.potholePk = potholePk;
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPothole = isPothole;
-        this.isRepair = isRepair;
         this.province = province;
         this.city = city;
         this.street = street;
         this.detectedAt = detectedAt;
+        this.state = state;
+        this.startAt = startAt;
+        this.expectAt = expectAt;
+        this.endAt = endAt;
     }
 
 }

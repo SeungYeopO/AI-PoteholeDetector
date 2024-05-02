@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface AccidentReportRepository extends JpaRepository<AccidentReport, Long> {
 
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportDto(ar.reportPk, ar.userPk.userPk, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.reportName, ar.reportContent,  ar.isProcess) FROM AccidentReport ar WHERE ar.userPk.userPk = :userId")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportDto(ar.reportPk, ar.userPk.userPk, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.userPk.userPk = :userId")
     List<AccidentReportDto> getAccidentReportInfoByUserId(@Param("userId") Long userId);
 
 
