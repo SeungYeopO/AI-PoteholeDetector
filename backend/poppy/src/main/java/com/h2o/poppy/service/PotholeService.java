@@ -62,6 +62,17 @@ public class PotholeService {
 
     }
 
+    //공사상태 get(공사대기)
+    public List<PotholeDto> getState1Pothole(String nowState){
+        try{
+            List<PotholeDto> statePotholes = potholeRepository.getPotholeByNowState(nowState);
+            System.out.println(statePotholes);
+            return statePotholes;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
 
     // 삽입
     public long saveData(Pothole data) {
@@ -81,52 +92,31 @@ public class PotholeService {
         }
     }
 
-    // 수정
-//    public int updateData(PotholeDto data) {
-//        Long potholePk = data.getPotholePk();
-//        boolean isPothole = false;
-//        int potholeFlag=1;
-//        boolean isRepair = false;
-//        int repairFlag=1;
-//
-//        try {
-//            isPothole = data.getIsPothole();
-//        }catch (Exception e){
-//            potholeFlag=0;
-//        }
-//
-//        try {
-//            isRepair = data.getIsRepair();
-//        }catch (Exception e){
-//            repairFlag=0;
-//        }
-//
-//        int state = 0;
-//        try {
-//            if (potholeFlag != 0 && repairFlag != 0) {
-//                // originPassword와 originPhoneNumber가 모두 null이 아닌 경우에 대한 처리
-//                potholeRepository.updateIsPothole(potholePk, isPothole);
-//                potholeRepository.updateIsRepair(potholePk, isRepair);
-//                state = 1;
-//            } else if (potholeFlag != 0) {
-//                potholeRepository.updateIsPothole(potholePk, isPothole);
-//                state = 2;
-//            } else if (repairFlag != 0) {
-//                potholeRepository.updateIsRepair(potholePk, isRepair);
-//                state = 3;
-//            }
-//            return state;
-//        } catch (Exception e) {
-//            System.out.println("update operation failed");
-//            e.printStackTrace(); // 예외 스택 트레이스 출력
-//            return 0;
-//        }
-//    }
+    public String changeState(PotholeDto data){
+        long potholePk = data.getPotholePk();
+        String nowState = data.getState();
+        if(nowState==null)return null;
+        if(!nowState.equals("공사대기") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
+        String changeState =null;
+        try{
+            if(nowState.equals("공사중")){
+                potholeRepository.updateState(potholePk,"공사중");
+                changeState = "공사중";
+            }else if(nowState.equals("공사완료")){
+                potholeRepository.updateState(potholePk,"공사완료");
+                changeState = "공사완료";
+            }
+            return changeState;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
 
     // 삭제
-    public boolean deleteData(Long potholePk) {
+    public boolean rejectData(Long potholePk) {
         try {
-            potholeRepository.deleteById(potholePk);
+            potholeRepository.updateIsPothole(potholePk);
             return true;
         } catch (Exception e) {
             return false;
