@@ -27,14 +27,40 @@ public class PotholeController {
 
     // 전체 포트홀 읽기
     @GetMapping
-    public List<PotholeDto> getAllPothole() {
-        return potholeService.getAllPothole();
+    public Object getAllPothole() {
+        List<PotholeDto> getAllPotholes = potholeService.getAllPothole();
+        boolean success = getAllPotholes != null; // PK가 0보다 크다면 성공으로 간주
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<PotholeDto> getAllPotholes;
+
+            getResponse(boolean success, List<PotholeDto> getAllPotholes) {
+                this.success = success;
+                this.getAllPotholes = getAllPotholes;
+            }
+        }
+        return new getResponse(success,getAllPotholes);
     }
 
     // 포트홀 1명 정보 보기
     @GetMapping("/{potholePk}")
-    public PotholeDto getIdPothole(@PathVariable Long potholePk) {
-        return potholeService.getIdPothole(potholePk);
+    public Object getIdPothole(@PathVariable Long potholePk) {
+
+        PotholeDto getPothole = potholeService.getIdPothole(potholePk);
+        boolean success = getPothole != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final PotholeDto getPothole;
+
+            getResponse(boolean success, PotholeDto getPothole) {
+                this.success = success;
+                this.getPothole = getPothole;
+            }
+        }
+        return new getResponse(success,getPothole);
+
     }
 
     
