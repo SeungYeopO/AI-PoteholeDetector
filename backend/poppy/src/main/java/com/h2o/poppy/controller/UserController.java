@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -27,14 +28,13 @@ public class UserController {
 
     // 유저 1명 정보 보기
     @GetMapping("/{userPk}")
-    public User getIdUser(@PathVariable Long userPk) {
+    public UserDto getIdUser(@PathVariable Long userPk) {
         return userService.getIdUser(userPk);
     }
 
     // 아이디 중복 검사
     @PostMapping("/duplicate-id")
     public Object duplicateId(@RequestBody UserDto data) {
-        boolean result = userService.duplicateId(data.getLoginId());
         @Getter
         class duplicateIdResponse {
             private final boolean result;
@@ -43,6 +43,8 @@ public class UserController {
                 this.result = result;
             }
         }
+        boolean result = userService.duplicateId(data.getLoginId());
+
         return new duplicateIdResponse(result);
     }
 
@@ -66,18 +68,23 @@ public class UserController {
     }
 
     // 수정
-    @PutMapping
-    public Object updateData(@RequestBody UserDto data) {
-        long userPk = userService.updateData(data);
+    @PutMapping("/{userPk}")
+    public Object updateData(@PathVariable long userPk, @RequestBody UserDto data) {
+        data.setUserPk(userPk);
+        UserDto userDto = userService.getIdUser(userPk);
+        if(!Objects.equals(userDto.getUserName(), data.getUserName())) {
+            return "invalid value";
+        }
+        int state = userService.updateData(data);
         @Getter
         class UpdateDataResponse {
             private final boolean result;
 
-            UpdateDataResponse(long userPk) {
-                this.result = userPk != 0;
+            UpdateDataResponse(int state) {
+                this.result = state != 0;
             }
         }
-        return new UpdateDataResponse(userPk);
+        return new UpdateDataResponse(state);
     }
 
     // 삭제

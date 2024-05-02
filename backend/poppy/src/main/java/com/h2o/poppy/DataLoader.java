@@ -48,7 +48,7 @@ public class DataLoader implements CommandLineRunner {
 
         potholeRepository.saveAll(List.of(
                 new Pothole(35.202370, 126.810139, true, true, "광주광역시", "광산구", "하남산단6번로", date1),
-                new Pothole(37.501475, 127.039515, true, false, "서울특별시", "강남수", "테헤란로", date2)));
+                new Pothole(37.501475, 127.039515, true, false, "서울특별시", "강남구", "테헤란로", date2)));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);

@@ -2,6 +2,7 @@ package com.h2o.poppy.service;
 
 import com.h2o.poppy.entity.User;
 import com.h2o.poppy.model.user.UserDto;
+import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AccidentReportRepository accidentReportRepository;
 
     private UserDto convertToDto(User user) {
         UserDto userDto = new UserDto();
@@ -26,8 +28,9 @@ public class UserService {
     }
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AccidentReportRepository accidentReportRepository) {
         this.userRepository = userRepository;
+        this.accidentReportRepository = accidentReportRepository;
     }
 
     // 전체 get
@@ -39,9 +42,9 @@ public class UserService {
     }
 
     // 1인 get
-    public User getIdUser(Long userPk) {
+    public UserDto getIdUser(Long userPk) {
         Optional<User> optionalUser = userRepository.findById(userPk);
-        return optionalUser.orElse(null);
+        return optionalUser.map(this::convertToDto).orElse(null);
     }
 
     public boolean duplicateId(String loginId) {
@@ -104,6 +107,7 @@ public class UserService {
     // 삭제
     public boolean deleteData(Long userPk) {
         try {
+            accidentReportRepository.deleteByUserPk(userPk);
             userRepository.deleteById(userPk);
             return true;
         } catch (Exception e) {
