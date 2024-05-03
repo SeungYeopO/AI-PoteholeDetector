@@ -13,6 +13,7 @@ import Login from "./component/Login";
 import SignUp from "./component/SignUp";
 import Navbar from "./component/Navbar";
 import { useAuth } from "./component/AuthContext";
+import "./firebase-messaging-sw.js";
 import "./App.css";
 
 function App() {
