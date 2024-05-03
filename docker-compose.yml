@@ -25,13 +25,20 @@ services:
       - SPRING_DATASOURCE_PASSWORD=s10p31c106
     restart: always
 
-  client:
-    image: h2o_client
-    container_name: client
+  client_user:
+    image: h2o_client_user
+    container_name: client-user
     build:
-      context: ./frontend
+      context: ./frontend/user
     ports:
       - "3000:3000"
+  client_manager:
+    image: h2o_client_manager
+    container_name: client-manager
+    build:
+      context: ./frontend/poppy
+    ports:
+      - "3001:3001"
 
 volumes:
   mariadb-data:
