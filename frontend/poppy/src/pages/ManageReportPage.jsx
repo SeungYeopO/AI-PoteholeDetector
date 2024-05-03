@@ -33,7 +33,9 @@ const GridArea = styled.div`
   height : 87%;
   display : grid;
   flex-wrap : wrap;
-  grid-template-columns : repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
+  grid-template-rows: repeat(auto-fill, 50%);
+
   justify-content : center;
 `
 
@@ -243,14 +245,19 @@ const PageText = styled.div`
     const fetchData = async () => {
       try {
         const response = await fetch(
-          '/dummydata/dummydata.json' // 경로 수정
+          '/api/potholes',{
+            method : 'GET',
+            headers : {
+              "Content-Type" : "application/json",
+            }
+          } 
         );
         if (!response.ok) {
           throw new Error('일단 try 구문은 돌았음');
         }
         const jsonData = await response.json();
-        console.log(jsonData);
-        setData(jsonData);
+        console.log('포트홀정보',jsonData.getAllPotholes);
+        setData(jsonData.getAllPotholes);
         setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -259,6 +266,7 @@ const PageText = styled.div`
 
     fetchData();
   }, []); 
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -285,6 +293,7 @@ const PageText = styled.div`
 
   const handleGridClick = (item) => {
     setSelectedGrid(item);
+    console.log(item)
     setIsModalOpen(true);
     console.log('선택된 grid', item)
   }
@@ -294,6 +303,7 @@ const PageText = styled.div`
   }
 
   const gotoProcess = () => {
+    
     navigate('/manage-process')
   }
  
@@ -310,9 +320,9 @@ const PageText = styled.div`
                     <PotholeImg src={item.potholeImg}></PotholeImg>
                     <ListBox>
                       <List>신고시각</List>
-                      <List> {item.reportTime}</List>
+                      <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
                       <List>신고위치</List>
-                      <List>{item.reportLocation}</List>
+                      <List>{item.province} {item.street}</List>
                     </ListBox>
                   </ContentBox>
               </GridCard>
@@ -355,7 +365,7 @@ const PageText = styled.div`
                       <tbody>
                         <TableRow>
                           <TableCell1>신고위치</TableCell1>
-                          <TableCell2>{selectedGrid.reportLocation}</TableCell2>
+                          <TableCell2>{selectedGrid.province} {selectedGrid.street}</TableCell2>
                         </TableRow>
                         {/* <TableRow>
                           <TableCell1>신고자</TableCell1>
@@ -363,11 +373,11 @@ const PageText = styled.div`
                         </TableRow> */}
                         <TableRow>
                           <TableCell1>신고시각</TableCell1>
-                          <TableCell2>{selectedGrid.reportTime}</TableCell2>
+                          <TableCell2>{selectedGrid.detectedAt.slice(0,10)} {selectedGrid.detectedAt.slice(11,19)}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>담당부서</TableCell1>
-                          <TableCell2>{selectedGrid.mainPart}</TableCell2>
+                          <TableCell2>미정</TableCell2>
                         </TableRow>
                       </tbody>
                     </ModalTable>
@@ -379,7 +389,7 @@ const PageText = styled.div`
                 {/*각 버튼 클릭시 백에 요청할거 정해지면 추가 */}
                 <Btn onClick={gotoProcess}>공사요청</Btn>
                 {/* 공사요청 시 랜덤으로 시작일, 예정일 보내주는걸로 api 요청 */}
-                
+  
                 <Btn>반려</Btn>
               </BtnArea>
             </BtnBox>
