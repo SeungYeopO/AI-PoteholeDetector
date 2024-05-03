@@ -1,7 +1,9 @@
 package com.h2o.poppy;
 
 import com.h2o.poppy.entity.*;
+import com.h2o.poppy.model.user.UserDto;
 import com.h2o.poppy.repository.*;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ public class DataLoader implements CommandLineRunner {
     private ManagerRepository managerRepository;
     @Autowired
     private SerialListRepository serialListRepository;
+    @Autowired
+    private UsersSerialsRepository usersSerialsRepository;
     @Autowired
     private PotholeRepository potholeRepository;
     @Autowired
@@ -40,15 +44,25 @@ public class DataLoader implements CommandLineRunner {
                 new Manager("dlek567", "2", "유명렬", "01090123456")));
 
         serialListRepository.saveAll(List.of(
-                new SerialList("123456789"),
-                new SerialList("987654321")));
+                new SerialList("BB12345678"),
+                new SerialList("BB98765432")));
+
+        User user1 = userRepository.findById(1L).orElse(null);
+        User user2 = userRepository.findById(2L).orElse(null);
+        SerialList serial1 = serialListRepository.findById(1L).orElse(null);
+        SerialList serial2 = serialListRepository.findById(2L).orElse(null);
+
+        usersSerialsRepository.saveAll(List.of(
+                new UsersSerials(user1, serial1),
+                new UsersSerials(user2,serial2)));
+
 
         Date date1 = new Date(2022 - 1900, 3, 25, 14, 30, 0); // 2022년 4월 25일 오후 2시 30분
         Date date2 = new Date(2022 - 1900, 5, 46, 22, 30, 0); // 2022년 4월 25일 오후 2시 30분
 
         potholeRepository.saveAll(List.of(
-                new Pothole(35.202370, 126.810139, true, "광주광역시", "광산구", "하남산단6번로", date1, "미확인",null,null,null),
-                new Pothole(37.501475, 127.039515, true, "서울특별시", "강남구", "테헤란로", date2, "공사대기",null,null,null)));
+                new Pothole(35.202370, 126.810139, true, "광주", "광산구", "하남산단6번로", date1, "미확인",null,null,null),
+                new Pothole(37.501475, 127.039515, true, "서울", "강남구", "테헤란로", date2, "공사대기",null,null,null)));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
@@ -59,9 +73,6 @@ public class DataLoader implements CommandLineRunner {
                     new BlackboxVideoMetadata(serialList1, new Date(), 35.202370, 126.810139),
                     new BlackboxVideoMetadata(serialList2, new Date(), 37.501475, 127.039515)));
         }
-
-        User user1 = userRepository.findById(1L).orElse(null);
-        User user2 = userRepository.findById(2L).orElse(null);
 
         Pothole pothole1 = potholeRepository.findById(1L).orElse(null);
         Pothole pothole2 = potholeRepository.findById(2L).orElse(null);

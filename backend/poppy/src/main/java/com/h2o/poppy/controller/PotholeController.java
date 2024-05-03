@@ -27,7 +27,7 @@ public class PotholeController {
 
 
     //포트홀 등록
-    @PostMapping()
+    @PostMapping
     public Object saveData(@RequestBody PotholeDto data){
         double d_lat = data.getLatitude();
         double d_lon = data.getLongitude();
