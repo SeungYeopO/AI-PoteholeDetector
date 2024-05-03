@@ -46,3 +46,15 @@ jetson nano yolov5세텅 완료
 OSY - 2024/05/02
 
 yolov5 모델 jetson nano에 porting 성공
+
+--------------------------------
+
+OSY - 2024/05/03
+
+yolov5 모델 가속화 성공
+
+-ubuntu20.04로 업그레이드
+
+-python3.8.10버전으로 yolov5 및 cuda 동작 확인
+
+-yolov5모델 학습한 가중치로 실시간 인식 동작 실행 성공, 송출 딜레이 평균 약 280ms정도
