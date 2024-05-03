@@ -25,6 +25,37 @@ public class PotholeController {
         this.potholeService = potholeService;
     }
 
+
+    //포트홀 등록
+    @PostMapping()
+    public Object saveData(@RequestBody PotholeDto data){
+        double d_lat = data.getLatitude();
+        double d_lon = data.getLongitude();
+        String lat = Double.toString(d_lat);
+        String lon = Double.toString(d_lon);
+
+        long potholePk=0;
+        String road = potholeService.callTmapApi(lat,lon);
+        boolean success = road != null; // PK가 0보다 크다면 성공으로 간주
+        try{
+            potholePk = Long.parseLong(road);
+        }catch (Exception e){
+            potholePk = 0;
+        }
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final long potholePk;
+
+            getResponse(boolean success, long potholePk) {
+                this.success = success;
+                this.potholePk = potholePk;
+            }
+        }
+        return new getResponse(success,potholePk);
+    }
+
+    
     // 전체 포트홀 읽기
     @GetMapping
     public Object getAllPothole() {
@@ -133,28 +164,6 @@ public class PotholeController {
     }
 
     
-
-    // 포트홀 등록
-    @PostMapping
-    public Object saveData(@RequestBody Pothole data) {
-        long potholePk = potholeService.saveData(data);
-        boolean success = potholePk > 0; // PK가 0보다 크다면 성공으로 간주
-
-        @Getter
-        class SaveResponse {
-            private final boolean success;
-            private final long potholePk;
-
-            SaveResponse(boolean success, long potholePk) {
-                this.success = success;
-                this.potholePk = potholePk;
-            }
-        }
-        return new SaveResponse(success, potholePk);
-    }
-
-
-
     // 삭제 -> 반려
     @PutMapping("/{potholePk}")
     public Object deleteData(@PathVariable Long potholePk) {
