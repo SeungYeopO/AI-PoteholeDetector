@@ -138,12 +138,6 @@
     "potholeImg" : "../../public/dummydata/pothole3.jpg",
     "mainPart" : "성남시청 도로교통과",
     "state" :"공사중"
-  },
-  {
-    "reportLocation": "경기도 광주시 화정3동 2번길 13",
-    "reportTime": "2024.04.11 12:12:34",
-    "potholeImg" : "../../public/dummydata/pothole4.jpg",
-    "mainPart" : "광주시청 도로교통과",
-    "state" :"공사대기"
   }
+
 ]
