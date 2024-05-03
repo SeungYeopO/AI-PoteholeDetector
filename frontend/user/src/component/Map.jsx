@@ -134,7 +134,7 @@ function Map() {
         potholes.forEach((pothole) => {
           const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
-            icon: "../img/center.png", // 포트홀 아이콘 이미지 경로
+            icon: "../img/free-icon-pothole-10392295.png", // 포트홀 아이콘 이미지 경로
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
@@ -285,7 +285,6 @@ function Map() {
     };
 
     function sendNotification(message) {
-      console.log(Notification.permission);
       if (Notification.permission === "granted") {
         new Notification(message);
         const sound = new Audio("../../audio/1.mp3");
@@ -299,7 +298,7 @@ function Map() {
       // 특정 지점의 좌표 예시
       const targetLatitude = 35.20614750665463; // 서울 시청 근처
       const targetLongitude = 126.811107240829;
-      const threshold = 3; // 약 1km 이내로 설정
+      const threshold = 0.0001; // 약 1km 이내로 설정
 
       const distance = calculateDistance(
         latitude,
@@ -307,11 +306,9 @@ function Map() {
         targetLatitude,
         targetLongitude
       );
-      console.log(distance);
 
       if (distance < threshold) {
         sendNotification("You are now within 1 km of Seoul City Hall!");
-        console.log("hihi");
       }
     };
 
@@ -329,11 +326,11 @@ function Map() {
         lastCenter = currentCenter; // 최신 중심으로 업데이트
       }
 
-      timeoutId = setTimeout(checkCenterChange, 3000);
+      timeoutId = setTimeout(checkCenterChange, 2000);
     };
 
     // 3초마다 맵의 중심이 변경되었는지 확인
-    timeoutId = setTimeout(checkCenterChange, 3000);
+    timeoutId = setTimeout(checkCenterChange, 2000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -411,10 +408,8 @@ function Map() {
 
     setSearchPerformed(true);
     setOnRoute(true);
-    console.log(onRoute);
     onRouteRef.current = onRoute;
 
-    console.log(onRouteRef);
     const options = {
       method: "POST",
       headers: {
@@ -449,7 +444,6 @@ function Map() {
       }),
     };
 
-    console.log(typeof endX, typeof endY);
     const midPoint = updateMapCenterAndZoom(startY, startX, endY, endX);
     await fetch(
       "https://apis.openapi.sk.com/tmap/routes?version=1&callback=function",
@@ -457,7 +451,7 @@ function Map() {
     )
       .then((response) => response.json())
       .then((response) => {
-        console.log(response); // 전체 응답 데이터를 콘솔에 출력
+        // 전체 응답 데이터를 콘솔에 출력
         const resultData = response.features;
         const pathPoints = resultData
           .map((feature) => {
