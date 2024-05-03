@@ -16,16 +16,16 @@ public class Manager {
     @Column(name = "manager_pk", nullable = false, updatable = false)
     private Long managerPk;
 
-    @Column(name = "login_id", nullable = true, length = 50)
+    @Column(name = "login_id", nullable = false, length = 50)
     private String loginId;
 
-    @Column(name = "password", nullable = true, length = 64)
+    @Column(name = "password", nullable = false, length = 64)
     private String password;
 
-    @Column(name = "manager_name", nullable = true, length = 255)
+    @Column(name = "manager_name", nullable = false, length = 255)
     private String managerName;
 
-    @Column(name = "phone_number", nullable = true, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
     // 생성자

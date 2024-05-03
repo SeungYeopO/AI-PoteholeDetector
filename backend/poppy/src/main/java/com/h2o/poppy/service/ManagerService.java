@@ -15,6 +15,16 @@ public class ManagerService {
 
     private final ManagerRepository managerRepository;
 
+    private ManagerDto convertToDto(Manager manager) {
+        ManagerDto managerDto = new ManagerDto();
+        managerDto.setManagerPk(manager.getManagerPk());
+        managerDto.setLoginId(manager.getLoginId());
+        managerDto.setPassword(manager.getPassword());
+        managerDto.setManagerName(manager.getManagerName());
+        managerDto.setPhoneNumber(manager.getPhoneNumber());
+        return managerDto;
+    }
+
     @Autowired
     public ManagerService(ManagerRepository managerRepository) {
         this.managerRepository = managerRepository;
@@ -29,19 +39,9 @@ public class ManagerService {
     }
 
     // 1인 get
-    public Manager getIdManager(Long managerPk) {
+    public ManagerDto getIdManager(Long managerPk) {
         Optional<Manager> optionalManager = managerRepository.findById(managerPk);
-        return optionalManager.orElse(null);
-    }
-
-    private ManagerDto convertToDto(Manager manager) {
-        ManagerDto managerDto = new ManagerDto();
-        managerDto.setManagerPk(manager.getManagerPk());
-        managerDto.setLoginId(manager.getLoginId());
-        managerDto.setPassword(manager.getPassword());
-        managerDto.setManagerName(manager.getManagerName());
-        managerDto.setPhoneNumber(manager.getPhoneNumber());
-        return managerDto;
+        return optionalManager.map(this::convertToDto).orElse(null);
     }
 
     public boolean duplicateId(String loginId) {
@@ -58,13 +58,18 @@ public class ManagerService {
 
     // 삽입
     public long saveData(Manager data) {
-        long nowPk = 0;
-        try {
-            managerRepository.save(data);
-            nowPk = data.getManagerPk();
-            return nowPk;
-        } catch (Exception e) {
+        try{
+            long managerPk = data.getManagerPk();
             return 0;
+        }catch (Exception e){
+            try {
+                long nowPk = 0;
+                managerRepository.save(data);
+                nowPk = data.getManagerPk();
+                return nowPk;
+            } catch (Exception e1) {
+                return 0;
+            }
         }
     }
 

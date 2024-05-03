@@ -31,13 +31,13 @@ public class User implements Serializable {
     @Column(name = "user_name", nullable = false, length = 255)
     private String userName;
 
-    @Column(name = "phone_number", nullable = true, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
-    @OneToOne(mappedBy = "userPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "userPk", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UsersSerials usersSerials;
 
-    @OneToMany(mappedBy = "userPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userPk", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReport;
 
     // 생성자

@@ -8,6 +8,9 @@ import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
 
 @Entity
 @Table(name = "potholes")
@@ -23,17 +26,11 @@ public class Pothole implements Serializable {
     @Column(name = "pothole_pk", nullable = false, updatable = false)
     private Long potholePk;
 
-    @Column(name = "latitude", nullable = true)
-    private Double latitude;
-
-    @Column(name = "longitude", nullable = true)
-    private Double longitude;
+    @Column(name = "location", nullable = false)
+    private Geometry location;  // JTS의 Point 타입 사용
 
     @Column(name = "is_pothole", nullable = true)
     private Boolean isPothole;
-
-    @Column(name = "is_repair", nullable = true)
-    private Boolean isRepair;
 
     @Column(name = "province", nullable = true, length = 10)
     private String province;
@@ -48,6 +45,21 @@ public class Pothole implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date detectedAt;
 
+    @Column(name = "state", nullable = true, length = 50)
+    private String state;
+
+    @Column(name = "start_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startAt;
+
+    @Column(name = "expect_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expectAt;
+
+    @Column(name = "end_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endAt;
+
     @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReports;
 
@@ -55,14 +67,18 @@ public class Pothole implements Serializable {
     public Pothole() {
     }
 
-    public Pothole(Double latitude, Double longitude, Boolean isPothole, Boolean isRepair, String province, String city, String street, Date detectedAt) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    // 매개변수를 모두 포함한 생성자
+    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        this.location = geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 경도, 위도 순서 주의
         this.isPothole = isPothole;
-        this.isRepair = isRepair;
         this.province = province;
         this.city = city;
         this.street = street;
         this.detectedAt = detectedAt;
+        this.state = state;
+        this.startAt = startAt;
+        this.expectAt = expectAt;
+        this.endAt = endAt;
     }
 }
