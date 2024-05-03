@@ -44,6 +44,30 @@ function Map() {
     return <Navigate to="/login" />;
   }
 
+  // Notification API를 사용하기 위한 권한 요청 함수
+  function requestNotificationPermission() {
+    if (!("Notification" in window)) {
+      console.error("This browser does not support desktop notification");
+    } else {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+          // 권한이 승인되었을 때 추가적인 초기화나 설정을 할 수 있습니다.
+        } else if (permission === "denied") {
+          console.log("Notification permission was denied.");
+          // 권한이 거부되었을 때 사용자에게 알림 기능이 제한될 것임을 알릴 수 있습니다.
+        } else {
+          console.log("Notification permission is set to default (ask again).");
+          // 사용자가 아직 결정을 내리지 않았을 때, 다음 요청 때 다시 권한을 요청할 수 있습니다.
+        }
+      });
+    }
+  }
+
+  useEffect(() => {
+    requestNotificationPermission(); // 컴포넌트가 마운트될 때 권한 요청
+  }, []);
+
   useEffect(() => {
     onRouteRef.current = onRoute; // onRoute 값이 변경될 때마다 ref 업데이트
   }, [onRoute]);
@@ -252,11 +276,40 @@ function Map() {
           startX = longitude;
 
           updateMarkerPosition(latitude, longitude);
+          checkLocationAndNotify(latitude, longitude);
         },
         (error) => {
           console.error("Error getting geolocation:", error);
         }
       );
+    };
+
+    function sendNotification(message) {
+      console.log(Notification.permission);
+      if (Notification.permission === "granted") {
+        console.log("hi");
+        new Notification(message);
+      }
+    }
+
+    const checkLocationAndNotify = (latitude, longitude) => {
+      // 특정 지점의 좌표 예시
+      const targetLatitude = 35.20614750665463; // 서울 시청 근처
+      const targetLongitude = 126.811107240829;
+      const threshold = 3; // 약 1km 이내로 설정
+
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        targetLatitude,
+        targetLongitude
+      );
+      console.log(distance);
+
+      if (distance < threshold) {
+        sendNotification("You are now within 1 km of Seoul City Hall!");
+        console.log("hihi");
+      }
     };
 
     const checkCenterChange = async () => {
@@ -446,6 +499,7 @@ function Map() {
     setShowResults(false);
     setDestinationSelected(true);
   };
+
   function simpleDistance(lat1, lon1, lat2, lon2) {
     const latDiff = lat2 - lat1;
     const lonDiff = lon2 - lon1;
@@ -521,10 +575,6 @@ function Map() {
     resultMarkerArr = [];
     resultdrawArr = [];
     routeMarkers = [];
-  }
-
-  function hihihi() {
-    console.log(selectedRoute);
   }
 
   return (
@@ -670,19 +720,6 @@ function Map() {
               }}
             >
               안내 시작
-            </button>
-            <button
-              onClick={hihihi}
-              style={{
-                color: "black",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "none",
-                padding: "20px 30px",
-                cursor: "pointer",
-              }}
-            >
-              bb
             </button>
           </div>
         </div>
