@@ -97,7 +97,11 @@ function SignUp() {
     };
     axios
       .post(url, data)
-      .then((response) => response.data)
+
+      .then((response) => {
+        console.log(response);
+        response.data;
+      })
       .then((response) => {
         if (response.result == true) {
           setIsIdDuplicate(true);

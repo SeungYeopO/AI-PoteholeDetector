@@ -287,8 +287,11 @@ function Map() {
     function sendNotification(message) {
       console.log(Notification.permission);
       if (Notification.permission === "granted") {
-        console.log("hi");
         new Notification(message);
+        const sound = new Audio("../../audio/1.mp3");
+        sound
+          .play()
+          .catch((error) => console.log("Sound playback failed: " + error));
       }
     }
 
