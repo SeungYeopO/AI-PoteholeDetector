@@ -177,6 +177,16 @@ public class PotholeService {
     }
 
 
+    // 이미있는 포트홀 검사
+    public boolean checkGPSdata(double lat, double lon){
+
+        List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat,lon);
+        //System.out.println(potholes.get(0).getPotholePk());
+        if(potholes.isEmpty())return true;
+        else return false;
+    }
+
+
     // 전체 get
     public List<PotholeDto> getAllPothole() {
         try {
@@ -216,14 +226,16 @@ public class PotholeService {
         long potholePk = data.getPotholePk();
         String nowState = data.getState();
         if(nowState==null)return null;
-        if(!nowState.equals("공사대기") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
+        if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
         String changeState =null;
         try{
+            // 공사시작 버튼 누른경우
             if(nowState.equals("공사중")){
-                potholeRepository.updateState(potholePk,"공사중");
+                potholeRepository.updateIngState(potholePk,"공사중",new Date());
                 changeState = "공사중";
+            // 공사완료 버튼 누른경우
             }else if(nowState.equals("공사완료")){
-                potholeRepository.updateState(potholePk,"공사완료");
+                potholeRepository.updateFnishState(potholePk,"공사완료",new Date());
                 changeState = "공사완료";
             }
             return changeState;

@@ -34,14 +34,6 @@ public class PotholeController {
         String lat = Double.toString(d_lat);
         String lon = Double.toString(d_lon);
 
-        long potholePk=0;
-        String road = potholeService.callTmapApi(lat,lon);
-        boolean success = road != null; // PK가 0보다 크다면 성공으로 간주
-        try{
-            potholePk = Long.parseLong(road);
-        }catch (Exception e){
-            potholePk = 0;
-        }
         @Getter
         class getResponse {
             private final boolean success;
@@ -52,9 +44,22 @@ public class PotholeController {
                 this.potholePk = potholePk;
             }
         }
+
+        boolean checkGPS = potholeService.checkGPSdata(d_lat,d_lon);
+
+        if(!checkGPS)return new getResponse(false,0);
+        long potholePk=0;
+        String road = potholeService.callTmapApi(lat,lon);
+
+        boolean success = road != null; // PK가 0보다 크다면 성공으로 간주
+        try{
+            potholePk = Long.parseLong(road);
+        }catch (Exception e){
+            potholePk = 0;
+        }
+
         return new getResponse(success,potholePk);
     }
-
     
     // 전체 포트홀 읽기
     @GetMapping
