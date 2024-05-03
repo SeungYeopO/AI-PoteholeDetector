@@ -1,0 +1,149 @@
+[
+  {
+    "reportLocation": " 경기도 성남시 신흥3동 2번길 13",
+    "reportTime": "2024.04.11 11:12:34",
+    "potholeImg" : "../../public/dummydata/pothole1.jpg",
+    "mainPart" : "성남시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "경기도 광주시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 12:12:34",
+    "potholeImg" : "../../public/dummydata/pothole2.jpg",
+    "mainPart" : "광주시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "으악도 으악시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 13:12:34",
+    "potholeImg" : "../../public/dummydata/pothole3.jpg",
+    "mainPart" : "으악시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "끄악도 끄악시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 14:12:34",
+    "potholeImg" : "../../public/dummydata/pothole4.jpg",
+    "mainPart" : "끄악시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "우와아도 우와아시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 17:12:34",
+    "potholeImg" : "../../public/dummydata/pothole5.jpg",
+    "mainPart" : "우와아시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "야미광역시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 19:12:34",
+    "potholeImg" : "../../public/dummydata/pothole6.jpg",
+    "mainPart" : "야미시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "경기도 성남시 신흥3동 2번길 13",
+    "reportTime": "2024.04.11 11:12:34",
+    "potholeImg" : "../../public/dummydata/pothole1.jpg",
+    "mainPart" : "성남시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "경기도 광주시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 12:12:34",
+    "potholeImg" : "../../public/dummydata/pothole2.jpg",
+    "mainPart" : "광주시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "으악도 으악시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 13:12:34",
+    "potholeImg" : "../../public/dummydata/pothole3.jpg",
+    "mainPart" : "으악시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "끄악광역시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 14:12:34",
+    "potholeImg" : "../../public/dummydata/pothole4.jpg",
+    "mainPart" : "끄악시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "우와아광역시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 17:12:34",
+    "potholeImg" : "../../public/dummydata/pothole5.jpg",
+    "mainPart" : "우와아시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "경기도 야미시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 19:12:34",
+    "potholeImg" : "../../public/dummydata/pothole6.jpg",
+    "mainPart" : "야미시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "경기도 성남시 신흥3동 2번길 13",
+    "reportTime": "2024.04.11 11:12:34",
+    "potholeImg" : "../../public/dummydata/pothole3.jpg",
+    "mainPart" : "성남시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "경기도 광주시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 12:12:34",
+    "potholeImg" : "../../public/dummydata/pothole4.jpg",
+    "mainPart" : "광주시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "으아악도 으악시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 13:12:34",
+    "potholeImg" : "../../public/dummydata/pothole6.jpg",
+    "mainPart" : "으악시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "으악도 으악시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 13:12:34",
+    "potholeImg" : "../../public/dummydata/pothole3.jpg",
+    "mainPart" : "으악시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "끄악광역시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 14:12:34",
+    "potholeImg" : "../../public/dummydata/pothole4.jpg",
+    "mainPart" : "끄악시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "우와아광역시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 17:12:34",
+    "potholeImg" : "../../public/dummydata/pothole5.jpg",
+    "mainPart" : "우와아시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "경기도 야미시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 19:12:34",
+    "potholeImg" : "../../public/dummydata/pothole6.jpg",
+    "mainPart" : "야미시청 도로교통과",
+    "state" :"공사대기"
+  },
+  {
+    "reportLocation": "경기도 성남시 신흥3동 2번길 13",
+    "reportTime": "2024.04.11 11:12:34",
+    "potholeImg" : "../../public/dummydata/pothole3.jpg",
+    "mainPart" : "성남시청 도로교통과",
+    "state" :"공사중"
+  },
+  {
+    "reportLocation": "경기도 광주시 화정3동 2번길 13",
+    "reportTime": "2024.04.11 12:12:34",
+    "potholeImg" : "../../public/dummydata/pothole4.jpg",
+    "mainPart" : "광주시청 도로교통과",
+    "state" :"공사대기"
+  }
+]
