@@ -39,6 +39,7 @@ export default defineConfig({
     }),
   ],
   server: {
+    port: 3000,
     proxy: {
       "/api": {
         target: "https://k10c106.p.ssafy.io",
