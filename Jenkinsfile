@@ -6,8 +6,10 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'client') {
-                        dockerComposeDown('client')
-                        dockerComposeUp('client')
+                        dockerComposeDown('client_user')
+                        dockerComposeDown('client_manager')
+                        dockerComposeUp('client_user')
+                        dockerComposeUp('client_manager')
                     } else if (env.BRANCH_NAME == 'server') {
                         dockerComposeDown('server')
                         dockerComposeDown('mariadb')
