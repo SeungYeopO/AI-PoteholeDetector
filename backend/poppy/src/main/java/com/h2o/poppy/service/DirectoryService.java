@@ -7,7 +7,7 @@ import java.io.File;
 @Service
 public class DirectoryService {
 
-    public void createDirectory(String address) {
+    public int createDirectory(String address) {
         // 띄어쓰기를 기준으로 주소를 단어로 나눔
         String[] words = address.split(" ");
 
@@ -35,11 +35,14 @@ public class DirectoryService {
         if (!directory.exists()) {
             if (directory.mkdirs()) {
                 System.out.println("Directory created successfully.");
+                return 1;
             } else {
                 System.out.println("Failed to create directory.");
+                return 0;
             }
         } else {
             System.out.println("Directory already exists.");
+            return 2;
         }
     }
 }
