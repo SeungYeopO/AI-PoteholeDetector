@@ -36,11 +36,11 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE Pothole e SET e.state = :newData, e.startAt = :startDate, e.expectAt = :exDate WHERE e.potholePk = :potholePk")
-    int updateIngState(@Param("potholePk") long Pk, @Param("newData") String newValue, @Param("startDate") Date startDate);
+    int updateIngState(@Param("potholePk") long Pk, @Param("newData") String newValue, @Param("startDate") Date startDate, @Param("exDate") Date exDate);
 
     @Transactional
     @Modifying
-    @Query("UPDATE Pothole e SET e.state = :newData, e.startAt = :endDate WHERE e.potholePk = :potholePk")
+    @Query("UPDATE Pothole e SET e.state = :newData, e.endAt = :endDate WHERE e.potholePk = :potholePk")
     int updateFnishState(@Param("potholePk") long Pk, @Param("newData") String newValue, @Param("endDate") Date endDate);
 
     @Transactional
