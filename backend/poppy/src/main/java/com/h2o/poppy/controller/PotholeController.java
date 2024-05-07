@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/potholes")
 public class PotholeController {
 
-
     private final PotholeService potholeService;
 
     @Autowired
@@ -25,10 +24,9 @@ public class PotholeController {
         this.potholeService = potholeService;
     }
 
-
-    //포트홀 등록
+    // 포트홀 등록
     @PostMapping
-    public Object saveData(@RequestBody PotholeDto data){
+    public Object saveData(@RequestBody PotholeDto data) {
         double d_lat = data.getLatitude();
         double d_lon = data.getLongitude();
         String lat = Double.toString(d_lat);
@@ -45,22 +43,23 @@ public class PotholeController {
             }
         }
 
-        boolean checkGPS = potholeService.checkGPSdata(d_lat,d_lon);
+        boolean checkGPS = potholeService.checkGPSdata(d_lat, d_lon);
 
-        if(!checkGPS)return new getResponse(false,0);
-        long potholePk=0;
-        String road = potholeService.callTmapApi(lat,lon);
+        if (!checkGPS)
+            return new getResponse(false, 0);
+        long potholePk = 0;
+        String road = potholeService.callTmapApi(lat, lon);
 
         boolean success = road != null; // PK가 0보다 크다면 성공으로 간주
-        try{
+        try {
             potholePk = Long.parseLong(road);
-        }catch (Exception e){
+        } catch (Exception e) {
             potholePk = 0;
         }
 
-        return new getResponse(success,potholePk);
+        return new getResponse(success, potholePk);
     }
-    
+
     // 전체 포트홀 읽기
     @GetMapping
     public Object getAllPothole() {
@@ -76,11 +75,17 @@ public class PotholeController {
                 this.getAllPotholes = getAllPotholes;
             }
         }
-        return new getResponse(success,getAllPotholes);
+        return new getResponse(success, getAllPotholes);
+    }
+
+    @PostMapping("/choose")
+    public List<PotholeDto> chooseGet(@RequestBody PotholeDto data) {
+        List<PotholeDto> filterdDate = potholeService.chooseGet(data);
+        return filterdDate;
     }
 
     @GetMapping("before-state")
-    public Object getState1Potholes(){
+    public Object getState1Potholes() {
         List<PotholeDto> State1Potholes = potholeService.getState1Pothole("공사대기");
         boolean success = State1Potholes != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
@@ -93,11 +98,11 @@ public class PotholeController {
                 this.State1Potholes = State1Potholes;
             }
         }
-        return new getResponse(success,State1Potholes);
+        return new getResponse(success, State1Potholes);
     }
 
     @GetMapping("ing-state")
-    public Object getState2Potholes(){
+    public Object getState2Potholes() {
         List<PotholeDto> getState2Potholes = potholeService.getState1Pothole("공사중");
         boolean success = getState2Potholes != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
@@ -110,11 +115,11 @@ public class PotholeController {
                 this.State1Potholes = getState2Potholes;
             }
         }
-        return new getResponse(success,getState2Potholes);
+        return new getResponse(success, getState2Potholes);
     }
 
     @GetMapping("after-state")
-    public Object getState3Potholes(){
+    public Object getState3Potholes() {
         List<PotholeDto> getState3Potholes = potholeService.getState1Pothole("공사완료");
         boolean success = getState3Potholes != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
@@ -127,25 +132,25 @@ public class PotholeController {
                 this.State1Potholes = getState3Potholes;
             }
         }
-        return new getResponse(success,getState3Potholes);
+        return new getResponse(success, getState3Potholes);
     }
 
-    //공사대기 - 공사중 - 공사완료 변경
+    // 공사대기 - 공사중 - 공사완료 변경
     @PatchMapping()
-    public Object changeState(@RequestBody PotholeDto data){
+    public Object changeState(@RequestBody PotholeDto data) {
         String changeState = potholeService.changeState(data);
         boolean success = changeState != null;
         @Getter
-        class stateResponse{
+        class stateResponse {
             private final boolean success;
             private final String changeState;
 
-            stateResponse(boolean success,String changeState){
+            stateResponse(boolean success, String changeState) {
                 this.changeState = changeState;
                 this.success = success;
             }
         }
-        return new stateResponse(success,changeState);
+        return new stateResponse(success, changeState);
     }
 
     // 포트홀 1개 정보 보기
@@ -164,11 +169,10 @@ public class PotholeController {
                 this.getPothole = getPothole;
             }
         }
-        return new getResponse(success,getPothole);
+        return new getResponse(success, getPothole);
 
     }
 
-    
     // 삭제 -> 반려
     @PutMapping("/{potholePk}")
     public Object deleteData(@PathVariable Long potholePk) {
@@ -178,7 +182,7 @@ public class PotholeController {
         class DeleteDataResponse {
             private final boolean result;
 
-            DeleteDataResponse(boolean result){
+            DeleteDataResponse(boolean result) {
                 this.result = result;
             }
         }
