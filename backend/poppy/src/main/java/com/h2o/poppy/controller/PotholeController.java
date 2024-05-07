@@ -79,9 +79,20 @@ public class PotholeController {
     }
 
     @PostMapping("/choose")
-    public List<PotholeDto> chooseGet(@RequestBody PotholeDto data) {
+    public Object chooseGet(@RequestBody PotholeDto data) {
         List<PotholeDto> filterdDate = potholeService.chooseGet(data);
-        return filterdDate;
+        boolean success = filterdDate != null; // PK가 0보다 크다면 성공으로 간주
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<PotholeDto> filterdDate;
+
+            getResponse(boolean success, List<PotholeDto> filterdDate) {
+                this.success = success;
+                this.filterdDate = filterdDate;
+            }
+        }
+        return new getResponse(success, filterdDate);
     }
 
     @GetMapping("before-state")

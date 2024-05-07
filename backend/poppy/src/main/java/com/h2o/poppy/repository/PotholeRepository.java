@@ -30,8 +30,8 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
 
 
     // 필터 조회
-    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE (:nowState is null or pt.state = :nowState) and (:nowProvince is null or pt.province = :nowProvince) and  (:nowCity is null or pt.city = :nowCity) and (:nowDate is null or pt.detectedAt = :nowDate) and pt.isPothole = true")
-    List<PotholeDto> getPotholeByFilter(@Param("nowState") String nowState, @Param("nowProvince") String nowProvince, @Param("nowCity") String nowCity, @Param("nowDate") Date nowDate);
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE (:nowState is null or pt.state = :nowState) and (:nowProvince is null or pt.province = :nowProvince) and  (:nowCity is null or pt.city = :nowCity) and (:year is null or (YEAR(pt.detectedAt) = :year AND MONTH(pt.detectedAt) = :month AND DAY(pt.detectedAt) = :day)) and pt.isPothole = true")
+    List<PotholeDto> getPotholeByFilter(@Param("nowState") String nowState, @Param("nowProvince") String nowProvince, @Param("nowCity") String nowCity, @Param("year") Integer year, @Param("month") Integer month, @Param("day") Integer day);
 
     @Transactional
     @Modifying

@@ -208,19 +208,24 @@ public class PotholeService {
             String nowCity = data.getCity();
             Date nowDate = data.getDetectedAt();
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(nowDate); // Date 객체를 Calendar로 설정
+            Integer year = null;
+            Integer month = null;
+            Integer day = null;
 
-            Integer year = calendar.get(Calendar.YEAR); // 년도 추출
-            Integer month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
-            Integer day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
+            if(nowDate!=null){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(nowDate); // Date 객체를 Calendar로 설정
+                year = calendar.get(Calendar.YEAR); // 년도 추출
+                month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
+                day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
+            }
 
-            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity,nowDate);
+            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity, year,month,day);
             return pothole;
         }catch (Exception e){
+            e.printStackTrace();
             return null;
         }
-
     }
 
     // 1인 get
