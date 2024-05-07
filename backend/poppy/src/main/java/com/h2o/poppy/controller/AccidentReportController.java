@@ -1,6 +1,7 @@
 package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.*;
+import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.model.accidentreport.AccidentReportDto;
 import com.h2o.poppy.service.AccidentReportService;
@@ -9,6 +10,7 @@ import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.repository.PotholeRepository;
 import com.h2o.poppy.service.AccidentReportService;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +75,85 @@ public class AccidentReportController {
         }
         // 로컬 클래스 인스턴스 생성 및 반환
         return new SaveResponse(success, result);
+    }
+
+    // 미확인 상태 get
+    @GetMapping("/no-check")
+    public Object getNoCheck(){
+        List<AccidentReportDto> noCheckState = accidentReportService.getState("미확인");
+        boolean success = noCheckState != null; // PK가 0보다 크다면 성공으로 간주
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<AccidentReportDto> noCheckState;
+
+            getResponse(boolean success, List<AccidentReportDto> noCheckState) {
+                this.success = success;
+                this.noCheckState = noCheckState;
+            }
+        }
+        return new getResponse(success, noCheckState);
+    }
+
+    // 반려,보상완료 상태 get
+    @GetMapping("/yes-check")
+    public Object getYesCheck(){
+        List<AccidentReportDto> yesCheckState = accidentReportService.getState("y");
+        boolean success = yesCheckState != null; // PK가 0보다 크다면 성공으로 간주
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<AccidentReportDto> yesCheckState;
+
+            getResponse(boolean success, List<AccidentReportDto> yesCheckState) {
+                this.success = success;
+                this.yesCheckState = yesCheckState;
+            }
+        }
+        return new getResponse(success, yesCheckState);
+    }
+
+    // 날짜 필터링 post
+    @Getter
+    @Setter
+    static class DateRequest {
+        private Date reportDate;
+    }
+    @PostMapping("/date")
+    public Object dateGet(@RequestBody DateRequest request){
+        Date targetDate = request.getReportDate();
+        List<AccidentReportDto> dateList = accidentReportService.getDate(targetDate);
+        boolean success = dateList != null; // PK가 0보다 크다면 성공으로 간주
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<AccidentReportDto> dateList;
+
+            getResponse(boolean success, List<AccidentReportDto> dateList) {
+                this.success = success;
+                this.dateList = dateList;
+            }
+        }
+        return new getResponse(success, dateList);
+    }
+
+    //반려 - 신청완료 상태 변경
+
+    @PatchMapping()
+    public Object changeState(@RequestBody AccidentReportDto data) {
+        String changeState = accidentReportService.changeState(data);
+        boolean success = changeState != null;
+        @Getter
+        class stateResponse {
+            private final boolean success;
+            private final String changeState;
+
+            stateResponse(boolean success, String changeState) {
+                this.changeState = changeState;
+                this.success = success;
+            }
+        }
+        return new stateResponse(success, changeState);
     }
 
 }
