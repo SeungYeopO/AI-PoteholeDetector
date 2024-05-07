@@ -6,14 +6,22 @@ import { useNavigate } from "react-router-dom";
 
 const Background = styled.div`
 
+  display : flex;
+  flex-direction : row;
+  position : fixed;
+  left : 0;
+  top : 0;
+  overflow : hidden;
 `
+
+
 const Container = styled.div`
   display : flex;
   flex-direction : row;
 ` 
 
 const Content = styled.div`
-  margin-left : 5rem;
+  /* margin-left : 5rem; */
   /* background-color : #ebeae2; */
   width : 100vw;
   height : 100vh;
@@ -25,11 +33,13 @@ const TimeArea = styled.div`
   font-size : 1.1rem;
   display : flex;
   align-items : center;  
+  margin-left : 3rem;
 `
 const GridArea = styled.div`
   margin-top : 0.8rem;
   background-color : white;
-  width : 100%;
+  margin-left : 4.2rem;
+  width : 90%;
   height : 87%;
   display : grid;
   flex-wrap : wrap;
@@ -239,13 +249,18 @@ const PageText = styled.div`
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [selectedGrid, setSelectedGrid] = useState(null);
   const [ismodalOpen, setIsModalOpen] = useState(false);
+  const [randomCompany, setRandomCompany] = useState('');
+  const company = ['아무건설', '싸피건설', '삼성건설', '난몰라건설', '뭐라해건설'];
+  const currentDate = new Date();
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          '/api/potholes',{
+          '/api/potholes/before-state',{
             method : 'GET',
             headers : {
               "Content-Type" : "application/json",
@@ -256,8 +271,8 @@ const PageText = styled.div`
           throw new Error('일단 try 구문은 돌았음');
         }
         const jsonData = await response.json();
-        console.log('포트홀정보',jsonData.getAllPotholes);
-        setData(jsonData.getAllPotholes);
+        console.log('포트홀정보',jsonData.state1Potholes);
+        setData(jsonData.state1Potholes);
         setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -302,10 +317,57 @@ const PageText = styled.div`
     setIsModalOpen(false);
   }
 
-  const gotoProcess = () => {
-    
-    navigate('/manage-process')
+  
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
   }
+
+
+  const gotoProcess = async () => {
+    const value = company[Math.floor(Math.random() * company.length)];
+    console.log(value);
+    setRandomCompany(value);
+    console.log(new Date(currentDate.getTime()))
+    
+    // 시작 예정일 설정
+    const startDate = new Date(currentDate.getTime());
+    const startDaysToAdd = Math.floor(Math.random() * 4) + 2; 
+    startDate.setDate(startDate.getDate() + startDaysToAdd);
+    setStartDate(formatDate(startDate));
+    console.log('시작예정일:', startDate);
+
+    // 완료 예정일 설정
+    const endDate = new Date(startDate.getTime()); 
+    const endDaysToAdd = Math.floor(Math.random() * 4) + 7; 
+    endDate.setDate(endDate.getDate() + endDaysToAdd);
+    console.log('완료예정일:', formatDate(endDate));
+    setEndDate(formatDate(endDate));
+
+    const userData = {
+      potholePk : selectedGrid.potholePk,
+      state : "공사중"
+    };
+    try{
+      const response = await fetch("/api/potholes", {
+        method : "PATCH",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if (response.ok){
+        const responseData = await response.json();
+        console.log(responseData); 
+      }else{
+        console.log('데이터수정실패')
+      }
+    } catch (error) {
+      console.error('에러발생', error);
+    }
+  };
  
   return (
     <Background>
@@ -322,7 +384,7 @@ const PageText = styled.div`
                       <List>신고시각</List>
                       <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
                       <List>신고위치</List>
-                      <List>{item.province} {item.street}</List>
+                      <List>{item.province} {item.city} {item.street}</List>
                     </ListBox>
                   </ContentBox>
               </GridCard>
@@ -365,7 +427,7 @@ const PageText = styled.div`
                       <tbody>
                         <TableRow>
                           <TableCell1>신고위치</TableCell1>
-                          <TableCell2>{selectedGrid.province} {selectedGrid.street}</TableCell2>
+                          <TableCell2>{selectedGrid.province} {selectedGrid.city} {selectedGrid.street}</TableCell2>
                         </TableRow>
                         {/* <TableRow>
                           <TableCell1>신고자</TableCell1>

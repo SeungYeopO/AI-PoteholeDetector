@@ -10,9 +10,14 @@ import closeBtnImg from '../assets/modal/closeBtn.png';
 const Background = styled.div`
   display : flex;
   flex-direction : row;
+  position : fixed;
+  left : 0;
+  top : 0;
+  overflow : hidden;
+
 `
 const Content = styled.div`
-  margin-left : 5rem;
+  /* margin-left : 5rem; */
   width : 100vw;
   height : 100vh;
 `
@@ -342,7 +347,7 @@ const ModalTitle = styled.div`
   color : white;
   text-indent : 1.4rem;
   
-`
+` 
 
 const ManageProcessPage = () => {
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -373,14 +378,14 @@ const ManageProcessPage = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          '/dummydata/dummydata.json'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+          '/api/potholes/ing-state'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
         );
         if (!response.ok) {
           throw new Error('일단 try 구문은 돌았음');
         }
         const jsonData = await response.json();
-        console.log('데이터', jsonData);
-        setData(jsonData); 
+        console.log('데이터', jsonData.state1Potholes);
+        setData(jsonData.state1Potholes); 
         console.log(Math.ceil(jsonData.length / itemsPerPage))
         setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
       } catch (error) {
@@ -455,6 +460,7 @@ const ManageProcessPage = () => {
 
   const handleDdateClick = (value) => {
     setSelectedDate(value);
+    console.log('선택 날짜', value)
     setIsModalOpen(false);
   }
   
@@ -515,6 +521,57 @@ const ManageProcessPage = () => {
   
   }
 
+  const gotoDone = async () => {
+    const userData = {
+      potholePk : selectedList.potholePk,
+      state : "공사완료"
+    };
+    try{
+      const response = await fetch("/api/potholes", {
+        method : "PATCH",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if (response.ok){
+        const responseData = await response.json();
+        console.log(responseData); 
+      }else{
+        console.log('데이터수정실패')
+      }
+    } catch (error) {
+      console.error('에러발생', error);
+    }
+
+  }
+  
+  const gotoSearch = async () => {
+    const userData = {
+      state : null,
+      Province : null,
+      city : null,
+      date : null,
+    };
+    try {
+      const response = await fetch('/api/potholes/choose', {
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if (response.ok){
+        const responseData = await response.json();
+        console.log('데이터 조회성공', responseData);
+      }else{
+        console.log('데이터조회실패')
+      }
+    }catch (error) {
+      console.error('에러발생', error);
+    }
+
+  }
 
   const closeModal = () => {
     setIsInfoModalOpen(false);
@@ -551,15 +608,15 @@ const ManageProcessPage = () => {
                </AreaDrop>
               </DropArea>
             </LocationBox>
-            <StateBox>
+            {/* <StateBox>
               <BoxName width="34%">상태</BoxName>
               <StateDrop onChange={handleStateSelect}>
                 <Option value="">선택하세요</Option>
                 <Option value="공사대기">공사대기</Option>
                 <Option value="공사중">공사중</Option>
               </StateDrop>
-            </StateBox>
-            <SearchBtn>검색</SearchBtn>
+            </StateBox> */}
+            <SearchBtn onClick={gotoSearch}>검색</SearchBtn>
           </SortedBox>
         </SortedArea>
         <ResultArea>
@@ -573,8 +630,8 @@ const ManageProcessPage = () => {
             {currentData && currentData.map((item, index) => (
               <Lists key={index} onClick={()=> handleListClick(item)}>
               {status && (<Info color={color}>{status}</Info>)}
-                <Info width="48%">{item.reportLocation}</Info>
-                <Info width="20%">{item.reportTime}</Info>
+                <Info width="48%">{item.province} {item.city} {item.street}</Info>
+                <Info width="20%">{item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</Info>
                 <Info>김싸피</Info>
               </Lists>
             ))}
@@ -623,11 +680,11 @@ const ManageProcessPage = () => {
                         </TableRow>
                         <TableRow>
                           <TableCell1>신고위치</TableCell1>
-                          <TableCell2>{selectedList.reportLocation}</TableCell2>
+                          <TableCell2>{selectedList.province} {selectedList.city} {selectedList.street}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>신고시각</TableCell1>
-                          <TableCell2>{selectedList.reportTime}</TableCell2>
+                          <TableCell2>{selectedList.detectedAt.slice(0,10)} {selectedList.detectedAt.slice(11,19)}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>담당부서</TableCell1>
@@ -635,15 +692,15 @@ const ManageProcessPage = () => {
                         </TableRow>
                         <TableRow>
                           <TableCell1>시공업체</TableCell1>
-                          <TableCell2>{randomCompany}</TableCell2>
+                          <TableCell2>삼성건설</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>시작예정일</TableCell1>
-                          <TableCell2>{startDate}</TableCell2>
+                          <TableCell2>{selectedList.startAt.slice(0,10)}</TableCell2>
                         </TableRow>
                         <TableRow>
                           <TableCell1>완료예정일</TableCell1>
-                          <TableCell2>{endDate}</TableCell2>
+                          <TableCell2>{selectedList.expectAt.slice(0,10)}</TableCell2>
                         </TableRow>
                     </ModalTable>
               </ModalContainer>
@@ -654,7 +711,7 @@ const ManageProcessPage = () => {
                 {/* 처음에 들어오면 모두 공사대기, 공사예정일/완료일 랜덤으로 설정한다음에 */}
                 {/* 그냥 시간 지나가면 공사중으로 바뀌고, 완료버튼을 누르면 완료내역으로 가기 */}
                 {/* 완료일보다 공사완료버튼을 누른게 더 이후라면 몇일 지연됐는지 보여주면 될듯? (미정) */}
-                <ModalBtn>공사완료</ModalBtn>
+                <ModalBtn onClick={gotoDone}>공사완료</ModalBtn>
                 {/* 공사완료 여부 바꿔주는 api 요청 */}
               </BtnArea>
             </BtnBox>

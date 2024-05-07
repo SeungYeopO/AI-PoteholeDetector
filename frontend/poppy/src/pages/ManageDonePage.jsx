@@ -9,9 +9,14 @@ import closeBtnImg from '../assets/modal/closeBtn.png';
 const Background = styled.div`
   display : flex;
   flex-direction : row;
+  position : fixed;
+  left : 0;
+  top : 0;
+  overflow : hidden;
+
 `
 const Content = styled.div`
-  margin-left : 5rem;
+  /* margin-left : 5rem; */
   width : 100vw;
   height : 100vh;
 `
