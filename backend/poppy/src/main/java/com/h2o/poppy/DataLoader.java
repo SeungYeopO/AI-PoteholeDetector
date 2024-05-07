@@ -145,10 +145,10 @@ public class DataLoader implements CommandLineRunner {
                 new AccidentReport(user2, pothole8, BlackboxVideoMetadata8, "8번제목","8번내용", date2, "반려","그냥"),
                 new AccidentReport(user2, pothole9, BlackboxVideoMetadata9, "9번제목","9번내용", date2, "반려","그냥"),
                 new AccidentReport(user2, pothole10, BlackboxVideoMetadata10, "10번제목","10번내용", date2, "반려","그냥"),
-                new AccidentReport(user2, pothole11, BlackboxVideoMetadata11, "11번제목","11번내용", date2, "접수중",null),
-                new AccidentReport(user2, pothole12, BlackboxVideoMetadata12, "12번제목","12번내용", date2, "접수중",null),
-                new AccidentReport(user2, pothole13, BlackboxVideoMetadata13, "13번제목","13번내용", date2, "접수중",null),
-                new AccidentReport(user2, pothole14, BlackboxVideoMetadata14, "14번제목","14번내용", date2, "접수중",null),
-                new AccidentReport(user2, pothole15, BlackboxVideoMetadata15, "15번제목","15번내용",date2,"접수중",null)));
+                new AccidentReport(user2, pothole11, BlackboxVideoMetadata11, "11번제목","11번내용", date2, "보상완료",null),
+                new AccidentReport(user2, pothole12, BlackboxVideoMetadata12, "12번제목","12번내용", date2, "보상완료",null),
+                new AccidentReport(user2, pothole13, BlackboxVideoMetadata13, "13번제목","13번내용", date2, "보상완료",null),
+                new AccidentReport(user2, pothole14, BlackboxVideoMetadata14, "14번제목","14번내용", date2, "보상완료",null),
+                new AccidentReport(user2, pothole15, BlackboxVideoMetadata15, "15번제목","15번내용",date2,"보상완료",null)));
     }
 }

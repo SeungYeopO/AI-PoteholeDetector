@@ -86,7 +86,7 @@ public class PotholeController {
 
     @GetMapping("before-state")
     public Object getState1Potholes() {
-        List<PotholeDto> State1Potholes = potholeService.getState1Pothole("공사대기");
+        List<PotholeDto> State1Potholes = potholeService.getState1Pothole("미확인");
         boolean success = State1Potholes != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
