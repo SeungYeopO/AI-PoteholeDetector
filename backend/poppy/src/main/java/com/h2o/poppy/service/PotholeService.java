@@ -18,10 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -205,13 +202,25 @@ public class PotholeService {
 
     // 선택사항 필터후 반환
     public List<PotholeDto> chooseGet(PotholeDto data){
-        String nowState = data.getState();
-        String nowProvince = data.getProvince();
-        String nowCity = data.getCity();
-        Date nowDate = data.getDetectedAt();
+        try {
+            String nowState = data.getState();
+            String nowProvince = data.getProvince();
+            String nowCity = data.getCity();
+            Date nowDate = data.getDetectedAt();
 
-        List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState,nowProvince,nowCity,nowDate);
-        return pothole;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nowDate); // Date 객체를 Calendar로 설정
+
+            Integer year = calendar.get(Calendar.YEAR); // 년도 추출
+            Integer month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
+            Integer day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
+
+            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity,nowDate);
+            return pothole;
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
     // 1인 get

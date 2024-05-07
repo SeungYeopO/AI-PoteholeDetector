@@ -27,7 +27,8 @@ public class AccidentReportController {
     private final AccidentReportRepository accidentReportRepository;
     private final AccidentReportService accidentReportService;
 
-    public AccidentReportController(AccidentReportRepository accidentReportRepository,AccidentReportService accidentReportService) {
+    public AccidentReportController(AccidentReportRepository accidentReportRepository,
+            AccidentReportService accidentReportService) {
         this.accidentReportRepository = accidentReportRepository;
         this.accidentReportService = accidentReportService;
     }
@@ -38,14 +39,17 @@ public class AccidentReportController {
         AccidentReportDto result = accidentReportService.saveData(data);
         boolean success;
 
-        if(result!=null)success=true;
-        else success = false;
+        if (result != null)
+            success = true;
+        else
+            success = false;
 
         // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
             private final boolean success;
             private final AccidentReportDto result;
+
             SaveResponse(boolean success, AccidentReportDto result) {
                 this.success = success;
                 this.result = result;
@@ -61,13 +65,16 @@ public class AccidentReportController {
         List<AccidentReportDto> result = accidentReportService.getAccident(userPk);
         boolean success;
 
-        if(result!=null)success=true;
-        else success = false;
+        if (result != null)
+            success = true;
+        else
+            success = false;
         // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
             private final boolean success;
             private final List<AccidentReportDto> result;
+
             SaveResponse(boolean success, List<AccidentReportDto> result) {
                 this.success = success;
                 this.result = result;
@@ -79,7 +86,7 @@ public class AccidentReportController {
 
     // 미확인 상태 get
     @GetMapping("/no-check")
-    public Object getNoCheck(){
+    public Object getNoCheck() {
         List<AccidentReportDto> noCheckState = accidentReportService.getState("미확인");
         boolean success = noCheckState != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
@@ -97,7 +104,7 @@ public class AccidentReportController {
 
     // 반려,보상완료 상태 get
     @GetMapping("/yes-check")
-    public Object getYesCheck(){
+    public Object getYesCheck() {
         List<AccidentReportDto> yesCheckState = accidentReportService.getState("y");
         boolean success = yesCheckState != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
@@ -119,8 +126,9 @@ public class AccidentReportController {
     static class DateRequest {
         private Date reportDate;
     }
+
     @PostMapping("/date")
-    public Object dateGet(@RequestBody DateRequest request){
+    public Object dateGet(@RequestBody DateRequest request) {
         Date targetDate = request.getReportDate();
         List<AccidentReportDto> dateList = accidentReportService.getDate(targetDate);
         boolean success = dateList != null; // PK가 0보다 크다면 성공으로 간주
@@ -137,7 +145,7 @@ public class AccidentReportController {
         return new getResponse(success, dateList);
     }
 
-    //반려 - 신청완료 상태 변경
+    // 반려 - 신청완료 상태 변경
 
     @PatchMapping()
     public Object changeState(@RequestBody AccidentReportDto data) {
