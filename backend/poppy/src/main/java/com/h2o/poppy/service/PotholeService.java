@@ -15,9 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -233,20 +237,37 @@ public class PotholeService {
     }
 
 
+    // 공사상태(날짜) 변경
     public String changeState(PotholeDto data){
         long potholePk = data.getPotholePk();
         String nowState = data.getState();
+
+        LocalDate now = LocalDate.now(); // 현재 날짜를 가져옴
+        // 현재 날짜를 기준으로 Instant 객체 생성
+        Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+
+        // Instant를 Date로 변환
+        Date currentDate = Date.from(instantNow);
+        // 2~5일 사이의 임의의 값을 더하여 새로운 날짜 생성
+        Random random = new Random();
+        int daysToAdd = random.nextInt(4) + 2;
+        LocalDate exLocalDate = now.plusDays(daysToAdd);
+
+        // LocalDate를 Date로 변환
+        Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+        Date exDate = Date.from(instant);
+
         if(nowState==null)return null;
         if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
         String changeState =null;
         try{
             // 공사시작 버튼 누른경우
             if(nowState.equals("공사중")){
-                potholeRepository.updateIngState(potholePk,"공사중",new Date());
+                potholeRepository.updateIngState(potholePk,"공사중",currentDate,exDate);
                 changeState = "공사중";
             // 공사완료 버튼 누른경우
             }else if(nowState.equals("공사완료")){
-                potholeRepository.updateFnishState(potholePk,"공사완료",new Date());
+                potholeRepository.updateFnishState(potholePk,"공사완료",currentDate);
                 changeState = "공사완료";
             }
             return changeState;
