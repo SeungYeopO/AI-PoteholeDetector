@@ -4,6 +4,7 @@ import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.entity.User;
 import com.h2o.poppy.entity.AccidentReport;
+import com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto;
 import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.repository.PotholeRepository;
@@ -69,11 +70,12 @@ public class AccidentReportService {
     }
 
 
-    public List<AccidentReportDto> getAccident(Long userPk) {
+    // 유저 번호로 get
+    public List<AccidentReportJoinMetaDataDto> getAccident(Long userPk) {
         try {
             User user = userRepository.findById(userPk).orElse(null);
             if (user != null) {
-                List<AccidentReportDto> reports = accidentReportRepository.getAccidentReportInfoByUserId(userPk);
+                List<AccidentReportJoinMetaDataDto> reports = accidentReportRepository.getAccidentReportInfoByUserId(userPk);
                 return reports;
             } else {
                 // handle case where user is not found
@@ -86,17 +88,32 @@ public class AccidentReportService {
         }
     }
 
+
+    // report 번호로 get
+    public AccidentReportJoinMetaDataDto getAccidentReportPk(Long reportPk) {
+        try {
+            AccidentReportJoinMetaDataDto reports = accidentReportRepository.getAccidentReportInfoByReportPk(reportPk);
+            return reports;
+        } catch (Exception e) {
+            // handle any exception that occurs during data retrieval
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
     // 상태에 따른 get
-    public List<AccidentReportDto> getState(String nowState){
+    public List<AccidentReportJoinMetaDataDto> getState(String nowState){
         try{
-            List<AccidentReportDto> accidentReportDto;
+            List<AccidentReportJoinMetaDataDto> accidentReportJoinMetaDataDto;
             if(nowState.equals("미확인")){
-                accidentReportDto = accidentReportRepository.getAccidentReportInfoByNoCheck("미확인");
+                accidentReportJoinMetaDataDto = accidentReportRepository.getAccidentReportInfoByNoCheck("미확인");
             }
             else{
-                accidentReportDto =  accidentReportRepository.getAccidentReportInfoByCheck("미확인");
+                accidentReportJoinMetaDataDto =  accidentReportRepository.getAccidentReportInfoByCheck("미확인");
             }
-            return accidentReportDto;
+            return accidentReportJoinMetaDataDto;
         }catch (Exception e){
             return null;
         }
