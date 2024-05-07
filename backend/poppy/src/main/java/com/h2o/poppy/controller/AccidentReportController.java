@@ -1,6 +1,7 @@
 package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.*;
+import com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto;
 import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.model.accidentreport.AccidentReportDto;
@@ -59,10 +60,11 @@ public class AccidentReportController {
         return new SaveResponse(success, result);
     }
 
-    @GetMapping("/{userPk}")
+    // 사용자가 확인하는거 ( 사용자 pk로 조회)
+    @GetMapping("/user/{userPk}")
     public Object getIduser(@PathVariable Long userPk) {
 
-        List<AccidentReportDto> result = accidentReportService.getAccident(userPk);
+        List<AccidentReportJoinMetaDataDto> result = accidentReportService.getAccident(userPk);
         boolean success;
 
         if (result != null)
@@ -73,9 +75,35 @@ public class AccidentReportController {
         @Getter
         class SaveResponse {
             private final boolean success;
-            private final List<AccidentReportDto> result;
+            private final List<AccidentReportJoinMetaDataDto> result;
 
-            SaveResponse(boolean success, List<AccidentReportDto> result) {
+            SaveResponse(boolean success, List<AccidentReportJoinMetaDataDto> result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        // 로컬 클래스 인스턴스 생성 및 반환
+        return new SaveResponse(success, result);
+    }
+
+    // 관리자가 확인하는거 ( 리포트 pk로 조회) 1개만
+    @GetMapping("/{reportPk}")
+    public Object getIdReport(@PathVariable Long reportPk) {
+
+        AccidentReportJoinMetaDataDto result = accidentReportService.getAccidentReportPk(reportPk);
+        boolean success;
+
+        if (result != null)
+            success = true;
+        else
+            success = false;
+        // 메서드 내 로컬 클래스 정의
+        @Getter
+        class SaveResponse {
+            private final boolean success;
+            private final AccidentReportJoinMetaDataDto result;
+
+            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result) {
                 this.success = success;
                 this.result = result;
             }
@@ -87,14 +115,14 @@ public class AccidentReportController {
     // 미확인 상태 get
     @GetMapping("/no-check")
     public Object getNoCheck() {
-        List<AccidentReportDto> noCheckState = accidentReportService.getState("미확인");
+        List<AccidentReportJoinMetaDataDto> noCheckState = accidentReportService.getState("미확인");
         boolean success = noCheckState != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
             private final boolean success;
-            private final List<AccidentReportDto> noCheckState;
+            private final List<AccidentReportJoinMetaDataDto> noCheckState;
 
-            getResponse(boolean success, List<AccidentReportDto> noCheckState) {
+            getResponse(boolean success, List<AccidentReportJoinMetaDataDto> noCheckState) {
                 this.success = success;
                 this.noCheckState = noCheckState;
             }
@@ -105,14 +133,14 @@ public class AccidentReportController {
     // 반려,보상완료 상태 get
     @GetMapping("/yes-check")
     public Object getYesCheck() {
-        List<AccidentReportDto> yesCheckState = accidentReportService.getState("y");
+        List<AccidentReportJoinMetaDataDto> yesCheckState = accidentReportService.getState("y");
         boolean success = yesCheckState != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
             private final boolean success;
-            private final List<AccidentReportDto> yesCheckState;
+            private final List<AccidentReportJoinMetaDataDto> yesCheckState;
 
-            getResponse(boolean success, List<AccidentReportDto> yesCheckState) {
+            getResponse(boolean success, List<AccidentReportJoinMetaDataDto> yesCheckState) {
                 this.success = success;
                 this.yesCheckState = yesCheckState;
             }
