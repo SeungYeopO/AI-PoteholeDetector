@@ -199,6 +199,17 @@ public class PotholeService {
         }
     }
 
+    // 선택사항 필터후 반환
+    public List<PotholeDto> chooseGet(PotholeDto data){
+        String nowState = data.getState();
+        String nowProvince = data.getProvince();
+        String nowCity = data.getCity();
+        Date nowDate = data.getDetectedAt();
+
+        List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState,nowProvince,nowCity,nowDate);
+        return pothole;
+    }
+
     // 1인 get
     public PotholeDto getIdPothole(Long potholePk) {
         try{
