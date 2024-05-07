@@ -4,8 +4,14 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Service
 public class S3Service {
@@ -22,12 +28,28 @@ public class S3Service {
                 .build();
     }
 
-    public void createBucket(String bucketName) {
-        if (!s3Client.doesBucketExistV2(bucketName)) {
-            s3Client.createBucket(bucketName);
-            System.out.println("Bucket created successfully.");
+    public void createFolder(String bucketName, String folderName) {
+        String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
+        if (!s3Client.doesObjectExist(bucketName, folderKey)) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(0);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, folderKey, new ByteArrayInputStream(new byte[0]), metadata);
+            s3Client.putObject(putObjectRequest);
+            System.out.println("Folder created successfully in bucket: " + bucketName);
         } else {
-            System.out.println("Bucket already exists.");
+            System.out.println("Folder already exists in bucket: " + bucketName);
         }
+    }
+
+    public void uploadFile(String bucketName, String folderName, MultipartFile file) throws IOException {
+        String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
+        String fileKey = folderKey + file.getOriginalFilename();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
+
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, file.getInputStream(), metadata);
+        s3Client.putObject(putObjectRequest);
+        System.out.println("File uploaded successfully to " + fileKey);
     }
 }
