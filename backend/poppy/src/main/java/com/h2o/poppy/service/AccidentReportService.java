@@ -12,6 +12,7 @@ import com.h2o.poppy.model.accidentreport.AccidentReportDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -85,4 +86,56 @@ public class AccidentReportService {
         }
     }
 
+    // 상태에 따른 get
+    public List<AccidentReportDto> getState(String nowState){
+        try{
+            List<AccidentReportDto> accidentReportDto;
+            if(nowState.equals("미확인")){
+                accidentReportDto = accidentReportRepository.getAccidentReportInfoByNoCheck("미확인");
+            }
+            else{
+                accidentReportDto =  accidentReportRepository.getAccidentReportInfoByCheck("미확인");
+            }
+            return accidentReportDto;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    // 날짜 필터링 조회
+    public List<AccidentReportDto> getDate(Date targetDate){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate); // Date 객체를 Calendar로 설정
+
+        int year = calendar.get(Calendar.YEAR); // 년도 추출
+        int month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
+        int day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
+
+        try{
+            List<AccidentReportDto> accidentReportDto = accidentReportRepository.getAccidentReportInfoByDate(year,month,day);
+            return accidentReportDto;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+
+    // 상태 변경
+    public String changeState(AccidentReportDto data){
+        long nowAccidentReportPk = data.getReportPk();
+        String changeState = data.getState();
+        try{
+            if(changeState.equals("반려")){
+                String rejectReason = data.getRejectionReason();
+                accidentReportRepository.updateState(nowAccidentReportPk,changeState,rejectReason);
+            }
+            else{
+                accidentReportRepository.updateState(nowAccidentReportPk,changeState,null);
+            }
+            return changeState;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
