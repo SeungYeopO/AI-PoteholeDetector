@@ -69,7 +69,7 @@ public class PotholeService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("accept", "application/json");
-            headers.set("appKey", "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5");
+            headers.set("appKey", "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5");
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -110,7 +110,7 @@ public class PotholeService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "application/json");
-            headers.set("appKey", "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5");
+            headers.set("appKey", "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5");
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             RestTemplate restTemplate = new RestTemplate();
