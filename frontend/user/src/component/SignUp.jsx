@@ -12,6 +12,9 @@ const Background = styled.div`
   justify-content: center;
   background-color :#949EFF;
   flex-direction : column;
+  position : fixed;
+  left : 0;
+  top : 0;
 
 `
 const Container = styled.div`
@@ -119,9 +122,6 @@ const DoubleChekcBtn = styled.div`
   height : 100%;
   border-radius : 1rem;
 
-
-
-  
 `
 const Text = styled.div`
  display : flex;
@@ -139,7 +139,7 @@ const TextBox = styled.div`
   width : 80%;
   height : 40%;
   
-  
+
 `
 const SignUp = () => {
   const [userId, setUserId] = useState("");
