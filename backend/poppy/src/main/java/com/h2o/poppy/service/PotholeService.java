@@ -142,9 +142,7 @@ public class PotholeService {
             String upperAddrName = poiList.get("upperAddrName").asText();
             String middleAddrName = poiList.get("middleAddrName").asText();
 
-
-            String potholePk = saveData(upperAddrName, middleAddrName, lowerAddrName, lat, lon);
-            return potholePk;
+            return upperAddrName + ' ' + middleAddrName + ' ' + lowerAddrName;
         } catch (Exception e) {
             return null;
         }

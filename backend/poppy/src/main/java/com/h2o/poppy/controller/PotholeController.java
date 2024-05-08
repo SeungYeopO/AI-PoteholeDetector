@@ -1,14 +1,10 @@
 package com.h2o.poppy.controller;
 
-import com.h2o.poppy.entity.Pothole;
-import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
-import com.h2o.poppy.repository.PotholeRepository;
+import com.h2o.poppy.service.DirectoryService;
 import com.h2o.poppy.service.PotholeService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +14,12 @@ import java.util.List;
 public class PotholeController {
 
     private final PotholeService potholeService;
+    private final DirectoryService directoryService;
 
     @Autowired
-    public PotholeController(PotholeService potholeService) {
+    public PotholeController(PotholeService potholeService, DirectoryService directoryService) {
         this.potholeService = potholeService;
+        this.directoryService = directoryService;
     }
 
     // 포트홀 등록
@@ -43,21 +41,30 @@ public class PotholeController {
             }
         }
 
-        boolean checkGPS = potholeService.checkGPSdata(d_lat, d_lon);
-
-        if (!checkGPS)
-            return new getResponse(false, 0);
-        long potholePk = 0;
         String road = potholeService.callTmapApi(lat, lon);
 
-        boolean success = road != null; // PK가 0보다 크다면 성공으로 간주
-        try {
-            potholePk = Long.parseLong(road);
-        } catch (Exception e) {
-            potholePk = 0;
-        }
+        int directoryResult = directoryService.createDirectory(road);
 
-        return new getResponse(success, potholePk);
+        boolean checkGPS = true;
+
+        if (directoryResult == 2) {
+            //경로가 이미 존재
+            checkGPS = potholeService.checkGPSdata(d_lat, d_lon);
+        }
+//        else {
+//            //폴더 생성 실패
+//        }
+        long potholePk = 0;
+        if(checkGPS){
+            String[] words = road.split(" ");
+            String stringPotholePk = potholeService.saveData(words[0], words[1], words[2], lat, lon);
+            potholePk = Long.parseLong(stringPotholePk);
+            boolean success = potholePk != 0;
+            return new getResponse(success, potholePk);
+        }
+        else return new getResponse(false, 0);
+
+
     }
 
     // 전체 포트홀 읽기

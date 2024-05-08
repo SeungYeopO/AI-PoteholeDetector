@@ -49,6 +49,6 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     int updateIsPothole(@Param("potholePk") long Pk);
 
 
-    @Query(value="SELECT * FROM potholes WHERE ST_DISTANCE(POINT(:longitude,:latitude ), location) <= 3/100",nativeQuery = true)
+    @Query(value="SELECT * FROM potholes WHERE ST_DISTANCE(POINT(:longitude,:latitude ), location) * 100000 <= 3",nativeQuery = true)
     List<Pothole> findNearbyPotholes(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 }

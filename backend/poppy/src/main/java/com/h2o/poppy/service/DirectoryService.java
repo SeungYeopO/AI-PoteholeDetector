@@ -3,11 +3,15 @@ package com.h2o.poppy.service;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class DirectoryService {
 
-    public int createDirectory(String address) {
+    public synchronized int createDirectory(String address) {
         // 띄어쓰기를 기준으로 주소를 단어로 나눔
         String[] words = address.split(" ");
 
@@ -31,18 +35,18 @@ public class DirectoryService {
         System.out.println("Directory Path: " + directoryPath);
 
         // 디렉토리 생성
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
-            if (directory.mkdirs()) {
-                System.out.println("Directory created successfully.");
-                return 1;
-            } else {
-                System.out.println("Failed to create directory.");
-                return 0;
-            }
-        } else {
+        Path path = Paths.get(directoryPath);
+        if (Files.exists(path)) {
             System.out.println("Directory already exists.");
             return 2;
+        }
+        try {
+            Files.createDirectories(path);
+            System.out.println("Directory created successfully.");
+            return 1;
+        } catch (IOException e) {
+            System.out.println("Failed to create directory due to an error: " + e.getMessage());
+            return 0;
         }
     }
 }
