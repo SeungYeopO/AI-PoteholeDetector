@@ -29,7 +29,10 @@ function Modal({ isOpen, onClose, children }) {
 }
 
 const Background = styled.div`
-  width: 100%;
+  position : fixed;
+  left : 0;
+  top : 0;
+  width: 100vw;
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -45,6 +48,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  /* background-color : red; */
 `;
 
 const LoginTitle = styled.div`
