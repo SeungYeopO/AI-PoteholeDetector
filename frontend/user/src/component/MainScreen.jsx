@@ -2,6 +2,7 @@ import { useAuth } from "../component/AuthContext";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Logo from '../../public/img/mainLogo.png';
+import { useEffect } from "react";
 
 const Background = styled.div`
   display : flex;
@@ -63,10 +64,13 @@ const LogoImg = styled.img`
 const MainScreen = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log(user);
-  if (user) {
-    navigate('/map');
-  }
+
+
+  useEffect(() => {
+    if (user) {
+      navigate('/map');
+    }
+  });
 
   const gotoLogin = () => {
     navigate('/login')

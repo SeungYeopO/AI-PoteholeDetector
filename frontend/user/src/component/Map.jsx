@@ -575,7 +575,7 @@ function Map() {
   }
 
   return (
-    <div id="mapContainer" style={{ position: "relative", height: "100%" }}>
+    <div id="mapContainer" style={{ position: "fixed", height: "100vh", width : "100vw", left : '0', top : '0' }}>
       <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
       <div>
         {locationName && (
@@ -598,7 +598,7 @@ function Map() {
           zIndex: 1000,
         }}
       >
-        <img src="/img/center.png" style={{ width: "50px", height: "50px" }} />
+        <img src="/img/center.png" style={{ position : "fixed", top : "82%", left : "1o%", width: "60px", height: "60px"  }} />
       </button>
       <div
         style={{
@@ -672,11 +672,13 @@ function Map() {
       {selectedRoute && (
         <div
           style={{
-            position: "absolute",
-            bottom: "0",
+            position: "fixed",
+            bottom: "8%",
             left: "0",
+            height : "11%",
             width: "100%",
             display: "flex",
+            zIndex : "2000",
           }}
         >
           <div

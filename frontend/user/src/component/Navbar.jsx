@@ -53,7 +53,6 @@ function Navbar() {
     navigate('/map');
   }
   
-  
   const gotoReport = () => {
     navigate('/report')
   }
