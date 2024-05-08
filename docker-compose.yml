@@ -16,7 +16,7 @@ services:
     build:
       context: ./backend/poppy
     volumes:
-      - ~/data:/app/data
+      - /home/ubuntu/data:/app/data
     ports:
       - "8081:8081"
     depends_on:
