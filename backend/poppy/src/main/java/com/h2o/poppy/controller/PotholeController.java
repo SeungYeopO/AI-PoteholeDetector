@@ -6,7 +6,8 @@ import com.h2o.poppy.service.PotholeService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
 
 @RestController
@@ -205,6 +206,36 @@ public class PotholeController {
             }
         }
         return new DeleteDataResponse(result);
+    }
+
+
+    // 특정 바운더리 포트홀 검색
+    @Getter
+    @Setter
+    static class boundaryRequest {
+        private double latitude;
+        private double longitude;
+        private double size; // km
+    }
+    @PostMapping("search-boundary")
+    public Object getBoundary(@RequestBody boundaryRequest data){
+        double targetLatitude = data.getLatitude();
+        double targetLongitude = data.getLongitude();
+        double size = data.getSize();
+        List<PotholeDto> result = potholeService.getBoundary(targetLatitude,targetLongitude,size);
+
+        boolean success = result != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<PotholeDto> result;
+
+            getResponse(boolean success, List<PotholeDto> result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
     }
 
 }
