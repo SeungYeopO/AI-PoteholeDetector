@@ -1,10 +1,9 @@
 import { useAuth } from "../component/AuthContext";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Logo from '../../public/img/mainLogo.png'
+import Logo from '../../public/img/mainLogo.png';
 
 const Background = styled.div`
-
   display : flex;
   flex-direction : row;
   position : fixed;
@@ -66,7 +65,7 @@ const MainScreen = () => {
   const { user } = useAuth();
   console.log(user);
   if (user) {
-    return <Navigate to="/map" />;
+    navigate('/map');
   }
 
   const gotoLogin = () => {
