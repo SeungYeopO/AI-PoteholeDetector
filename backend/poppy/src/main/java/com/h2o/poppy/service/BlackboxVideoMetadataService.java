@@ -4,10 +4,13 @@ package com.h2o.poppy.service;
 import com.h2o.poppy.entity.AccidentReport;
 import com.h2o.poppy.entity.SerialList;
 import com.h2o.poppy.entity.User;
+import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.repository.BlackboxVideoMetadataRepository;
 import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.repository.SerialListRepository;
+import com.h2o.poppy.repository.UsersSerialsRepository;
+import org.hibernate.boot.model.internal.ListBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,7 @@ public class BlackboxVideoMetadataService {
         this.blackboxVideoMetadataRepository = blackboxVideoMetadataRepository;
         this.serialListRepository = serialListRepository;
     }
+
     private BlackboxVideoMetadataDto convertToDto(BlackboxVideoMetadata blackboxVideoMetadata) {
         BlackboxVideoMetadataDto blackboxVideoMetadataDto = new BlackboxVideoMetadataDto();
         blackboxVideoMetadataDto.setVideoPk(blackboxVideoMetadata.getVideoPk());
@@ -116,6 +120,16 @@ public class BlackboxVideoMetadataService {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    // 사용자 pk입력으로 사용자 비디오 조회
+    public List<BlackboxVideoMetadataJoinUserDto> getByUserPk(Long userPk){
+        try{
+            List<BlackboxVideoMetadataJoinUserDto> videoList = blackboxVideoMetadataRepository.findByJoinUserPk(userPk);
+            return videoList;
+        }catch (Exception e){
+            return null;
         }
     }
 }
