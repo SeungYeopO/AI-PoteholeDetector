@@ -2,6 +2,7 @@ package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
+import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.service.BlackboxVideoMetadataService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,25 @@ public class BlackboxVideoMetadataController {
             }
         }
         return new DeleteDataResponse(result);
+    }
+
+    // 사용자의 비디오 조회 userPk입력
+    @GetMapping("/user/{userPk}")
+    public Object getByUserPk(@PathVariable Long userPk){
+        List<BlackboxVideoMetadataJoinUserDto> result = blockboxVideoMetadataService.getByUserPk(userPk);
+        boolean success = result !=null; // PK가 0보다 크다면 성공으로 간주
+
+        @Getter
+        class SaveResponse {
+            private final boolean success;
+            private final List<BlackboxVideoMetadataJoinUserDto> result;
+
+            SaveResponse(boolean success, List<BlackboxVideoMetadataJoinUserDto> result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new SaveResponse(success, result);
+
     }
 }
