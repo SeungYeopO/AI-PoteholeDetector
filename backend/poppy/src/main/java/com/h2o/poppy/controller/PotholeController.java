@@ -1,6 +1,8 @@
 package com.h2o.poppy.controller;
 
+import com.h2o.poppy.model.address.Address;
 import com.h2o.poppy.model.pothole.PotholeDto;
+import com.h2o.poppy.service.AddressService;
 import com.h2o.poppy.service.DirectoryService;
 import com.h2o.poppy.service.PotholeService;
 import lombok.Getter;
@@ -16,11 +18,13 @@ public class PotholeController {
 
     private final PotholeService potholeService;
     private final DirectoryService directoryService;
+    private final AddressService addressService;
 
     @Autowired
-    public PotholeController(PotholeService potholeService, DirectoryService directoryService) {
+    public PotholeController(PotholeService potholeService, DirectoryService directoryService, AddressService addressService) {
         this.potholeService = potholeService;
         this.directoryService = directoryService;
+        this.addressService = addressService;
     }
 
     // 포트홀 등록
