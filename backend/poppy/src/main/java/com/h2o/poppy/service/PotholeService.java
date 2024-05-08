@@ -299,4 +299,15 @@ public class PotholeService {
         }
     }
 
+
+    // 바운더리 포트홀 조회
+    public List<PotholeDto> getBoundary(double targetLatitude,double targetLongitude, double size){
+        try{
+            List<PotholeDto> pothole = potholeRepository.findPothlesbySize(targetLatitude,targetLongitude,size);
+            return pothole;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
 }
