@@ -58,30 +58,16 @@ public class BlackboxVideoMetadataService {
 
 
     // 삽입
-    public long saveData(BlackboxVideoMetadataDto data) {
+    public long saveData(double latitude,double longitude, String serialNumber) {
         try{
-            long videoPk = data.getVideoPk();
-            return 0;
+            SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
+            BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude);
+            blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
+            Long videoPk = blackboxVideoMetadata.getVideoPk();
+            return videoPk;
         }catch (Exception e){
-            try {
-                long nowPk = 0;
-
-                long serialPk = data.getSerialPk();
-                Date detectedAt = data.getDetectedAt();
-                double latitude = data.getLatitude();
-                double longitude = data.getLongitude();
-
-                SerialList serialList = serialListRepository.findById(serialPk).orElse(null);
-
-                BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, detectedAt, latitude, longitude);
-                blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
-
-                nowPk = blackboxVideoMetadata.getVideoPk();
-
-                return nowPk;
-            } catch (Exception e1) {
-                return 0;
-            }
+            e.printStackTrace();
+            return 0;
         }
     }
 
