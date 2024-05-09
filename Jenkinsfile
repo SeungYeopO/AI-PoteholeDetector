@@ -13,6 +13,8 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'server') {
                         dockerComposeDown('server')
                         dockerComposeDown('mariadb')
+                        dockerComposeDown('mongo')
+                        dockerComposeUp('mongo')
                         dockerComposeUp('mariadb')
                         dockerComposeUp('server')
                     } else if (env.BRANCH_NAME == 'develop') {

@@ -33,6 +33,7 @@ services:
       - "8081:8081"
     depends_on:
       - mariadb
+      - mongo
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-container:3306/poppy
       - SPRING_DATASOURCE_USERNAME=h2o
