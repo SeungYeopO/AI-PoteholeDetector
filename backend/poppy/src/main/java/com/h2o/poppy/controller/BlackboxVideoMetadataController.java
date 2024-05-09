@@ -5,6 +5,7 @@ import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.service.BlackboxVideoMetadataService;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,10 +36,21 @@ public class BlackboxVideoMetadataController {
     }
 
 
-    // 포트홀 등록
+    // 비디오 등록 (블랙박스에서 위경도, 시리얼 넘버 보내면 자동 등록)
+    @Getter
+    @Setter
+    static class blackBoxRequest {
+        private double latitude;
+        private double longitude;
+        private String serialNumber;
+    }
     @PostMapping
-    public Object saveData(@RequestBody BlackboxVideoMetadataDto data) {
-        long videoPk = blockboxVideoMetadataService.saveData(data);
+    public Object saveData(@RequestBody blackBoxRequest data) {
+        double latitude = data.getLatitude();
+        double longitude = data.getLongitude();
+        String serialNumber = data.getSerialNumber();
+
+        long videoPk = blockboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
         boolean success = videoPk > 0; // PK가 0보다 크다면 성공으로 간주
 
         @Getter
