@@ -5,11 +5,14 @@ import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.service.AddressService;
 import com.h2o.poppy.service.DirectoryService;
 import com.h2o.poppy.service.PotholeService;
-import lombok.Getter;
+import com.h2o.poppy.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,21 +22,30 @@ public class PotholeController {
     private final PotholeService potholeService;
     private final DirectoryService directoryService;
     private final AddressService addressService;
+    private final S3Service s3Service;
 
     @Autowired
-    public PotholeController(PotholeService potholeService, DirectoryService directoryService, AddressService addressService) {
+    public PotholeController(PotholeService potholeService, DirectoryService directoryService, AddressService addressService, S3Service s3Service) {
         this.potholeService = potholeService;
         this.directoryService = directoryService;
         this.addressService = addressService;
+        this.s3Service = s3Service;
     }
 
+    @Getter
+    @Setter
+    static class GPSPotholeData{
+        private double latitude;
+        private double longitude;
+        private MultipartFile file;
+    }
     // 포트홀 등록
     @PostMapping
-    public Object saveData(@RequestBody PotholeDto data) {
-        double d_lat = data.getLatitude();
-        double d_lon = data.getLongitude();
-        String lat = Double.toString(d_lat);
-        String lon = Double.toString(d_lon);
+    public void saveData(@RequestParam("latitude") double latitude,
+                         @RequestParam("longitude") double longitude,
+                         @RequestParam("file") MultipartFile image) throws IOException {
+        String lat = Double.toString(latitude);
+        String lon = Double.toString(longitude);
 
         @Getter
         class getResponse {
@@ -48,13 +60,13 @@ public class PotholeController {
 
         String road = potholeService.callTmapApi(lat, lon);
 
-        int directoryResult = directoryService.createDirectory(road);
-
+//        int directoryResult = directoryService.createDirectory(road);
+        int directoryResult = addressService.saveAddress(road);
         boolean checkGPS = true;
 
         if (directoryResult == 2) {
             //경로가 이미 존재
-            checkGPS = potholeService.checkGPSdata(d_lat, d_lon);
+            checkGPS = potholeService.checkGPSdata(latitude, longitude);
         }
 //        else {
 //            //폴더 생성 실패
@@ -63,13 +75,9 @@ public class PotholeController {
         if(checkGPS){
             String[] words = road.split(" ");
             String stringPotholePk = potholeService.saveData(words[0], words[1], words[2], lat, lon);
-            potholePk = Long.parseLong(stringPotholePk);
-            boolean success = potholePk != 0;
-            return new getResponse(success, potholePk);
+            s3Service.createFolder(road);
+            s3Service.uploadFile(road, image);
         }
-        else return new getResponse(false, 0);
-
-
     }
 
     // 전체 포트홀 읽기

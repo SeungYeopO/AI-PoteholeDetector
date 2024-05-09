@@ -15,5 +15,6 @@ public class Address {
 
     public Address(String address){
         this.address = address;
+        this.id = address;
     }
 }

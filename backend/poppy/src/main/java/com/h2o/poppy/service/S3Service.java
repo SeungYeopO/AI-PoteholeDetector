@@ -28,7 +28,8 @@ public class S3Service {
                 .build();
     }
 
-    public void createFolder(String bucketName, String folderName) {
+    public void createFolder(String folderName) {
+        String bucketName = "poppys3";
         String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
         if (!s3Client.doesObjectExist(bucketName, folderKey)) {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -41,7 +42,8 @@ public class S3Service {
         }
     }
 
-    public void uploadFile(String bucketName, String folderName, MultipartFile file) throws IOException {
+    public void uploadFile(String folderName, MultipartFile file) throws IOException {
+        String bucketName = "poppys3";
         String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
         String fileKey = folderKey + file.getOriginalFilename();
         ObjectMetadata metadata = new ObjectMetadata();
