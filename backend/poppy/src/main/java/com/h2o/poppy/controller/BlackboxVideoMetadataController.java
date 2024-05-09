@@ -4,11 +4,14 @@ import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.service.BlackboxVideoMetadataService;
+import com.h2o.poppy.service.S3Service;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,10 +20,13 @@ public class BlackboxVideoMetadataController {
 
 
     private final BlackboxVideoMetadataService blockboxVideoMetadataService;
+    private final S3Service s3Service;
+
 
     @Autowired
-    public BlackboxVideoMetadataController(BlackboxVideoMetadataService blockboxVideoMetadataService) {
+    public BlackboxVideoMetadataController(BlackboxVideoMetadataService blockboxVideoMetadataService, S3Service s3Service) {
         this.blockboxVideoMetadataService = blockboxVideoMetadataService;
+        this.s3Service = s3Service;
     }
 
     // 전체 포트홀 읽기
@@ -37,33 +43,19 @@ public class BlackboxVideoMetadataController {
 
 
     // 비디오 등록 (블랙박스에서 위경도, 시리얼 넘버 보내면 자동 등록)
-    @Getter
-    @Setter
-    static class blackBoxRequest {
-        private double latitude;
-        private double longitude;
-        private String serialNumber;
-    }
     @PostMapping
-    public Object saveData(@RequestBody blackBoxRequest data) {
-        double latitude = data.getLatitude();
-        double longitude = data.getLongitude();
-        String serialNumber = data.getSerialNumber();
+    public void saveData(@RequestParam("latitude") double latitude,
+                           @RequestParam("longitude") double longitude,
+                           @RequestParam("serialNumber") String serialNumber,
+                           @RequestParam("file") MultipartFile video) throws IOException {
 
-        long videoPk = blockboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
-        boolean success = videoPk > 0; // PK가 0보다 크다면 성공으로 간주
+        String fileName = blockboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
+        boolean success = fileName != null;
 
-        @Getter
-        class SaveResponse {
-            private final boolean success;
-            private final long videoPk;
-
-            SaveResponse(boolean success, long videoPk) {
-                this.success = success;
-                this.videoPk = videoPk;
-            }
+        if(success){
+            s3Service.createFolder(fileName);
+            s3Service.uploadFile(fileName,video);
         }
-        return new SaveResponse(success, videoPk);
     }
 
     // 수정
