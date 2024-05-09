@@ -1,7 +1,7 @@
 services:
   mariadb:
     build: 
-      context: .
+      context: ./mariadb
     container_name: mariadb-container
     environment:
       MYSQL_ROOT_PASSWORD: "1234"
@@ -10,16 +10,15 @@ services:
       - "3306:3306"
     restart: always
   mongo:
-    image: mongo:latest
+    build: 
+      context: ./mongodb
     container_name: mongodb-container
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 1234
       MONGO_INITDB_DATABASE: h2o
+    ports:
+      - "27017:27017"
     restart: always
     
   server:
