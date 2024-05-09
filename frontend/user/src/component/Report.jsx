@@ -28,7 +28,7 @@ const Header = styled.div`
   justify-content : center;
   align-items : center;
   font-size : 2rem;
-  border : #D8D8D8 1px solid;
+  border : #D8D8D8 1p1x solid;
 
 `
 const ContentBox = styled.div`

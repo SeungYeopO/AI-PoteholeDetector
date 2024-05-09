@@ -15,6 +15,7 @@ import Navbar from "./component/Navbar.jsx";
 import ReportList from "./component/ReportList.jsx";
 import MainScreen from "./component/MainScreen.jsx";
 import Blackbox from "./component/Blackbox.jsx";
+import Mypage from "./component/Mypage.jsx";
 import "./App.css";
 import { useAuth } from "./component/AuthContext";
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/report" element={<Report />} /> 
             <Route path="/reports" element={<ReportList />}/>
             <Route path="/blackbox" element={<Blackbox/>}/>
+            <Route path="/mypage" element={<Mypage/>}/>
           </Routes>
             <NavbarWithAuth />
         </div>
