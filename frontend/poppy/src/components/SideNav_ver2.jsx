@@ -109,16 +109,16 @@ const SideNav_ver2 = () => {
   const location = useLocation();
 
   const gotoManageReport = () => {
-    navigate('/compensation-report')
+    navigate('/manager/compensation-report')
   };
 
 
   const gotoManageDone = () => {
-    navigate('/compensation-done')
+    navigate('/manager/compensation-done')
   };
 
   const gotoModeSelect = () => {
-    navigate('/mode');
+    navigate('/manager/mode');
   }
   return (
     <SideBox>
@@ -127,8 +127,8 @@ const SideNav_ver2 = () => {
         <LogoTitle onClick={gotoModeSelect}>POPPY</LogoTitle>
       </LogoBox>
       <ListBox>
-        <List onClick={gotoManageReport} active={location.pathname === "/compensation-report"}>신고내역</List>
-        <List onClick={gotoManageDone} active={location.pathname === "/compensation-done"}>처리내역</List>
+        <List onClick={gotoManageReport} active={location.pathname === "/manager/compensation-report"}>신고내역</List>
+        <List onClick={gotoManageDone} active={location.pathname === "/manager/compensation-done"}>처리내역</List>
       
       </ListBox>
       <UserInfoBox>
