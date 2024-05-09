@@ -69,11 +69,11 @@ const ModeSelectPage = () => {
   const navigate = useNavigate();
   
   const gotoManagePothole = () => {
-    navigate('/manage-report')
+    navigate('/manager/report')
   }
 
   const gotoMangeCompensation = () => {
-    navigate('/compensation-report')
+    navigate('/manager/compensation-report')
   }
 
   return (

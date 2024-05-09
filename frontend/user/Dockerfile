@@ -1,12 +1,13 @@
 FROM node:20.11.1
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY ./package*.json ./
+COPY package.json .
+COPY package-lock.json .
 
-RUN npm install
+RUN npm i
 
-COPY . /usr/src/app
+COPY . .
 
 EXPOSE 3000
 

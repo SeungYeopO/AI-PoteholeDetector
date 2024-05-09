@@ -8,17 +8,23 @@ import calendarImg from '../assets/modal/calenderImg.png';
 
 import '../../node_modules/react-calendar/dist/Calendar.css';
 
+
 const Background = styled.div`
   display : flex;
   flex-direction : row;
+  position : fixed;
+  left : 0;
+  top : 0;
+  overflow : hidden;
 `
 const Content = styled.div`
-  margin-left : 5rem;
+  /* margin-left : 5rem; */
   /* background-color : #ebeae2; */
   width : 100vw;
   height : 100vh;
 `
 const TimeArea = styled.div`
+  margin-left : 3rem;
   /* background-color : darkgray; */
   width : 100%;
   height : 10%;
@@ -87,7 +93,8 @@ const CalenderImg = styled.img`
   
 `
 const ListArea = styled.div`
-  width : 100%;
+  margin-left : 2rem;
+  width : 90%;
   height : 83%;
   display : flex;
   justify-content : center;
