@@ -28,7 +28,7 @@ const Header = styled.div`
   justify-content : center;
   align-items : center;
   font-size : 2rem;
-  border : #D8D8D8 1px solid;
+  border : #D8D8D8 1p1x solid;
 
 `
 const ContentBox = styled.div`
@@ -124,21 +124,22 @@ const VideoListModal = styled.div`
   opacity : 98%;
   border-radius : 1rem;
   width: 80%; 
-  height: 35rem; 
+  height: 40rem; 
   position: fixed;
   top: 50%; 
   left: 50%; 
-  transform: translate(-50%, -55%);
+  transform: translate(-50%, -43%);
   z-index: 1000;
   
 `
 const ModalHeader = styled.div`
   width : 100%;
   height : 17%;
-  background-color : yellow;
+  /* background-color : yellow; */
   
 `
 const ModalVideoList = styled.div`
+  margin-top : 0.3rem;
   width : 100%;
   height : 73%;
   background-color : #28325e;
@@ -146,27 +147,103 @@ const ModalVideoList = styled.div`
 const BtnArea = styled.div`
   width : 100%;
   height : 10%;
-  background-color : #99056d;
+  /* background-color : #99056d; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
 `
 const ModalTitle = styled.div`
   display : flex;
   align-items : center;
-  margin-left : 0.5rem;
+  margin-left : 1rem;
   font-size : 1.4rem;
   width : 70%;
   height : 50%;
   /* background-color : lightblue; */
 
 `
-const SelectDateBox = styled.div`
-  width : 80%;
-  height : 50%;
-  background-color : lightcyan;
+
+const BoxName = styled.div`
+  display : flex;
+  justify-content : center;
+  align-items : center;
+ width : ${(props) => props.width || '25%'};
+  height : 100%;
+  background-color : #8d8c8c;
+  font-size : 1.4rem;
+
 `
+const DateTable = styled.div`
+  background-color :  white;
+  width : 75%;
+  height : 100%;
+  display : flex;
+  
+`
+const CalenderModal = styled.div`
+  /* background-color: white; */
+  opacity: 98%;
+  border-radius: 1rem;
+  width: 20rem; 
+  height: 15rem; 
+  position: absolute; /* 부모 요소를 기준으로 위치를 절대값으로 지정 */
+  top: calc(30% + 1rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
+  left: calc(40% - 7.5rem); /* CalenderImg 버튼의 위치에 따라 조정 */
+  z-index: 1000;
+`
+
+const DateBox = styled.div`
+  display : flex;
+  align-items : center;
+  width : 80%;
+  height : 40%;
+  background-color : lightcyan;
+  /* background-color : #e83e3e; */
+  border : 1px solid darkgray;
+  margin-left : 1rem;
+`
+const SortInfo = styled.div`
+  width : ${(props) => props.width || '10%'};
+  height : ${(props) => props.height || '90%'};
+  display : flex;
+  text-indent : 0.3rem;
+  align-items : center;
+  font-size : 1.1rem;
+  `
+  const CalenderImg = styled.img`
+  display : flex;
+  cursor: pointer;
+  position : relative;
+  margin-top : 0.3rem;
+  width : 15%;
+  height : 70%;
+  /* background-color : red; */
+  
+`
+const VideoList = styled.div`
+  width : 100%;
+  height : 20%;
+  background-color : lightgreen;
+`
+const Btn = styled.div`
+  width : 20%;
+  height : 80%;
+  margin-bottom : 0.3rem;
+  background-color : #949EFF;
+  border-radius : 1rem;
+  display : flex;
+  align-items : center;
+  justify-content : center;
+  color : white;
+  font-size : 1.34rem;
+  `
+
 const Report = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [ismodalOpen, setIsModalOpen] = useState(false);
+  const [iscalenderOpen, setIsCalenderOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
 
     const handleTitle = (event) => {
       console.log(event.target.value);
@@ -188,6 +265,25 @@ const Report = () => {
     }
 
     const closeModal = () => {
+      setIsModalOpen(false);
+    };
+    
+    const modalOpen = () => {
+      setIsCalenderOpen(true);
+    };
+    const handleDateClick = (value) => {
+      setSelectedDate(value);
+      setIsCalenderOpen(false);
+    };
+
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}.${month}.${day}`;
+    };
+  
+    const chooseBlackbox = () => {
       setIsModalOpen(false);
     }
 
@@ -219,11 +315,27 @@ const Report = () => {
         <VideoListModal>
           <ModalHeader>
             <ModalTitle>블랙박스 영상 자료 선택</ModalTitle>
-            <SelectDateBox></SelectDateBox>
+            <DateBox>
+             <BoxName>날짜</BoxName>
+              <DateTable>
+                <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
+                <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
+              </DateTable>
+            </DateBox>
           </ModalHeader>
-          <ModalVideoList></ModalVideoList>
-          <BtnArea></BtnArea>
+          <ModalVideoList>
+            {/* 영상 어떻게 들어오는지 보고 추가 */}
+            <VideoList></VideoList> 
+          </ModalVideoList>
+          <BtnArea>
+            <Btn onClick={chooseBlackbox}>선택</Btn>
+          </BtnArea>
         </VideoListModal>
+      )}
+    {iscalenderOpen && (
+        <CalenderModal>
+            <Calender onChange={handleDateClick}  />
+        </CalenderModal>
       )}
    </Background>
   );
