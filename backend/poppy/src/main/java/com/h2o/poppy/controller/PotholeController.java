@@ -256,6 +256,7 @@ public class PotholeController {
     @Setter
     static class traceRequest {
         private String name;
+        private int index;
         private double latitude;
         private double longitude;
     }
@@ -264,19 +265,23 @@ public class PotholeController {
         List<Long> visitedPk = new ArrayList<>();
         List<traceRequest> potholeList = new ArrayList<>();
         int breakFlag = 0;
+        int i=-1;
         for (traceRequest data2 : data) {
+            i++;
             String name = data2.getName();
             double targetLatitude = data2.getLatitude();
             double targetLongitude = data2.getLongitude();
 
             List<PotholeDto> result = potholeService.getTraceSearch(targetLatitude,targetLongitude);
             if(!result.isEmpty()){
+
                 for (PotholeDto nowDir : result){
                     if(visitedPk.contains(nowDir.getPotholePk()))continue;
                     traceRequest nowData = new traceRequest();
                     nowData.setName(name);
                     nowData.setLatitude(nowDir.getLatitude());
                     nowData.setLongitude(nowDir.getLongitude());
+                    nowData.setIndex(i);
                     potholeList.add(nowData);
                     visitedPk.add(nowDir.getPotholePk());
                 }
@@ -300,5 +305,4 @@ public class PotholeController {
         }
         return new getResponse(success, potholeList);
     }
-
 }
