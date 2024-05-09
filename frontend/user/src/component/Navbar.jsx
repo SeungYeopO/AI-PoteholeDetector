@@ -7,6 +7,7 @@ import icon1 from '../../public/icons/navicon1.png';
 import icon2 from '../../public/icons/navicon2.png';
 import icon3 from '../../public/icons/navicon3.png';
 import icon4 from '../../public/icons/navicon4.png';
+import profile from '../../public/icons/profile.png'
 
 const Nav = styled.div`
   position : fixed;
@@ -19,7 +20,7 @@ const Nav = styled.div`
   background: #d7dbec;
 `
 const Content = styled.div`
-  width : 20%;
+  width : 17%;
   height : 100%;
   background-color: ${(props) => (props.active ? "#eeb7bc" : "#d7dbec")};
   /* background-color : lightcoral; */
@@ -40,8 +41,8 @@ const Text = styled.div`
 `
 const Icon = styled.img`
   margin-top : 0.3rem;
-  width : 3rem;
-  height : 3rem;
+  width : 2.6rem;
+  height : 2.6rem;
   /* background-color : blue; */
 `
 
@@ -66,6 +67,10 @@ function Navbar() {
     navigate('/blackbox')
 
   }
+
+  const gotoMyPage = () => {
+    navigate('/mypage')
+  }
   
 
   return (
@@ -86,7 +91,11 @@ function Navbar() {
         <Icon src={icon4}></Icon>
         <Text>블랙박스</Text>
       </Content>
-
+      <Content onClick={gotoMyPage} active={location.pathname === "/mypage"}>
+        <Icon src={profile}></Icon>
+        <Text>마이페이지</Text>
+      </Content>
+  
     
     </Nav>
   );
