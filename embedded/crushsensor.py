@@ -26,6 +26,11 @@ sensorfusion.yaw = imu.yaw
 count = 0
 rollo = 0
 rolle = 0
+pitcho = 0
+pitche = 0
+yawo = 0
+yawe = 0
+
 currTime = time.time()
 while True:
     imu.readSensor()
@@ -37,14 +42,17 @@ while True:
 												imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
     print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
     
-    if count/2 == 0:
-        rolle = sensorfusion.roll
-    else:
-        rollo = sensorfusion.roll
-	
-    if rolle != 0 and rollo != 0 and abs(rolle - rollo) > 5:
+    if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
         print("crush")
 
-
+    if count/2 == 0:
+        rolle = sensorfusion.roll
+        pitche = sensorfusion.pitch
+        yawe = sensorfusion.yaw
+    else:
+        rollo = sensorfusion.roll
+        pitcho = sensorfusion.pitch
+        yawo = sensorfusion.yaw
+	
     count += 1
-    time.sleep(1)
+    time.sleep(0.1)
