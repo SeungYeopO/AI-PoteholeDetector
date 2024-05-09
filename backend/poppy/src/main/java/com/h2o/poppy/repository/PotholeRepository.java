@@ -2,6 +2,7 @@ package com.h2o.poppy.repository;
 
 import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
+import com.h2o.poppy.model.pothole.TraceSearchDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -55,4 +56,9 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     // 바운더리 포트홀 조회
     @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE ST_DISTANCE(POINT(:longitude,:latitude ), pt.location) * 100 <= :size")
     List<PotholeDto> findPothlesbySize(@Param("latitude") Double latitude, @Param("longitude") Double longitude, @Param("size") Double size);
+
+    // 경로상 포트홀 탐색
+    @Query("SELECT new com.h2o.poppy.model.pothole.TraceSearchDto( CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double) ) FROM Pothole pt WHERE ST_DISTANCE(POINT(:longitude,:latitude ), pt.location) * 100000 <= 5")
+    List<TraceSearchDto> findPothlesbyTrace(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+
 }
