@@ -14,7 +14,6 @@ const Background = styled.div`
   overflow : hidden;
 `
 
-
 const Container = styled.div`
   display : flex;
   flex-direction : row;
@@ -281,6 +280,7 @@ const PageText = styled.div`
 
     fetchData();
   }, []); 
+  
 
 
   useEffect(() => {
@@ -379,7 +379,7 @@ const PageText = styled.div`
             {currentData && currentData.map((item, index) => (
               <GridCard key={index} onClick={() => handleGridClick(item)}>
                   <ContentBox>
-                    <PotholeImg src={item.potholeImg}></PotholeImg>
+                    <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`}></PotholeImg>
                     <ListBox>
                       <List>신고시각</List>
                       <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
@@ -421,7 +421,7 @@ const PageText = styled.div`
           <ModalContent>
             <ModalContentBox>
               <ModalContainer>
-                  <ModalImg src={selectedGrid.potholeImg}></ModalImg>
+                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedGrid.province}+${selectedGrid.city}+${selectedGrid.street}/${selectedGrid.longitude}_${selectedGrid.latitude}.jpg`}></ModalImg>
                   {selectedGrid && (
                     <ModalTable>
                       <tbody>
@@ -451,7 +451,6 @@ const PageText = styled.div`
                 {/*각 버튼 클릭시 백에 요청할거 정해지면 추가 */}
                 <Btn onClick={gotoProcess}>공사요청</Btn>
                 {/* 공사요청 시 랜덤으로 시작일, 예정일 보내주는걸로 api 요청 */}
-  
                 <Btn>반려</Btn>
               </BtnArea>
             </BtnBox>

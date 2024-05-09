@@ -5,6 +5,7 @@ import Calender from 'react-calendar';
 import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../assets/modal/calenderImg.png';
 import closeBtnImg from '../assets/modal/closeBtn.png';
+import reloadImg from '../assets/modal/reload.png'
 
 
 const Background = styled.div`
@@ -68,9 +69,10 @@ const LocationBox = styled.div`
 `
 const StateBox = styled.div`
   display : flex;
-  width : 15%;
+  justify-content : space-around;
+  width : 13%;
   height : 30%;
-  background-color : lightgrey;
+  /* background-color : lightgrey; */
 `
 const SearchBtn = styled.div`
   cursor: pointer;
@@ -79,8 +81,8 @@ const SearchBtn = styled.div`
   display : flex;
   justify-content : center;
   align-items : center;
-  width : 6%;
-  height : 30%;
+  width : 45%;
+  height : 100%;
   background-color : green;
 `
 const AreaDrop = styled.select`
@@ -349,6 +351,19 @@ const ModalTitle = styled.div`
   
 ` 
 
+const ReFilterBtn = styled.div`
+  width : 30%;
+  height : 100%;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
+const RefilterImg = styled.img`
+  width : 2.7rem;
+  height : 2.7rem;
+  /* background-color : red; */
+`
 const ManageProcessPage = () => {
   const [ismodalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -473,16 +488,16 @@ const ManageProcessPage = () => {
 
   const handleRegionSelect = (event) => {
     console.log(event.target.value);
+    console.log('상위지역', event.target.value);
     setSelectedRegion(event.target.value);
     const sub = areas.find((area) => area.name === event.target.value)?.subArea || [];
-    console.log('하위지역',sub);
     setSubAreas(sub);
     setSelectedDistrict("");
 
   }
 
   const handleDistrictSelect = (event) => {
-    console.log(event.target.value);
+    console.log('하위지역', event.target.value);
     setSelectedDistrict(event.target.value);
   }
   
@@ -548,10 +563,10 @@ const ManageProcessPage = () => {
   
   const gotoSearch = async () => {
     const userData = {
-      state : null,
-      Province : null,
-      city : null,
-      date : null,
+      state : '공사중',
+      Province : selectedRegion,
+      city : selectedDistrict,
+      date : selectedDate,
     };
     try {
       const response = await fetch('/api/potholes/choose', {
@@ -577,6 +592,12 @@ const ManageProcessPage = () => {
     setIsInfoModalOpen(false);
   }
   // filter 해달라고 요청하는 로직 추가하기
+
+  const gotoRefilter = () => {
+    setSelectedDate(null);
+    setSelectedRegion('');
+    setSelectedDistrict('');
+  }
  
   return (
     <Background>
@@ -608,15 +629,10 @@ const ManageProcessPage = () => {
                </AreaDrop>
               </DropArea>
             </LocationBox>
-            {/* <StateBox>
-              <BoxName width="34%">상태</BoxName>
-              <StateDrop onChange={handleStateSelect}>
-                <Option value="">선택하세요</Option>
-                <Option value="공사대기">공사대기</Option>
-                <Option value="공사중">공사중</Option>
-              </StateDrop>
-            </StateBox> */}
+            <StateBox>
             <SearchBtn onClick={gotoSearch}>검색</SearchBtn>
+             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg}></RefilterImg></ReFilterBtn> 
+            </StateBox>
           </SortedBox>
         </SortedArea>
         <ResultArea>
@@ -672,7 +688,7 @@ const ManageProcessPage = () => {
           <ModalContent>
             <ModalContentBox>
               <ModalContainer>
-                  <ModalImg src={selectedList.potholeImg}></ModalImg>
+                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedList.province}+${selectedList.city}+${selectedList.street}/${selectedList.longitude}_${selectedList.latitude}.jpg`}></ModalImg>
                     <ModalTable>
                         <TableRow>
                           <TableCell1>담당자명</TableCell1>
