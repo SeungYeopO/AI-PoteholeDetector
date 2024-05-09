@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import { useNavigate} from 'react-router-dom';
-import roadImg from '../assets/mode/roadImg.png';
-import moneyImg from '../assets/mode/moneyImg.png';
-
+import backImg from '../assets/background/loginBackImg3.jpg';
+import moneyImg from '../assets/mode/money.png';
+import potholeImg from '../assets/mode/pothole.png';
 
 const Background = styled.div`
-   background-color : #aec1f5;
+  background-image : url(${backImg});
+   /* background-color : #aec1f5; */
    width : 100vw;
    height : 100vh;
    top: 0;
@@ -22,47 +23,69 @@ const Background = styled.div`
 const ModeSelectArea = styled.div`
   /* background-color : yellow; */
   width : 73%;
-  height: 58%;
+  height: 53%;
   display : flex;
   justify-content : space-between;
 
   `
   const ModeText = styled.div`
+    width : 100%;
+    height : 20%;
+    /* background-color : yellow; */
+    display : flex;
+    justify-content : center;
+    align-items : center;
     font-size : 3.5rem;
-    margin-top : 7rem;
-  `
 
+  `
+  const ModeImg = styled.img`
+    margin-top : 2rem;
+    width : 300px;
+    height : 300px;
+
+  `
+    
+  
+
+const Mode = styled.div`
+  display : flex;
+  flex-direction : column;
+  justify-content : space-around;
+  align-items : center;
+  cursor: pointer;
+  /* background-color : pink; */
+  border-radius : 1rem;
+  width : 40%;
+  height : 100%;
+  font-size : 2.5rem;
+  box-shadow : 0px 5px 2px rgba(0, 0, 0, 0.2);
+  border-radius : 8rem;
+
+`
 const Mode1 = styled.div`
   display : flex;
-  justify-content : center;
+  flex-direction : column;
+  justify-content : space-around;
   align-items : center;
   cursor: pointer;
-  background-color : pink;
+  /* background-color : pink; */
   border-radius : 1rem;
   width : 40%;
   height : 100%;
   font-size : 2.5rem;
-
+  box-shadow : 0px -5px 2px rgba(0, 0, 0, 0.2);
+  border-radius : 8rem;
 `
-const Mode1Img = styled.img`
 
-  
-`
-const Mode2 = styled.div`
+const ModeImgBox = styled.div`
+  width : 70%;
+  height : 70%;
+  /* background-color : red; */
   display : flex;
   justify-content : center;
   align-items : center;
-  cursor: pointer;
-  background-color : pink;
-  border-radius : 1rem;
-  width : 40%;
-  height : 100%;
-  background-repeat : no-repeat;
-  background-size : cover;
-  display : flex;
-  justify-content : center;
-  font-size : 2.5rem;
 `
+
 
 
 const ModeSelectPage = () => {
@@ -79,13 +102,16 @@ const ModeSelectPage = () => {
   return (
     <Background>
       <ModeSelectArea>
-        <Mode1 onClick={gotoManagePothole}>포트홀관리
-          {/* <ModeText>포트홀 관리</ModeText> */}
-          {/* <Mode1Img src={roadImg}></Mode1Img> */}
+        <Mode onClick={gotoManagePothole}>
+          <ModeImgBox><ModeImg src={potholeImg} ></ModeImg></ModeImgBox>
+          <ModeText>
+          포트홀 관리</ModeText>
+        </Mode>
+        <Mode1 onClick={gotoMangeCompensation}>
+        <ModeImgBox><ModeImg src={moneyImg}></ModeImg></ModeImgBox>
+          <ModeText boxShadow="5px 0px 2px rgba(0, 0, 0, 0.5)">
+          보상 관리</ModeText>
         </Mode1>
-        <Mode2 onClick={gotoMangeCompensation}>보상관리
-          {/* <ModeText>보상 관리</ModeText> */}
-        </Mode2>
       </ModeSelectArea>
     </Background>
   );
