@@ -2,16 +2,10 @@ package com.h2o.poppy.repository;
 
 import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
-import com.h2o.poppy.model.pothole.TraceSearchDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.transaction.Transactional;
-import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -50,7 +44,7 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     int updateIsPothole(@Param("potholePk") long Pk);
 
 
-    @Query(value="SELECT * FROM potholes WHERE ST_DISTANCE(POINT(:longitude,:latitude ), location) * 100000 <= 3",nativeQuery = true)
+    @Query(value="SELECT * FROM potholes WHERE ST_DISTANCE(POINT(:longitude,:latitude ), location) * 111195 <= 3",nativeQuery = true)
     List<Pothole> findNearbyPotholes(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 
     // 바운더리 포트홀 조회
@@ -58,7 +52,7 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     List<PotholeDto> findPothlesbySize(@Param("latitude") Double latitude, @Param("longitude") Double longitude, @Param("size") Double size);
 
     // 경로상 포트홀 탐색
-    @Query("SELECT new com.h2o.poppy.model.pothole.TraceSearchDto( CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double) ) FROM Pothole pt WHERE ST_DISTANCE(POINT(:longitude,:latitude ), pt.location) * 100000 <= 5")
-    List<TraceSearchDto> findPothlesbyTrace(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE ST_DISTANCE(POINT(:longitude,:latitude ), pt.location) * 111195<= 15")
+    List<PotholeDto> findPothlesbyTrace(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 
 }

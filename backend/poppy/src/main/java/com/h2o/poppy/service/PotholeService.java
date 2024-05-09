@@ -2,13 +2,9 @@ package com.h2o.poppy.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.h2o.poppy.entity.AccidentReport;
 import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
-import com.h2o.poppy.model.pothole.TraceSearchDto;
 import com.h2o.poppy.repository.PotholeRepository;
-import lombok.Getter;
-import lombok.Setter;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -313,10 +309,12 @@ public class PotholeService {
         }
     }
 
+
     // 경로상 포트홀 탐색
-    public List<TraceSearchDto> getTraceSearch(double targetLatitude, double targetLongitude){
+    public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude){
         try{
-            List<TraceSearchDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
+            List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
+
             if (potholes.isEmpty()) {
                 return new ArrayList<>(); // 빈 리스트 반환
             } else {
