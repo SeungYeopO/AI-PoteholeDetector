@@ -110,19 +110,19 @@ const SideNav = () => {
   const location = useLocation();
 
   const gotoManageReport = () => {
-    navigate('/manage-report')
+    navigate('/manager/report')
   };
 
   const gotoManageProcess = () => {
-    navigate('/manage-process')
+    navigate('/manager/process')
   };
 
   const gotoManageDone = () => {
-    navigate('/manage-done')
+    navigate('/manager/done')
   };
 
   const gotoModeSelect = () => {
-    navigate('/mode');
+    navigate('/manager/mode');
   }
   return (
     <SideBox>
@@ -131,9 +131,9 @@ const SideNav = () => {
         <LogoTitle onClick={gotoModeSelect}>POPPY</LogoTitle>
       </LogoBox>
       <ListBox>
-        <List onClick={gotoManageReport} active={location.pathname === "/manage-report"}>신고내역</List>
-        <List onClick={gotoManageProcess} active={location.pathname === "/manage-process"}>처리내역</List>
-        <List onClick={gotoManageDone} active={location.pathname === "/manage-done"}>완료내역</List> 
+        <List onClick={gotoManageReport} active={location.pathname === "/manager/report"}>신고내역</List>
+        <List onClick={gotoManageProcess} active={location.pathname === "/manager/process"}>처리내역</List>
+        <List onClick={gotoManageDone} active={location.pathname === "/manager/done"}>완료내역</List> 
       </ListBox>
       <UserInfoBox>
         <ProfileImg src={profileImg}></ProfileImg>
