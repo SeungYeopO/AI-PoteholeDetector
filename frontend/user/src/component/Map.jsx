@@ -10,12 +10,13 @@ import axios from "axios";
 let resultMarkerArr = [];
 let resultdrawArr = [];
 let routeData = [];
-
+let potholeMarkers = [];
 let routeMarkers = [];
 let startX = 126.98702028;
 let startY = 37.5652045;
 let timeoutId;
 let map;
+let potholeAlert = [];
 
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -31,6 +32,8 @@ function Map() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLat, setSeletedLat] = useState(false);
   const [selectedLng, setSeletedLng] = useState(false);
+  const [userPosition, setUserPosition] = useState({ lat: 0, lon: 0 });
+  const [potholeAlerts, setPotholeAlerts] = useState([]);
   const [onRoute, setOnRoute] = useState(false);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
   const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
@@ -38,7 +41,6 @@ function Map() {
   const mapContainerId = "TMapApp";
   const location = useLocation();
   const { user } = useAuth();
-
   const onRouteRef = useRef(onRoute);
 
   if (!user) {
@@ -89,26 +91,6 @@ function Map() {
     return distance;
   };
 
-  const checkCenterChange = async () => {
-    const currentCenter = mapRef.current.getCenter();
-    const distance = calculateDistance(
-      lastCenter.lat(),
-      lastCenter.lng(),
-      currentCenter.lat(),
-      currentCenter.lng()
-    );
-
-    // Ref를 사용하여 최신의 onRoute 값을 확인
-    if (distance > 0.1 && !onRouteRef.current) {
-      await loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
-      lastCenter = currentCenter; // 최신 중심으로 업데이트
-    }
-
-    timeoutId = setTimeout(checkCenterChange, 3000); // 3초 후 다시 확인
-  };
-
-  let potholeMarkers = [];
-
   const getSearchDistanceByZoomLevel = (zoomLevel) => {
     if (zoomLevel >= 17) return 0.2; // zoomLevel이 10보다 작을 때 5km
     else if (zoomLevel >= 16) return 0.7; // zoomLevel이 15보다 작을 때 2km
@@ -146,7 +128,6 @@ function Map() {
         );
 
         const potholes = response.data.result;
-        console.log(potholes);
         // 필터링된 포트홀에 대해 마커 생성
 
         potholes.forEach((pothole) => {
@@ -162,6 +143,55 @@ function Map() {
         console.error("Error loading pothole data:", error);
       }
     }
+  };
+
+  useEffect(() => {
+    /*
+    지금까지 한것 : 포트홀에 대한 index를 받고, 10개 전의 index를 받아서 가지고 있을 수는 있음
+    그래서 이제는 현재 내 gps 정보를 받아와서 potholeAlert의 0번부터 찾아가면서 두 점의 거리가 가까워지면 알람을 띄우고 potholeAlert의 0번을 없애는 과정이 필요해 
+    
+    
+    */
+    console.log(potholeAlerts);
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log(latitude, longitude);
+        setUserPosition({ lat: latitude, lon: longitude });
+        checkPotholeProximity(latitude, longitude);
+      },
+      (error) => console.error(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [potholeAlerts]);
+
+  const checkPotholeProximity = (latitude, longitude) => {
+    if (potholeAlerts.length > 0) {
+      const firstAlert = potholeAlerts[0];
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        firstAlert.latitude,
+        firstAlert.longitude
+      );
+      if (distance < 0.05) {
+        // 50m 이내로 설정
+        alertUser();
+        removeFirstAlert(); // 첫 번째 경고만 제거
+      }
+    }
+  };
+
+  const alertUser = () => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("주의: 포트홀에 근접!");
+    }
+  };
+
+  const removeFirstAlert = () => {
+    setPotholeAlerts((prevAlerts) => prevAlerts.slice(1)); // 첫 번째 요소 제거
   };
 
   useEffect(() => {
@@ -344,11 +374,11 @@ function Map() {
         lastCenter = currentCenter; // 최신 중심으로 업데이트
       }
 
-      timeoutId = setTimeout(checkCenterChange, 2000);
+      timeoutId = setTimeout(checkCenterChange, 1000);
     };
 
     // 3초마다 맵의 중심이 변경되었는지 확인
-    timeoutId = setTimeout(checkCenterChange, 2000);
+    timeoutId = setTimeout(checkCenterChange, 1000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -490,7 +520,7 @@ function Map() {
             }
           });
         });
-
+        console.log(routeData);
         const pathPoints = resultData
           .map((feature) => {
             return feature.geometry.coordinates.map((coord) => {
@@ -499,7 +529,6 @@ function Map() {
           })
           .flat()
           .filter((point) => point.lat() !== 0 && point.lng() !== 0);
-        console.log(routeData);
         drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
 
         setSelectedRoute({
@@ -516,13 +545,18 @@ function Map() {
       try {
         routeMarkers.forEach((marker) => marker.setMap(null));
         routeMarkers = [];
-        const response = await axios.get("../../data/pothole.json");
+        const response = await axios.post(
+          "/api/potholes/trace-search",
+          routeData
+        );
 
-        response.data.forEach((element) => {
+        response.data.potholeList.map((element) => {
           const latitude = element.latitude;
           const longitude = element.longitude;
+          const index = element.index;
+          setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 10]);
           const marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(latitude, longitude),
+            position: new Tmapv2.LatLng(longitude, latitude),
             icon: "../img/free-icon-pothole-10392295.png",
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
@@ -602,15 +636,26 @@ function Map() {
 
   function resettingMap() {
     // 기존 마커 삭제
-    resultMarkerArr.forEach((marker) => marker.setMap(null));
+    resultMarkerArr.forEach((marker) => {
+      marker.setMap(null);
+    });
 
-    // 기존 draw 삭제
-    resultdrawArr.forEach((draw) => draw.setMap(null));
+    resultdrawArr.forEach((draw) => {
+      draw.setMap(null);
+    });
 
-    routeMarkers.forEach((marker) => marker.setMap(null));
+    potholeMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+
+    routeMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+    setPotholeAlerts([]);
     // 배열 초기화
     resultMarkerArr = [];
     resultdrawArr = [];
+    potholeMarkers = [];
     routeMarkers = [];
   }
 
