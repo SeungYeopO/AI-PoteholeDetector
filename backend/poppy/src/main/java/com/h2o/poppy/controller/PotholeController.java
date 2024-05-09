@@ -1,8 +1,6 @@
 package com.h2o.poppy.controller;
 
-import com.h2o.poppy.model.address.Address;
 import com.h2o.poppy.model.pothole.PotholeDto;
-import com.h2o.poppy.model.pothole.TraceSearchDto;
 import com.h2o.poppy.service.AddressService;
 import com.h2o.poppy.service.DirectoryService;
 import com.h2o.poppy.service.PotholeService;
@@ -14,7 +12,6 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -253,6 +250,7 @@ public class PotholeController {
         return new getResponse(success, result);
     }
 
+
     // 경로상 포트홀 탐색
     @Getter
     @Setter
@@ -263,7 +261,7 @@ public class PotholeController {
     }
     @PostMapping("trace-search")
     public Object getBoundary(@RequestBody List<traceRequest> data){
-
+        List<Long> visitedPk = new ArrayList<>();
         List<traceRequest> potholeList = new ArrayList<>();
         int breakFlag = 0;
         for (traceRequest data2 : data) {
@@ -271,9 +269,17 @@ public class PotholeController {
             double targetLatitude = data2.getLatitude();
             double targetLongitude = data2.getLongitude();
 
-            List<TraceSearchDto> result = potholeService.getTraceSearch(targetLatitude,targetLongitude);
+            List<PotholeDto> result = potholeService.getTraceSearch(targetLatitude,targetLongitude);
             if(!result.isEmpty()){
-                potholeList.add(data2);
+                for (PotholeDto nowDir : result){
+                    if(visitedPk.contains(nowDir.getPotholePk()))continue;
+                    traceRequest nowData = new traceRequest();
+                    nowData.setName(name);
+                    nowData.setLatitude(nowDir.getLatitude());
+                    nowData.setLongitude(nowDir.getLongitude());
+                    potholeList.add(nowData);
+                    visitedPk.add(nowDir.getPotholePk());
+                }
             }
             if(result==null){
                 breakFlag = 1;
