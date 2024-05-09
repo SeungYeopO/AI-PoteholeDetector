@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate} from 'react-router-dom';
 import backImg from '../assets/background/loginBackImg3.jpg';
 import Logo from '../assets/background/Loginlogo1.png'
+import logo from '../assets/background/logoImg.png'
 
 
 const Background = styled.div`
@@ -39,8 +40,8 @@ const LogoImgBox = styled.div`
   margin-right : 3rem;
 `
 const LogoImg = styled.img`
-    width : 550.7px;
-    height : 517px;
+    width : 778px;
+    height : 269px;
 `
 
 const LoginDiv = styled.div`
@@ -102,7 +103,6 @@ const SaveBtn = styled.div`
   justify-content : center;
   align-items : center;
   font-size : 1.8rem;
-
 `
 
 const LoginPage = () => {
@@ -152,7 +152,7 @@ const LoginPage = () => {
   return (
     <Background>
       <Container>
-        <LogoImgBox><LogoImg src={Logo}></LogoImg></LogoImgBox>
+        <LogoImgBox><LogoImg src={logo}></LogoImg></LogoImgBox>
       <LoginDiv>
           <LoginText>관리자 로그인</LoginText>
           <LoginArea>

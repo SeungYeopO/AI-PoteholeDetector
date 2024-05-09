@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import logoImg from '../assets/sidenav/logo.png'
+import logo from '../assets/background/logoImg2.png'
 import profileImg from '../assets/sidenav/profile.png'
 
 
@@ -22,11 +23,12 @@ const SideBox = styled.div`
 const LogoBox = styled.div`
   width : 100%;
   height : 9%;
-  background-color : lightcoral;
+  /* background-color : lightcoral; */
   display : flex;
   align-items : center;
   justify-content : space-between;
   cursor: pointer;
+  
 `
 
 const ListBox = styled.div`
@@ -60,15 +62,15 @@ const UserInfoBox = styled.div`
   /* background-color : lightblue; */
   width : 100%;
   height : 10%;
-  margin-bottom : 3rem;
+  margin-bottom : 1rem;
   justify-content : space-between;
 `
 
 const LogoImg = styled.img`
-  margin-left : 0.3rem;
+  margin-left : 0.7rem;
   /* background-color : red; */
-  width : 35%;
-  height : 75%;  
+  width : 92%;
+  height : 70%;  
 `
 
 const LogoTitle = styled.div`
@@ -127,8 +129,8 @@ const SideNav = () => {
   return (
     <SideBox>
       <LogoBox>
-        <LogoImg src={logoImg}></LogoImg>
-        <LogoTitle onClick={gotoModeSelect}>POPPY</LogoTitle>
+        <LogoImg onClick={gotoModeSelect} src={logo}></LogoImg>
+
       </LogoBox>
       <ListBox>
         <List onClick={gotoManageReport} active={location.pathname === "/manager/report"}>신고내역</List>
