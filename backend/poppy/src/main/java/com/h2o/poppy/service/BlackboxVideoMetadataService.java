@@ -58,16 +58,15 @@ public class BlackboxVideoMetadataService {
 
 
     // 삽입
-    public long saveData(double latitude,double longitude, String serialNumber) {
+    public String saveData(double latitude,double longitude, String serialNumber) {
         try{
             SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
             BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude);
             blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
-            Long videoPk = blackboxVideoMetadata.getVideoPk();
-            return videoPk;
+            return serialNumber;
         }catch (Exception e){
             e.printStackTrace();
-            return 0;
+            return null;
         }
     }
 
