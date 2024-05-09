@@ -1,11 +1,5 @@
-
-
 const Blackbox = () => {
-  return (
-    <div>
-      블랙박스페이지
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Blackbox;

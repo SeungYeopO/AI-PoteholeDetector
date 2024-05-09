@@ -9,6 +9,7 @@ import axios from "axios";
 
 let resultMarkerArr = [];
 let resultdrawArr = [];
+let routeData = [];
 
 let routeMarkers = [];
 let startX = 126.98702028;
@@ -108,6 +109,20 @@ function Map() {
 
   let potholeMarkers = [];
 
+  const getSearchDistanceByZoomLevel = (zoomLevel) => {
+    if (zoomLevel >= 17) return 0.2; // zoomLevel이 10보다 작을 때 5km
+    else if (zoomLevel >= 16) return 0.7; // zoomLevel이 15보다 작을 때 2km
+    else if (zoomLevel >= 15) return 1.2;
+    else if (zoomLevel >= 14) return 2.0;
+    else if (zoomLevel >= 13) return 3.5;
+    else if (zoomLevel >= 12) return 7.0;
+    else if (zoomLevel >= 11) return 13.5;
+    else if (zoomLevel >= 10) return 27.5;
+    else if (zoomLevel >= 9) return 50;
+    else if (zoomLevel >= 8) return 100;
+    else return 400;
+  };
+
   // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
   const loadAndMarkPotholes = async (latitude, longitude) => {
     if (!onRouteRef.current) {
@@ -116,24 +131,27 @@ function Map() {
         potholeMarkers.forEach((marker) => marker.setMap(null));
         potholeMarkers = []; // 마커 배열 초기화
 
-        const response = await axios.get("../../data/pothole.json");
+        const zoomLevel = mapRef.current.getZoom();
+        const searchDistance = getSearchDistanceByZoomLevel(zoomLevel);
 
-        const potholes = response.data.filter((pothole) => {
-          // 사용자 위치와 포트홀 위치 간 거리 계산
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            pothole.latitude,
-            pothole.longitude
-          );
+        const data = {
+          latitude: latitude,
+          longitude: longitude,
+          size: searchDistance,
+        };
 
-          return distance <= 0.5; // 0.5km 이내의 포트홀만 필터링
-        });
+        const response = await axios.post(
+          "/api/potholes/search-boundary",
+          data
+        );
 
+        const potholes = response.data.result;
+        console.log(potholes);
         // 필터링된 포트홀에 대해 마커 생성
+
         potholes.forEach((pothole) => {
           const marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
+            position: new Tmapv2.LatLng(pothole.longitude, pothole.latitude),
             icon: "../img/free-icon-pothole-10392295.png", // 포트홀 아이콘 이미지 경로
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
@@ -453,13 +471,35 @@ function Map() {
       .then((response) => {
         // 전체 응답 데이터를 콘솔에 출력
         const resultData = response.features;
+        console.log(resultData);
+
+        routeData = [];
+        resultData.forEach((feature) => {
+          feature.geometry.coordinates.forEach((coord) => {
+            if (
+              coord[0] !== undefined &&
+              coord[1] !== undefined &&
+              coord[0] !== 0 &&
+              coord[1] !== 0
+            ) {
+              routeData.push({
+                name: feature.properties.name,
+                latitude: coord[1],
+                longitude: coord[0],
+              });
+            }
+          });
+        });
+
         const pathPoints = resultData
           .map((feature) => {
             return feature.geometry.coordinates.map((coord) => {
               return new Tmapv2.LatLng(coord[1], coord[0]); // 좌표를 Tmapv2.LatLng 객체로 직접 변환
             });
           })
-          .flat();
+          .flat()
+          .filter((point) => point.lat() !== 0 && point.lng() !== 0);
+        console.log(routeData);
         drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
 
         setSelectedRoute({
@@ -575,7 +615,16 @@ function Map() {
   }
 
   return (
-    <div id="mapContainer" style={{ position: "fixed", height: "100vh", width : "100vw", left : '0', top : '0' }}>
+    <div
+      id="mapContainer"
+      style={{
+        position: "fixed",
+        height: "100vh",
+        width: "100vw",
+        left: "0",
+        top: "0",
+      }}
+    >
       <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
       <div>
         {locationName && (
@@ -598,7 +647,16 @@ function Map() {
           zIndex: 1000,
         }}
       >
-        <img src="/img/center.png" style={{ position : "fixed", top : "82%", left : "1o%", width: "60px", height: "60px"  }} />
+        <img
+          src="/img/center.png"
+          style={{
+            position: "fixed",
+            top: "82%",
+            left: "1o%",
+            width: "60px",
+            height: "60px",
+          }}
+        />
       </button>
       <div
         style={{
@@ -675,10 +733,10 @@ function Map() {
             position: "fixed",
             bottom: "8%",
             left: "0",
-            height : "11%",
+            height: "11%",
             width: "100%",
             display: "flex",
-            zIndex : "2000",
+            zIndex: "2000",
           }}
         >
           <div
