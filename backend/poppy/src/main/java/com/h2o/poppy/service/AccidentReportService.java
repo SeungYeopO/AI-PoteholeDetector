@@ -5,6 +5,7 @@ import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.entity.User;
 import com.h2o.poppy.entity.AccidentReport;
 import com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto;
+import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.repository.PotholeRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 
 @Service
 public class AccidentReportService {
@@ -152,6 +154,17 @@ public class AccidentReportService {
             return changeState;
         }catch (Exception e){
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    // 비디오 pk로 포트홀 조회
+    public List<PotholeDto> getPotholeList(Long videoPk){
+        try{
+            //List<PotholeDto> potholeList = potholeRepository.findPothlesbyVideoPk(videoPk);
+            List<PotholeDto> potholeList = potholeRepository.findPothlesbyVideoPk(videoPk);
+            return potholeList;
+        }catch (Exception e){
             return null;
         }
     }
