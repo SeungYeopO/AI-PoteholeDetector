@@ -55,4 +55,7 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE ST_DISTANCE(POINT(:longitude,:latitude ), pt.location) * 111195<= 15")
     List<PotholeDto> findPothlesbyTrace(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 
+    // 비디오 pk 근처 포트홀 조회
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE ST_DISTANCE(POINT ( (SELECT bvm.longitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk) , (SELECT bvm.latitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk) ), pt.location) * 111195 <= 5")
+    List<PotholeDto> findPothlesbyVideoPk(@Param("videoPk") Long videoPk);
 }

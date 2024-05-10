@@ -192,4 +192,23 @@ public class AccidentReportController {
         return new stateResponse(success, changeState);
     }
 
+    // 선택 비디오에 대한 포트홀 리스트 조회
+    @GetMapping("/pothole-list/{videoPk}")
+    public Object getPotholeList(@PathVariable Long videoPk){
+        List<PotholeDto> result = accidentReportService.getPotholeList(videoPk);
+        boolean success = result != null;
+        @Getter
+        class SaveResponse {
+            private final boolean success;
+            private final List<PotholeDto> result;
+
+            SaveResponse(boolean success, List<PotholeDto> result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        // 로컬 클래스 인스턴스 생성 및 반환
+        return new SaveResponse(success, result);
+    }
+
 }
