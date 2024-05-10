@@ -11,12 +11,17 @@ import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.repository.PotholeRepository;
 import com.h2o.poppy.service.AccidentReportService;
 
+import com.h2o.poppy.service.S3Service;
+import jakarta.persistence.*;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -27,31 +32,38 @@ public class AccidentReportController {
 
     private final AccidentReportRepository accidentReportRepository;
     private final AccidentReportService accidentReportService;
+    private final S3Service s3Service;
+
 
     public AccidentReportController(AccidentReportRepository accidentReportRepository,
-            AccidentReportService accidentReportService) {
+            AccidentReportService accidentReportService, S3Service s3Service) {
         this.accidentReportRepository = accidentReportRepository;
         this.accidentReportService = accidentReportService;
+        this.s3Service = s3Service;
     }
 
-    @PostMapping()
-    public Object saveData(@RequestBody AccidentReportDto data) {
+    // 사고 신고 등록
+    @PostMapping
+    public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("potholePk") Long potholePk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("rejectionReason") String rejectionReason,@RequestParam("file") List<MultipartFile> image)throws IOException {
+        AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk, potholePk,videoPk,reportName,reportContent,rejectionReason);
+        boolean success = result != null;
 
-        AccidentReportDto result = accidentReportService.saveData(data);
-        boolean success;
-
-        if (result != null)
-            success = true;
-        else
-            success = false;
-
+        if(success){
+            List<MultipartFile> fileList = image;
+            String reportPk = Long.toString(result.getReportPk());
+            String serialNumber = result.getSerialNumber();
+            s3Service.createFolder(serialNumber+"/"+reportPk);
+            for(MultipartFile nowFile : fileList ){
+                s3Service.uploadFile(serialNumber+"/"+reportPk, nowFile);
+            }
+        }
         // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
             private final boolean success;
-            private final AccidentReportDto result;
+            private final AccidentReportJoinMetaDataDto result;
 
-            SaveResponse(boolean success, AccidentReportDto result) {
+            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result) {
                 this.success = success;
                 this.result = result;
             }
@@ -59,6 +71,7 @@ public class AccidentReportController {
         // 로컬 클래스 인스턴스 생성 및 반환
         return new SaveResponse(success, result);
     }
+
 
     // 사용자가 확인하는거 ( 사용자 pk로 조회)
     @GetMapping("/user/{userPk}")
@@ -91,25 +104,30 @@ public class AccidentReportController {
     public Object getIdReport(@PathVariable Long reportPk) {
 
         AccidentReportJoinMetaDataDto result = accidentReportService.getAccidentReportPk(reportPk);
-        boolean success;
+        boolean success = result != null;
 
-        if (result != null)
-            success = true;
-        else
-            success = false;
+        List<String> imageFileNameList = null;
+
+        if(success){
+            String folderPath = result.getSerialNumber()+"/"+Long.toString(result.getReportPk());
+            imageFileNameList = s3Service.listObjectsInFolder(folderPath);
+        }
+
+        imageFileNameList.remove(0);
         // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
             private final boolean success;
             private final AccidentReportJoinMetaDataDto result;
-
-            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result) {
+            private final List<String> imageFileNameList;
+            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result, List<String> imageFileNameList) {
                 this.success = success;
                 this.result = result;
+                this.imageFileNameList = imageFileNameList;
             }
         }
         // 로컬 클래스 인스턴스 생성 및 반환
-        return new SaveResponse(success, result);
+        return new SaveResponse(success, result, imageFileNameList);
     }
 
     // 미확인 상태 get
@@ -191,6 +209,8 @@ public class AccidentReportController {
         }
         return new stateResponse(success, changeState);
     }
+
+
 
     // 선택 비디오에 대한 포트홀 리스트 조회
     @GetMapping("/pothole-list/{videoPk}")

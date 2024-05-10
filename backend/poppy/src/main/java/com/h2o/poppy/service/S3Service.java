@@ -4,14 +4,15 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class S3Service {
@@ -53,5 +54,25 @@ public class S3Service {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, file.getInputStream(), metadata);
         s3Client.putObject(putObjectRequest);
         System.out.println("File uploaded successfully to " + fileKey);
+    }
+
+    // 파일 모두 읽기
+    public List<String> listObjectsInFolder(String folderPath) {
+        String bucketName = "poppys3";
+        // S3 버킷에서 객체 목록을 가져오기 위한 요청 생성
+        ListObjectsV2Request request = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withPrefix(folderPath + "/"); // 폴더 내 모든 객체를 가져오기 위해 '/'를 추가합니다.
+
+        // 객체 목록 가져오기
+        ListObjectsV2Result result = s3Client.listObjectsV2(request);
+        List<String> objectKeys = new ArrayList<>();
+
+        // 가져온 객체들의 키(파일명)를 리스트에 추가
+        for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+            objectKeys.add(objectSummary.getKey());
+        }
+
+        return objectKeys;
     }
 }
