@@ -34,7 +34,9 @@ function Map() {
   const [selectedLng, setSeletedLng] = useState(false);
   const [userPosition, setUserPosition] = useState({ lat: 0, lon: 0 });
   const [potholeAlerts, setPotholeAlerts] = useState([]);
+  const [showAlertOverlay, setShowAlertOverlay] = useState(false);
   const [onRoute, setOnRoute] = useState(false);
+  const blinkIntervalIdRef = useRef(null);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
   const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
   const [mapZoom, setMapZoom] = useState(16);
@@ -168,25 +170,48 @@ function Map() {
   }, [potholeAlerts]);
 
   const checkPotholeProximity = (latitude, longitude) => {
+    console.log(latitude, longitude);
     if (potholeAlerts.length > 0) {
       const firstAlert = potholeAlerts[0];
       const distance = calculateDistance(
         latitude,
         longitude,
-        firstAlert.latitude,
-        firstAlert.longitude
+        routeData[firstAlert].latitude,
+        routeData[firstAlert].longitude
       );
+      console.log(distance);
       if (distance < 0.05) {
         // 50m 이내로 설정
         alertUser();
-        removeFirstAlert(); // 첫 번째 경고만 제거
+      } else if (firstAlert + 30 < routeData.length) {
+        // 다음 지점을 지났는지 확인
+        const nextDistance = calculateDistance(
+          latitude,
+          longitude,
+          routeData[firstAlert + 30].latitude,
+          routeData[firstAlert + 30].longitude
+        );
+        console.log("nextDistance = ", nextDistance);
+        if (nextDistance < 0.05) {
+          stopBlinking();
+          removeFirstAlert();
+        }
       }
     }
   };
 
   const alertUser = () => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("주의: 포트홀에 근접!");
+    clearInterval(blinkIntervalIdRef.current); // 기존 인터벌이 있다면 먼저 제거
+    blinkIntervalIdRef.current = setInterval(() => {
+      setShowAlertOverlay((prev) => !prev); // 깜빡임 효과
+    }, 300); // 0.3초마다 실행
+  };
+
+  const stopBlinking = () => {
+    if (blinkIntervalIdRef.current) {
+      clearInterval(blinkIntervalIdRef.current); // 인터벌 중지
+      setShowAlertOverlay(false); // 오버레이 숨기기
+      blinkIntervalIdRef.current = null; // 인터벌 ID 초기화
     }
   };
 
@@ -452,6 +477,19 @@ function Map() {
     mapRef.current.setZoom(16);
   };
 
+  function interpolatePoints(pointA, pointB, numPoints, name) {
+    let points = [];
+    for (let i = 1; i < numPoints; i++) {
+      let lat =
+        pointA.latitude + (pointB.latitude - pointA.latitude) * (i / numPoints);
+      let lon =
+        pointA.longitude +
+        (pointB.longitude - pointA.longitude) * (i / numPoints);
+      points.push({ name, latitude: lat, longitude: lon });
+    }
+    return points;
+  }
+
   const handleLocationSelect = async (lat, lng, convertRequired) => {
     resettingMap();
     let endX, endY;
@@ -514,24 +552,49 @@ function Map() {
         const resultData = response.features;
         console.log(resultData);
 
+        let lastCoord = null; // 이전 좌표를 저장할 변수
+        const maxDistance = 0.02; // 최대 거리(km), 이 거리를 초과하면 보간
+
         routeData = [];
         resultData.forEach((feature) => {
-          feature.geometry.coordinates.forEach((coord) => {
+          feature.geometry.coordinates.forEach((coord, index) => {
             if (
               coord[0] !== undefined &&
               coord[1] !== undefined &&
               coord[0] !== 0 &&
               coord[1] !== 0
             ) {
-              routeData.push({
+              const currentCoord = {
                 name: feature.properties.name,
                 latitude: coord[1],
                 longitude: coord[0],
-              });
+              };
+
+              if (lastCoord) {
+                const dist = calculateDistance(
+                  lastCoord.latitude,
+                  lastCoord.longitude,
+                  currentCoord.latitude,
+                  currentCoord.longitude
+                );
+                if (dist > maxDistance) {
+                  // 최대 거리를 초과할 경우 중간 지점 보간
+                  const interpolatedPoints = interpolatePoints(
+                    lastCoord,
+                    currentCoord,
+                    Math.ceil(dist / maxDistance),
+                    feature.properties.name
+                  );
+                  routeData.push(...interpolatedPoints);
+                }
+              }
+              routeData.push(currentCoord);
+              lastCoord = currentCoord; // 최신 좌표 업데이트
             }
           });
         });
         console.log(routeData);
+
         const pathPoints = resultData
           .map((feature) => {
             return feature.geometry.coordinates.map((coord) => {
@@ -565,7 +628,7 @@ function Map() {
           const latitude = element.latitude;
           const longitude = element.longitude;
           const index = element.index;
-          setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 10]);
+          setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 30]);
           const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(longitude, latitude),
             icon: "../img/free-icon-pothole-10392295.png",
@@ -663,6 +726,8 @@ function Map() {
       marker.setMap(null);
     });
     setPotholeAlerts([]);
+    setShowAlertOverlay(false); // 오버레이 숨기기
+
     // 배열 초기화
     resultMarkerArr = [];
     resultdrawArr = [];
@@ -681,6 +746,27 @@ function Map() {
         top: "0",
       }}
     >
+      {showAlertOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "red",
+            opacity: 0.5, // 투명도 설정을 통해 화면을 빨간색으로 표시하되, 내용은 보이도록 함
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            fontSize: "2em",
+            zIndex: 2000, // 다른 요소보다 위에 오도록 z-index 설정
+          }}
+        >
+          경고: 주의하세요!
+        </div>
+      )}
       <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
       <div>
         {locationName && (
