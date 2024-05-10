@@ -221,7 +221,7 @@ function Map() {
         zoom: mapZoom,
       });
       lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
-      mapRef.current.addListener("pointerdown", async (evt) => {
+      mapRef.current.addListener("touchstart", async (evt) => {
         const latLng = evt.latLng;
         const lat = latLng.lat();
         const lng = latLng.lng();
