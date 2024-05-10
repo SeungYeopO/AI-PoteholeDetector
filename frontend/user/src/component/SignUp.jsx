@@ -273,7 +273,7 @@ const SignUp = () => {
           <Box>
               <TextBox>
                 <Text width="30%">아이디</Text>
-                <Text width="65%" style={{color : doubleCheck ? 'green' : 'red'}} fontSize="1.2rem" marginTop ="1rem">{errorText}</Text>
+                <Text width="65%" style={{color : doubleCheck ? 'green' : 'red'}} fontSize="1.1rem" marginTop ="1rem">{errorText}</Text>
               </TextBox>
               <IdBox>
                 <Input style={{border : validUserId || userId.length === 0 ? "solid 1px #F5EAEA" : "solid 4px red" }} onChange={handleIdChange} type="text" placeholder="5~10자리 영어, 특수문자 불가" width="80%" height="100%"></Input>

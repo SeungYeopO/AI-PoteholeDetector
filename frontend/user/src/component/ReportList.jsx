@@ -3,6 +3,7 @@ import Calender from 'react-calendar';
 import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../../public/img/calenderImg.png';
 import { useState } from "react";
+import Navbar from "./Navbar";
 
 const Background = styled.div`
   position : fixed;
@@ -13,7 +14,7 @@ const Background = styled.div`
 `
 const Container = styled.div`
   width : 100%;
-  height : 91%;
+  height : 91.5%;
   display : flex;
   flex-direction : column;
   /* background-color : yellow; */
@@ -169,7 +170,11 @@ const ReportList = () => {
     setIsCalenderOpen(false);
   }
   const openCalender = () => {
-    setIsCalenderOpen(true);
+    if (!iscalenderOpen ){
+      setIsCalenderOpen(true);
+    }else{
+      setIsCalenderOpen(false);
+    }
   }
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -214,9 +219,10 @@ const ReportList = () => {
       </Container>
       {iscalenderOpen && (
         <CalenderModal>
-            <Calender onChange={handleDateClick}  />
+            <Calender calendarType="gregory"  onChange={handleDateClick}  />
         </CalenderModal>
       )}
+      <Navbar/>
     </Background>
   );
 };
