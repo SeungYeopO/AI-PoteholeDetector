@@ -1,12 +1,10 @@
 package com.h2o.poppy.controller;
 
-import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.service.BlackboxVideoMetadataService;
 import com.h2o.poppy.service.S3Service;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,26 +17,26 @@ import java.util.List;
 public class BlackboxVideoMetadataController {
 
 
-    private final BlackboxVideoMetadataService blockboxVideoMetadataService;
+    private final BlackboxVideoMetadataService blackboxVideoMetadataService;
     private final S3Service s3Service;
 
 
     @Autowired
-    public BlackboxVideoMetadataController(BlackboxVideoMetadataService blockboxVideoMetadataService, S3Service s3Service) {
-        this.blockboxVideoMetadataService = blockboxVideoMetadataService;
+    public BlackboxVideoMetadataController(BlackboxVideoMetadataService blackboxVideoMetadataService, S3Service s3Service) {
+        this.blackboxVideoMetadataService = blackboxVideoMetadataService;
         this.s3Service = s3Service;
     }
 
     // 전체 포트홀 읽기
     @GetMapping
     public List<BlackboxVideoMetadataDto> getAllVideo() {
-        return blockboxVideoMetadataService.getAllBlackboxVideoMetadata();
+        return blackboxVideoMetadataService.getAllBlackboxVideoMetadata();
     }
 
     // 포트홀 1명 정보 보기
     @GetMapping("/{videoPk}")
     public BlackboxVideoMetadataDto getIdVideo(@PathVariable Long videoPk) {
-        return blockboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
+        return blackboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
     }
 
 
@@ -49,7 +47,7 @@ public class BlackboxVideoMetadataController {
                            @RequestParam("serialNumber") String serialNumber,
                            @RequestParam("file") MultipartFile video) throws IOException {
 
-        String fileName = blockboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
+        String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
         boolean success = fileName != null;
 
         if(success){
@@ -61,7 +59,7 @@ public class BlackboxVideoMetadataController {
     // 수정
     @PutMapping
     public Object updateData(@RequestBody BlackboxVideoMetadataDto data) {
-        long videoPk = blockboxVideoMetadataService.updateData(data);
+        long videoPk = blackboxVideoMetadataService.updateData(data);
         @Getter
         class UpdateDataResponse {
             private final boolean result;
@@ -76,7 +74,7 @@ public class BlackboxVideoMetadataController {
     // 삭제
     @DeleteMapping("/{videoPk}")
     public Object deleteData(@PathVariable Long videoPk) {
-        boolean result = blockboxVideoMetadataService.deleteData(videoPk);
+        boolean result = blackboxVideoMetadataService.deleteData(videoPk);
 
         @Getter
         class DeleteDataResponse {
@@ -89,10 +87,10 @@ public class BlackboxVideoMetadataController {
         return new DeleteDataResponse(result);
     }
 
-    // 사용자의 비디오 조회 userPk입력
+    // 사용자의 비디오 조회 userPk 입력
     @GetMapping("/user/{userPk}")
     public Object getByUserPk(@PathVariable Long userPk){
-        List<BlackboxVideoMetadataJoinUserDto> result = blockboxVideoMetadataService.getByUserPk(userPk);
+        List<BlackboxVideoMetadataJoinUserDto> result = blackboxVideoMetadataService.getByUserPk(userPk);
         boolean success = result !=null; // PK가 0보다 크다면 성공으로 간주
 
         @Getter

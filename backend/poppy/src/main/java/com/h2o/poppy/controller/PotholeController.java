@@ -20,14 +20,12 @@ import java.util.List;
 public class PotholeController {
 
     private final PotholeService potholeService;
-    private final DirectoryService directoryService;
     private final AddressService addressService;
     private final S3Service s3Service;
 
     @Autowired
-    public PotholeController(PotholeService potholeService, DirectoryService directoryService, AddressService addressService, S3Service s3Service) {
+    public PotholeController(PotholeService potholeService, AddressService addressService, S3Service s3Service) {
         this.potholeService = potholeService;
-        this.directoryService = directoryService;
         this.addressService = addressService;
         this.s3Service = s3Service;
     }
@@ -60,7 +58,6 @@ public class PotholeController {
 
         String road = potholeService.callTmapApi(lat, lon);
 
-//        int directoryResult = directoryService.createDirectory(road);
         int directoryResult = addressService.saveAddress(road);
         boolean checkGPS = true;
 
@@ -68,9 +65,7 @@ public class PotholeController {
             //경로가 이미 존재
             checkGPS = potholeService.checkGPSdata(latitude, longitude);
         }
-//        else {
-//            //폴더 생성 실패
-//        }
+
         long potholePk = 0;
         if(checkGPS){
             String[] words = road.split(" ");
@@ -167,7 +162,7 @@ public class PotholeController {
     }
 
     // 공사대기 - 공사중 - 공사완료 변경
-    @PatchMapping()
+    @PatchMapping
     public Object changeState(@RequestBody PotholeDto data) {
         String changeState = potholeService.changeState(data);
         boolean success = changeState != null;

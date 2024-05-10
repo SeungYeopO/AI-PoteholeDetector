@@ -54,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
 
         usersSerialsRepository.saveAll(List.of(
                 new UsersSerials(user1, serial1),
-                new UsersSerials(user2,serial2)));
+                new UsersSerials(user2, serial2)));
 
         Date now = new Date();
         Date date1 = new Date(2022 - 1900, 3, 25, 14, 30, 0); // 2022년 4월 25일 오후 2시 30분
