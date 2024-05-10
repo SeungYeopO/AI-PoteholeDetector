@@ -221,13 +221,24 @@ function Map() {
         zoom: mapZoom,
       });
       lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
-      mapRef.current.addListener("touchstart", async (evt) => {
-        const latLng = evt.latLng;
-        const lat = latLng.lat();
-        const lng = latLng.lng();
+      let touchStartTime = 0; // 터치 시작 시간을 기록할 변수
 
-        // 여기에서 검색 함수를 호출하고 결과를 모달로 표시
-        await reverseGeocode(lat, lng);
+      mapRef.current.addListener("touchstart", (evt) => {
+        touchStartTime = Date.now(); // 터치가 시작되면 현재 시간을 기록
+      });
+
+      mapRef.current.addListener("touchend", async (evt) => {
+        const touchEndTime = Date.now(); // 터치가 끝날 때의 시간
+        const touchDuration = touchEndTime - touchStartTime; // 터치 지속 시간 계산
+
+        if (touchDuration < 200) {
+          // 지속 시간이 200밀리초 이내면 짧은 터치로 간주
+          const latLng = evt.latLng;
+          const lat = latLng.lat();
+          const lng = latLng.lng();
+
+          await reverseGeocode(lat, lng);
+        }
       });
 
       // 처음 마커 생성
