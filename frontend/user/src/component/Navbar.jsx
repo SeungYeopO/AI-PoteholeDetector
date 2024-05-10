@@ -1,11 +1,10 @@
-
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import icon1 from '../../public/icons/navicon1.png';
-import icon2 from '../../public/icons/navicon2.png';
+import icon2 from '../../public/icons/navicon6.png';
 import icon3 from '../../public/icons/navicon3.png';
 import icon4 from '../../public/icons/navicon4.png';
 import icon5 from '../../public/icons/navicon5.png'
@@ -16,7 +15,7 @@ const Nav = styled.div`
   bottom : 0;
   display: flex;
   width : 100%;
-  height : 5.5rem;
+  height : 10%;
   justify-content: space-around;
   background: #d7dbec;
 `
