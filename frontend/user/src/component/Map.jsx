@@ -11,12 +11,13 @@ import Navbar from "./Navbar.jsx";
 let resultMarkerArr = [];
 let resultdrawArr = [];
 let routeData = [];
-
+let potholeMarkers = [];
 let routeMarkers = [];
 let startX = 126.98702028;
 let startY = 37.5652045;
 let timeoutId;
 let map;
+let potholeAlert = [];
 
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -43,7 +44,6 @@ function Map() {
   const mapContainerId = "TMapApp";
   const location = useLocation();
   const { user } = useAuth();
-
   const onRouteRef = useRef(onRoute);
 
   if (!user) {
@@ -94,26 +94,6 @@ function Map() {
     return distance;
   };
 
-  const checkCenterChange = async () => {
-    const currentCenter = mapRef.current.getCenter();
-    const distance = calculateDistance(
-      lastCenter.lat(),
-      lastCenter.lng(),
-      currentCenter.lat(),
-      currentCenter.lng()
-    );
-
-    // Ref를 사용하여 최신의 onRoute 값을 확인
-    if (distance > 0.1 && !onRouteRef.current) {
-      await loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
-      lastCenter = currentCenter; // 최신 중심으로 업데이트
-    }
-
-    timeoutId = setTimeout(checkCenterChange, 3000); // 3초 후 다시 확인
-  };
-
-  let potholeMarkers = [];
-
   const getSearchDistanceByZoomLevel = (zoomLevel) => {
     if (zoomLevel >= 17) return 0.2; // zoomLevel이 10보다 작을 때 5km
     else if (zoomLevel >= 16) return 0.7; // zoomLevel이 15보다 작을 때 2km
@@ -151,7 +131,6 @@ function Map() {
         );
 
         const potholes = response.data.result;
-        console.log(potholes);
         // 필터링된 포트홀에 대해 마커 생성
 
         potholes.forEach((pothole) => {
@@ -268,10 +247,7 @@ function Map() {
         zoom: mapZoom,
       });
       lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
-      mapRef.current.addListener("click", async (evt) => {
-        const latLng = evt.latLng;
-        const lat = latLng.lat();
-        const lng = latLng.lng();
+      let touchStartTime = 0; // 터치 시작 시간을 기록할 변수
 
       mapRef.current.addListener("touchstart", (evt) => {
         touchStartTime = Date.now(); // 터치가 시작되면 현재 시간을 기록
@@ -435,11 +411,11 @@ function Map() {
         lastCenter = currentCenter; // 최신 중심으로 업데이트
       }
 
-      timeoutId = setTimeout(checkCenterChange, 2000);
+      timeoutId = setTimeout(checkCenterChange, 1000);
     };
 
     // 3초마다 맵의 중심이 변경되었는지 확인
-    timeoutId = setTimeout(checkCenterChange, 2000);
+    timeoutId = setTimeout(checkCenterChange, 1000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -578,7 +554,7 @@ function Map() {
         console.log(resultData);
 
         let lastCoord = null; // 이전 좌표를 저장할 변수
-        const maxDistance = 0.02; // 최대 거리(km), 이 거리를 초과하면 보간
+        const maxDistance = 0.015; // 최대 거리(km), 이 거리를 초과하면 보간
 
         routeData = [];
         resultData.forEach((feature) => {
@@ -628,7 +604,6 @@ function Map() {
           })
           .flat()
           .filter((point) => point.lat() !== 0 && point.lng() !== 0);
-        console.log(routeData);
         drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
 
         setSelectedRoute({
@@ -645,15 +620,18 @@ function Map() {
       try {
         routeMarkers.forEach((marker) => marker.setMap(null));
         routeMarkers = [];
-        const response = await axios.get("../../data/pothole.json");
+        const response = await axios.post(
+          "/api/potholes/trace-search",
+          routeData
+        );
 
-        response.data.forEach((element) => {
+        response.data.potholeList.map((element) => {
           const latitude = element.latitude;
           const longitude = element.longitude;
           const index = element.index;
           setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 30]);
           const marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(latitude, longitude),
+            position: new Tmapv2.LatLng(longitude, latitude),
             icon: "../img/free-icon-pothole-10392295.png",
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
@@ -733,10 +711,13 @@ function Map() {
 
   function resettingMap() {
     // 기존 마커 삭제
-    resultMarkerArr.forEach((marker) => marker.setMap(null));
+    resultMarkerArr.forEach((marker) => {
+      marker.setMap(null);
+    });
 
-    // 기존 draw 삭제
-    resultdrawArr.forEach((draw) => draw.setMap(null));
+    resultdrawArr.forEach((draw) => {
+      draw.setMap(null);
+    });
 
     potholeMarkers.forEach((marker) => {
       marker.setMap(null);
@@ -751,6 +732,7 @@ function Map() {
     // 배열 초기화
     resultMarkerArr = [];
     resultdrawArr = [];
+    potholeMarkers = [];
     routeMarkers = [];
   }
 
@@ -786,7 +768,7 @@ function Map() {
           경고: 주의하세요!
         </div>
       )}
-      <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
+      <div id="TMapApp" style={{ width: "100%", height: "90%" }} />
       <div>
         {locationName && (
           <LocationModal
@@ -799,30 +781,26 @@ function Map() {
           />
         )}
       </div>
-      <div
+      <button
         onClick={centerMapOnUser}
         style={{
-          position: "fixed",
-          width : "3rem",
-          height : "3rem",
-          left: "1rem",
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
           zIndex: 1000,
-          bottom : '6rem',
-          marginBottom : '0.5rem',
-          // backgroundColor : 'red',
-          display : 'flex',
-          justifyContent : 'center',
-          alignItems : 'center'
         }}
       >
         <img
           src="/img/center.png"
           style={{
+            position: "fixed",
+            top: "82%",
+            left: "1o%",
             width: "60px",
             height: "60px",
           }}
         />
-      </div>
+      </button>
       <div
         style={{
           position: "absolute",
@@ -946,7 +924,7 @@ function Map() {
           </div>
         </div>
       )}
-      <Navbar/>
+      <Navbar />
     </div>
   );
 }

@@ -3,80 +3,74 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import icon1 from '../../public/icons/navicon1.png';
-import icon2 from '../../public/icons/navicon6.png';
-import icon3 from '../../public/icons/navicon3.png';
-import icon4 from '../../public/icons/navicon4.png';
-import icon5 from '../../public/icons/navicon5.png'
+import icon1 from "../../public/icons/navicon1.png";
+import icon2 from "../../public/icons/navicon6.png";
+import icon3 from "../../public/icons/navicon3.png";
+import icon4 from "../../public/icons/navicon4.png";
+import icon5 from "../../public/icons/navicon5.png";
 
 const Nav = styled.div`
-  position : fixed;
-  left : 0;
-  bottom : 0;
+  position: fixed;
+  left: 0;
+  bottom: 0;
   display: flex;
-  width : 100%;
-  height : 10%;
+  width: 100%;
+  height: 10%;
   justify-content: space-around;
   background: #d7dbec;
-`
+`;
 const Content = styled.div`
-  width : 17%;
-  height : 100%;
+  width: 17%;
+  height: 100%;
   background-color: ${(props) => (props.active ? "#eeb7bc" : "#d7dbec")};
   /* background-color : lightcoral; */
-  display : flex;
-  flex-direction : column;
-  justify-content : space-around;
-  border-radius : 1rem;
-  align-items : center;
-`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 1rem;
+  align-items: center;
+`;
 const Text = styled.div`
-  width : 100%;
-  height : 30%;
+  width: 100%;
+  height: 30%;
   /* background-color : red; */
-  display : flex;
-  justify-content : center;
-  align-items : center;
-
-`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const Icon = styled.img`
-  margin-top : 0.3rem;
-  width : 2.6rem;
-  height : 2.6rem;
+  margin-top: 0.3rem;
+  width: 2.6rem;
+  height: 2.6rem;
   /* background-color : blue; */
-`
+`;
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const {logout} = useAuth();
+  const { logout } = useAuth();
 
   const gotoMap = () => {
-    navigate('/map');
-  }
-  
+    navigate("/map");
+  };
+
   const gotoReport = () => {
-    navigate('/report')
-  }
-  
+    navigate("/report");
+  };
+
   const gotoReportList = () => {
-    navigate('/reports')
+    navigate("/reports");
+  };
 
-  }
-  
   const gotoBlackbox = () => {
-    navigate('/blackbox')
-
-  }
+    navigate("/blackbox");
+  };
 
   const gotoLogout = () => {
     logout();
-    console.log('로그아웃');
-    navigate('/');
-    
-  }
-
-
+    console.log("로그아웃");
+    navigate("/");
+  };
 
   return (
     <Nav>
@@ -88,11 +82,17 @@ function Navbar() {
         <Icon src={icon2}></Icon>
         <Text>사고신고</Text>
       </Content>
-      <Content onClick={gotoReportList} active={location.pathname === "/reports"}>
+      <Content
+        onClick={gotoReportList}
+        active={location.pathname === "/reports"}
+      >
         <Icon src={icon3}></Icon>
         <Text>신고내역</Text>
       </Content>
-      <Content onClick={gotoBlackbox} active={location.pathname === "/blackbox"}>
+      <Content
+        onClick={gotoBlackbox}
+        active={location.pathname === "/blackbox"}
+      >
         <Icon src={icon4}></Icon>
         <Text>블랙박스</Text>
       </Content>
@@ -100,8 +100,6 @@ function Navbar() {
         <Icon onClick={gotoLogout} src={icon5}></Icon>
         <Text>로그아웃</Text>
       </Content>
-  
-    
     </Nav>
   );
 }
