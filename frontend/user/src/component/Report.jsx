@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Calender from 'react-calendar';
 import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../../public/img/calenderImg.png';
+import Navbar from "./Navbar";
 
 
 
@@ -38,6 +39,21 @@ const ContentBox = styled.div`
   flex-direction : column;
   justify-content : space-between;
   /* background-color : yellow; */
+    overflow: auto; 
+   &::-webkit-scrollbar {
+        width: 1rem; 
+    }
+
+    &::-webkit-scrollbar-track {
+    background:  rgba(79, 79, 79, 0.9);
+    border-radius: 10px; 
+    }
+
+    &::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 1rem;
+    }
+
 
 `
 const TextBox = styled.div`
@@ -244,6 +260,7 @@ const Report = () => {
   const [ismodalOpen, setIsModalOpen] = useState(false);
   const [iscalenderOpen, setIsCalenderOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedImage, setSelectedImage] = useState([]);
 
     const handleTitle = (event) => {
       console.log(event.target.value);
@@ -255,9 +272,24 @@ const Report = () => {
       setContent(event.target.value);
     };
 
-    const chooseImage = () => {
-        console.log('click');
+    const chooseImage = async () => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.multiple = true;
+      fileInput.click();
+
+      fileInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        const selectd = Array.from(files);
+        console.log(Array.from(files)[0].name)
+        setSelectedImage((prevSelected) => [...prevSelected, ...selectd]);
+      })
     };
+
+    const gotoUpload = () => {
+      console.log(selectedImage);
+    }
 
     const chooseVideo = () => {
       console.log('video Click');
@@ -268,9 +300,15 @@ const Report = () => {
       setIsModalOpen(false);
     };
     
-    const modalOpen = () => {
+   
+     const openCalender = () => {
+    if (!iscalenderOpen ){
       setIsCalenderOpen(true);
-    };
+    }else{
+      setIsCalenderOpen(false);
+    }
+  };
+
     const handleDateClick = (value) => {
       setSelectedDate(value);
       setIsCalenderOpen(false);
@@ -299,7 +337,11 @@ const Report = () => {
               <InputBox onChange={handleContent} placeholder="내용을 입력하세요"></InputBox>
             </TextBox>
             <TextBox>
-                  <FileText>사고 사진을 첨부하세요</FileText>
+                  {selectedImage && selectedImage.length > 0 ? (selectedImage.map((item,index) => (
+                    <FileText key={index}>{item.name}</FileText>
+                    //  <img src={URL.createObjectURL(item)} alt={item.name} />
+                  )) 
+                  ): (<FileText>사고사진을 첨부하세요</FileText> )}
                   <FileBtn onClick={chooseImage}>첨부</FileBtn>
             </TextBox>
             <TextBox>
@@ -307,10 +349,11 @@ const Report = () => {
                   <FileBtn onClick={chooseVideo}>첨부</FileBtn>
             </TextBox>
             <TextBox>
-              <SaveBtn>제출</SaveBtn>
+              <SaveBtn onClick={gotoUpload}>제출</SaveBtn>
             </TextBox>
         </ContentBox>
       </Container>
+      <Navbar/>
       {ismodalOpen && (
         <VideoListModal>
           <ModalHeader>
@@ -319,7 +362,7 @@ const Report = () => {
              <BoxName>날짜</BoxName>
               <DateTable>
                 <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
-                <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
+                <CalenderImg src={calendarImg} onClick={openCalender}></CalenderImg>
               </DateTable>
             </DateBox>
           </ModalHeader>
@@ -334,7 +377,7 @@ const Report = () => {
       )}
     {iscalenderOpen && (
         <CalenderModal>
-            <Calender onChange={handleDateClick}  />
+            <Calender calendarType="gregory" onChange={handleDateClick}  />
         </CalenderModal>
       )}
    </Background>

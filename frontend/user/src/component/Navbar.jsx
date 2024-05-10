@@ -1,13 +1,13 @@
-
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import icon1 from '../../public/icons/navicon1.png';
-import icon2 from '../../public/icons/navicon2.png';
+import icon2 from '../../public/icons/navicon6.png';
 import icon3 from '../../public/icons/navicon3.png';
 import icon4 from '../../public/icons/navicon4.png';
-import profile from '../../public/icons/profile.png'
+import icon5 from '../../public/icons/navicon5.png'
 
 const Nav = styled.div`
   position : fixed;
@@ -15,7 +15,7 @@ const Nav = styled.div`
   bottom : 0;
   display: flex;
   width : 100%;
-  height : 5rem;
+  height : 10%;
   justify-content: space-around;
   background: #d7dbec;
 `
@@ -49,6 +49,7 @@ const Icon = styled.img`
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const {logout} = useAuth();
 
   const gotoMap = () => {
     navigate('/map');
@@ -68,10 +69,14 @@ function Navbar() {
 
   }
 
-  const gotoMyPage = () => {
-    navigate('/mypage')
+  const gotoLogout = () => {
+    logout();
+    console.log('로그아웃');
+    navigate('/');
+    
   }
-  
+
+
 
   return (
     <Nav>
@@ -91,9 +96,9 @@ function Navbar() {
         <Icon src={icon4}></Icon>
         <Text>블랙박스</Text>
       </Content>
-      <Content onClick={gotoMyPage} active={location.pathname === "/mypage"}>
-        <Icon src={profile}></Icon>
-        <Text>마이페이지</Text>
+      <Content>
+        <Icon onClick={gotoLogout} src={icon5}></Icon>
+        <Text>로그아웃</Text>
       </Content>
   
     
