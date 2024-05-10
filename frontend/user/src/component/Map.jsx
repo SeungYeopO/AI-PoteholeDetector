@@ -231,7 +231,7 @@ function Map() {
         const touchEndTime = Date.now(); // 터치가 끝날 때의 시간
         const touchDuration = touchEndTime - touchStartTime; // 터치 지속 시간 계산
 
-        if (touchDuration < 200) {
+        if (touchDuration < 100) {
           // 지속 시간이 200밀리초 이내면 짧은 터치로 간주
           const latLng = evt.latLng;
           const lat = latLng.lat();
