@@ -46,7 +46,7 @@ public class AccidentReportService {
                 String context = data.getReportContent();
                 String name = data.getReportName();
                 Date date = data.getReportDate();
-                String state = data.getState();
+                String state = "미확인";
                 String rejectionReason = data.getRejectionReason();
 
                 User user = userRepository.findById(userPk).orElse(null);
