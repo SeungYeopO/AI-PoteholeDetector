@@ -2,10 +2,13 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate} from 'react-router-dom';
+import backImg from '../assets/background/loginBackImg3.jpg';
+import Logo from '../assets/background/Loginlogo1.png'
+import logo from '../assets/background/logoImg.png'
 
 
 const Background = styled.div`
-   background-color : #aec1f5;
+  background-image : url(${backImg});
    width : 100vw;
    height : 100vh;
    top: 0;
@@ -19,11 +22,32 @@ const Background = styled.div`
    align-items: center;
    justify-content: center;
 `
+const Container = styled.div`
+  display : flex;
+  width : 82%;
+  height : 60%;
+  /* background-color : yellow; */
+  align-items : center;
+  justify-content : space-around;
+`
+const LogoImgBox = styled.div`
+  width : 45%;
+  height : 100%;
+  /* background-color : pink; */
+  display : flex;
+  align-items : center;
+  justify-content : center;
+  margin-right : 3rem;
+`
+const LogoImg = styled.img`
+    width : 778px;
+    height : 269px;
+`
+
 const LoginDiv = styled.div`
-  width : 28.4%;
-  height : 58%;
-  background-color : #DCDCDC;
-  opacity : 50%;
+  margin-top : 1rem;
+  width : 40%;
+  height : 100%;
   border-radius : 2rem;
   display : flex;
   flex-direction : column;
@@ -49,7 +73,7 @@ const LoginInput = styled.input`
   margin-bottom : 3rem;
   width : 90%;
   height : 23%;
-  background-color : #DCDCDC;
+  background-color : #ffffff;
   border-bottom : 0.3rem #A6A2A2 solid;
   border-top: none;
   border-left: none;
@@ -62,6 +86,7 @@ const LoginInput = styled.input`
     font-family : 'BlackHanSans';
     font-size: 1.7rem;
     font-weight: 300;
+
   }
 
 `
@@ -71,14 +96,13 @@ const SaveBtn = styled.div`
   border-radius : 10rem;
   width : 30%;
   height : 9%;
-  background-color : red;
+  background-color : #f3648c;
   margin-top : 3rem;
   color : white;
   display : flex;
   justify-content : center;
   align-items : center;
   font-size : 1.8rem;
-
 `
 
 const LoginPage = () => {
@@ -98,22 +122,46 @@ const LoginPage = () => {
     setPassword(pw);
   }
   
-  const gotoLogin = () => {
-    //백에 post 요청
-    navigate('./mode')
+  const gotoLogin = async () => {
+    const userData = {
+      loginId : userId,
+      password : password,
+    };
+    try{
+      const response = await fetch('/api/managers/login',{
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if(response.ok){
+        const responseData = await response.json();
+        console.log('로그인 성공', responseData);
+        navigate('/manager/mode')
+      }else{
+        console.log('로그인 실패')
+      }
+    }catch(error){
+      console.error('에러발생', error);
+    }
+ 
   }
 
 
   return (
     <Background>
+      <Container>
+        <LogoImgBox><LogoImg src={logo}></LogoImg></LogoImgBox>
       <LoginDiv>
-        <LoginText>로그인</LoginText>
-        <LoginArea>
-          <LoginInput onChange={handleIdChnage} placeholder="관리자 아이디를 입력하세요"></LoginInput>
-          <LoginInput onChange={handlePWChange} placeholder="관리자 암호를 입력하세요"></LoginInput>
-        </LoginArea>
-        <SaveBtn onClick={gotoLogin}>완료</SaveBtn>
-      </LoginDiv>
+          <LoginText>관리자 로그인</LoginText>
+          <LoginArea>
+            <LoginInput onChange={handleIdChnage} placeholder="관리자 아이디를 입력하세요"></LoginInput>
+            <LoginInput type="password" onChange={handlePWChange} placeholder="관리자 암호를 입력하세요"></LoginInput>
+          </LoginArea>
+          <SaveBtn onClick={gotoLogin}>로그인</SaveBtn>
+        </LoginDiv>
+      </Container>
     </Background>
   );
 };

@@ -5,30 +5,37 @@ import closeBtnImg from '../assets/modal/closeBtn.png'
 import { useNavigate } from "react-router-dom";
 import Calender from 'react-calendar';
 import calendarImg from '../assets/modal/calenderImg.png';
-
-
 import '../../node_modules/react-calendar/dist/Calendar.css';
 
+
 const Background = styled.div`
+
   display : flex;
   flex-direction : row;
+  position : fixed;
+  left : 0;
+  top : 0;
+  overflow : hidden;
 `
+
 const Content = styled.div`
-  margin-left : 5rem;
+  /* margin-left : 5rem; */
   /* background-color : #ebeae2; */
   width : 100vw;
   height : 100vh;
 `
 const TimeArea = styled.div`
   /* background-color : darkgray; */
+  margin-left : 3rem;
   width : 100%;
   height : 10%;
   font-size : 1.1rem;
   display : flex;
   align-items : center;  
 `
-const ListArea = styled.div`
-  width : 100%;
+const ListArea = styled.div` 
+  margin-left : 2rem;
+  width : 90%;
   height : 83%;
   display : flex;
   justify-content : center;
@@ -388,15 +395,15 @@ const CompensationReportPage = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          '/data/articledata.json'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+          '/api/accident-report/no-check'  
         );
         if (!response.ok) {
           throw new Error('일단 try 구문은 돌았음');
         }
         const jsonData = await response.json();
-        console.log('데이터', jsonData);
+        console.log('데이터', jsonData.noCheckState);
         setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
-        setData(jsonData);    
+        setData(jsonData.noCheckState);    
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -468,9 +475,9 @@ const CompensationReportPage = () => {
               {currentData && currentData.map((item, index) => (
                 <Lists key={index} onClick={()=> handleListClick(item)}>
                   <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
-                  <Info width="48%">{item.title}</Info>
-                  <Info width="20%">{item.writer}</Info>
-                  <Info width="20%">{item.date}</Info>
+                  <Info width="48%">{item.reportName}</Info>
+                  <Info width="20%">{item.report}</Info>
+                  <Info width="20%">{item.reportDate.slice(0,10)}</Info>
                 </Lists>
               ))}
           
@@ -509,9 +516,9 @@ const CompensationReportPage = () => {
           </ModalHeader>
           <ModalContent height="89%" marginTop="0rem">
             <ArticleArea>
-              <ArticleList>{selectedList.title}</ArticleList>
+              <ArticleList>{selectedList.reportName}</ArticleList>
               <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.writer}</ArticleList>
-              <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.content}</ArticleList>
+              <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.reportContent}</ArticleList>
             </ArticleArea>
             <PlusFileArea>
               <SubFile>[첨부파일]</SubFile>
