@@ -44,8 +44,8 @@ public class AccidentReportController {
 
     // 사고 신고 등록
     @PostMapping
-    public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("potholePk") Long potholePk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("rejectionReason") String rejectionReason,@RequestParam("file") List<MultipartFile> image)throws IOException {
-        AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk, potholePk,videoPk,reportName,reportContent,rejectionReason);
+    public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("potholePk") Long potholePk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("file") List<MultipartFile> image)throws IOException {
+        AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk, potholePk,videoPk,reportName,reportContent);
         boolean success = result != null;
 
         if(success){
