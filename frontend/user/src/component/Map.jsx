@@ -6,6 +6,7 @@ import { useAuth } from "./AuthContext";
 import { Navigate, useLocation } from "react-router-dom";
 import LocationModal from "./LocationModal.jsx";
 import axios from "axios";
+import Navbar from "./Navbar.jsx";
 
 let resultMarkerArr = [];
 let resultdrawArr = [];
@@ -625,7 +626,7 @@ function Map() {
         top: "0",
       }}
     >
-      <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
+      <div id="TMapApp" style={{ width: "100%", height: "90%" }} />
       <div>
         {locationName && (
           <LocationModal
@@ -638,26 +639,30 @@ function Map() {
           />
         )}
       </div>
-      <button
+      <div
         onClick={centerMapOnUser}
         style={{
-          position: "absolute",
-          bottom: "10px",
-          left: "10px",
+          position: "fixed",
+          width : "3rem",
+          height : "3rem",
+          left: "1rem",
           zIndex: 1000,
+          bottom : '6rem',
+          marginBottom : '0.5rem',
+          // backgroundColor : 'red',
+          display : 'flex',
+          justifyContent : 'center',
+          alignItems : 'center'
         }}
       >
         <img
           src="/img/center.png"
           style={{
-            position: "fixed",
-            top: "82%",
-            left: "1o%",
             width: "60px",
             height: "60px",
           }}
         />
-      </button>
+      </div>
       <div
         style={{
           position: "absolute",
@@ -781,6 +786,7 @@ function Map() {
           </div>
         </div>
       )}
+      <Navbar/>
     </div>
   );
 }
