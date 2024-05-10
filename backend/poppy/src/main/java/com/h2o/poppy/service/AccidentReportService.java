@@ -13,11 +13,11 @@ import com.h2o.poppy.repository.BlackboxVideoMetadataRepository;
 import com.h2o.poppy.model.accidentreport.AccidentReportDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 
 @Service
 public class AccidentReportService {
@@ -36,38 +36,27 @@ public class AccidentReportService {
     }
 
 
-    public AccidentReportDto saveData(AccidentReportDto data) {
-        try{
-            long reportPk = data.getReportPk();
-            return null;
-        }catch (Exception e){
-            try {
-                long userPk = data.getUserPk();
-                long potholePk = data.getPotholePk();
-                long blackboxVideoMetadataPk = data.getVideoPk();
-                String context = data.getReportContent();
-                String name = data.getReportName();
-                Date date = data.getReportDate();
-                String state = "미확인";
-                String rejectionReason = data.getRejectionReason();
+    public AccidentReportJoinMetaDataDto saveData(Long userPk, Long potholePk, Long videoPk, String reportName, String reportContent, String rejectionReason) {
+        try {
+            Date date = new Date();
+            String state = "미확인";
 
-                User user = userRepository.findById(userPk).orElse(null);
-                Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
-                BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(blackboxVideoMetadataPk).orElse(null);
-                System.out.println(blackboxVideoMetadata);
-                if (user != null && pothole != null && blackboxVideoMetadata != null) {
-                    AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, context, name, date,state,rejectionReason);
-                    accidentReportRepository.save(accidentReport);
-                    return new AccidentReportDto(accidentReport.getReportPk(), user.getUserPk(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(),context,name,date,state,rejectionReason);
-                } else {
-                    // handle case where user, pothole, or blackboxVideoMetadata is not found
-                    return null;
-                }
-            } catch (Exception e1) {
-                // handle any exception that occurs during data processing
-                //e.printStackTrace();
+            User user = userRepository.findById(userPk).orElse(null);
+            Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
+            BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(videoPk).orElse(null);
+
+            if (user != null && pothole != null && blackboxVideoMetadata != null) {
+                AccidentReport accidentReport = new AccidentReport(user, pothole, blackboxVideoMetadata, reportContent, reportName, date,state,rejectionReason);
+                accidentReportRepository.save(accidentReport);
+                return new AccidentReportJoinMetaDataDto(accidentReport.getReportPk(), user.getUserName(),pothole.getPotholePk(), blackboxVideoMetadata.getVideoPk(), blackboxVideoMetadata.getSerialPk().getSerialNumber(), blackboxVideoMetadata.getLatitude(),blackboxVideoMetadata.getLongitude(), reportName, reportContent,date,state,rejectionReason);
+            } else {
+                // handle case where user, pothole, or blackboxVideoMetadata is not found
                 return null;
             }
+        } catch (Exception e1) {
+            // handle any exception that occurs during data processing
+            //e.printStackTrace();
+            return null;
         }
     }
 
