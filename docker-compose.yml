@@ -31,14 +31,14 @@ services:
     build:
       context: ./frontend/user
     ports:
-      - "3000:80"
+      - "3000:3000"
   client_manager:
     image: h2o_client_manager
     container_name: client-manager
     build:
       context: ./frontend/poppy
     ports:
-      - "3001:80"
+      - "3001:3001"
 
 volumes:
   mariadb-data:
