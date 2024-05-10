@@ -11,6 +11,7 @@ import gpsd
 import time
 import requests
 
+# IMU Sensor
 import smbus
 import numpy as np
 from imusensor.MPU9250 import MPU9250
@@ -32,39 +33,48 @@ sensorfusion.pitch = imu.pitch
 sensorfusion.yaw = imu.yaw
 
 count = 0
+
 rollo = 0
 rolle = 0
 pitcho = 0
 pitche = 0
 yawo = 0
 yawe = 0
-
+crush = 0
 currTime = time.time()
-def sensor(
-    imu.readSensor()
-    imu.computeOrientation()
-    newTime = time.time()
-    dt = newTime - currTime
-    currTime = newTime
-    sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2],\
-												imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
-    print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
-    
-    if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
-        print("crush")
+# IMU Sensor
 
-    if count/2 == 0:
-        rolle = sensorfusion.roll
-        pitche = sensorfusion.pitch
-        yawe = sensorfusion.yaw
-    else:
-        rollo = sensorfusion.roll
-        pitcho = sensorfusion.pitch
-        yawo = sensorfusion.yaw
+# Send to server
+gpsd.connect()
+url = 'https://k10c106.p.ssafy.io/api/potholes'
+# Send to server
+
+# def sensor():
+#     imu.readSensor()
+#     imu.computeOrientation()
+#     newTime = time.time()
+#     dt = newTime - currTime
+#     currTime = newTime
+#     sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2],\
+# 												imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
+#     print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
+    
+#     if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
+#         print("crush")
+#         global crush
+#         crush = 1
+
+#     if count/2 == 0:
+#         rolle = sensorfusion.roll
+#         pitche = sensorfusion.pitch
+#         yawe = sensorfusion.yaw
+#     else:
+#         rollo = sensorfusion.roll
+#         pitcho = sensorfusion.pitch
+#         yawo = sensorfusion.yaw
 	
-    count += 1
-    time.sleep(0.1)
-)
+#     count += 1
+#     time.sleep(0.1)
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -72,7 +82,6 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-gpsd.connect()
 
 from ultralytics.utils.plotting import Annotator, colors, save_one_box
 
@@ -95,10 +104,6 @@ from utils.general import (
     xyxy2xywh,
 )
 from utils.torch_utils import select_device, smart_inference_mode
-
-latitude = 35.208829
-longitude = 126.846152
-fileName = str(latitude)+'_'+str(longitude)+'.jpg'
 
 @smart_inference_mode()
 def run(
@@ -211,6 +216,28 @@ def run(
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
+            # IMU Sensor detect
+            imu.readSensor()
+            imu.computeOrientation()
+            newTime = time.time()
+            dt = newTime - currTime
+            currTime = newTime
+            sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2], imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
+            print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
+            if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
+                print("crush")
+
+            if count/2 == 0:
+                rolle = sensorfusion.roll
+                pitche = sensorfusion.pitch
+                yawe = sensorfusion.yaw
+            else:
+                rollo = sensorfusion.roll
+                pitcho = sensorfusion.pitch
+                yawo = sensorfusion.yaw
+            
+            count += 1
+    
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, frame = path[i], im0s[i].copy(), dataset.count
@@ -222,7 +249,15 @@ def run(
             save_hole = False
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
             save_path = str(save_dir / f'hole_{timestamp}.jpg')  # im.jpg
-            #im0 = annotator.result()
+            
+            # GPS info
+            packet = gpsd.get_current()
+            # Get the latitude and longitude
+            latitude = packet.lat
+            longitude = packet.lon
+
+            fileName = './result/'+ str(latitude)+'_'+str(longitude)+'.jpg'
+
 			#txt_path = str(save_dir / "labels" / p.stem) + ("" if dataset.mode == "image" else f"_{frame}")  # im.txt
             s += "%gx%g " % im.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
@@ -274,8 +309,6 @@ def run(
 
             # Save results (image with detections)
             if save_hole:
-                
-
                 if dataset.mode == "image":
                     cv2.imwrite(save_path, im0)
                 else:  # 'video' or 'stream'
@@ -289,10 +322,22 @@ def run(
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         else:  # stream
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
-                        save_path = str(Path(save_path).with_suffix(".mp4"))  # force *.mp4 suffix on results videos
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
-                    vid_writer[i].write(im0)
+                        #save_path = str(Path(save_path).with_suffix(".mp4"))  # force *.mp4 suffix on results videos
+                        #vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+                    #vid_writer[i].write(im0)
                     #cv2.imwrite(save_path, im0)
+                    
+                    cv2.imwrite(fileName, im0)
+                    with open(fileName, 'rb') as img:
+                        files = {'file': (fileName, img)}  
+                        # 'file'은 Spring의 MultipartFile 파라미터 이름과 일치해야 함
+                        data = {'latitude': latitude, 'longitude': longitude}
+                        try:
+                            response = requests.post(url, files=files, data=data)
+                            print("success")
+                        except requests.exceptions.RequestException as e:
+                            print(f'오류 발생: {e}')
+
 
         # Print time (inference-only)
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
