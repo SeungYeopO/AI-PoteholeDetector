@@ -44,8 +44,8 @@ public class AccidentReportController {
 
     // 사고 신고 등록
     @PostMapping
-    public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("potholePk") Long potholePk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("file") List<MultipartFile> image)throws IOException {
-        AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk, potholePk,videoPk,reportName,reportContent);
+    public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("file") List<MultipartFile> image)throws IOException {
+        AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk,videoPk,reportName,reportContent);
         boolean success = result != null;
 
         if(success){
@@ -111,9 +111,9 @@ public class AccidentReportController {
         if(success){
             String folderPath = result.getSerialNumber()+"/"+Long.toString(result.getReportPk());
             imageFileNameList = s3Service.listObjectsInFolder(folderPath);
+            if(!imageFileNameList.isEmpty()) imageFileNameList.remove(0);
         }
 
-        imageFileNameList.remove(0);
         // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
