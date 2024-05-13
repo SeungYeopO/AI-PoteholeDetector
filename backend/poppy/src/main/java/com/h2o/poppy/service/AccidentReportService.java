@@ -36,12 +36,13 @@ public class AccidentReportService {
     }
 
 
-    public AccidentReportJoinMetaDataDto saveData(Long userPk, Long potholePk, Long videoPk, String reportName, String reportContent) {
+    public AccidentReportJoinMetaDataDto saveData(Long userPk, Long videoPk, String reportName, String reportContent) {
         try {
             Date date = new Date();
             String state = "미확인";
             String rejectionReason = null;
             User user = userRepository.findById(userPk).orElse(null);
+            Long potholePk = potholeRepository.findPothlesbyVideoPk(videoPk).get(0).getPotholePk();
             Pothole pothole = potholeRepository.findById(potholePk).orElse(null);
             BlackboxVideoMetadata blackboxVideoMetadata = blackboxVideoMetadataRepository.findById(videoPk).orElse(null);
 
@@ -59,7 +60,6 @@ public class AccidentReportService {
             return null;
         }
     }
-
 
     // 유저 번호로 get
     public List<AccidentReportJoinMetaDataDto> getAccident(Long userPk) {
