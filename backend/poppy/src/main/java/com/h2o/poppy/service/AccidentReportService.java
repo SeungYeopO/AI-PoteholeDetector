@@ -130,9 +130,9 @@ public class AccidentReportService {
 
     // 상태 변경
     public String changeState(AccidentReportDto data){
-        long nowAccidentReportPk = data.getReportPk();
-        String changeState = data.getState();
         try{
+            long nowAccidentReportPk = data.getReportPk();
+            String changeState = data.getState();
             if(changeState.equals("반려")){
                 String rejectReason = data.getRejectionReason();
                 accidentReportRepository.updateState(nowAccidentReportPk,changeState,rejectReason);
@@ -142,7 +142,6 @@ public class AccidentReportService {
             }
             return changeState;
         }catch (Exception e){
-            e.printStackTrace();
             return null;
         }
     }

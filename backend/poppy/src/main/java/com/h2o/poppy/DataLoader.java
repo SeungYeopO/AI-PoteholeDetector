@@ -103,6 +103,7 @@ public class DataLoader implements CommandLineRunner {
                     new BlackboxVideoMetadata(serialList2, now, 37.880579, 127.729987),
                     new BlackboxVideoMetadata(serialList1, now, 36.098999, 127.490736),
                     new BlackboxVideoMetadata(serialList2, now, 36.099268, 127.483175),
+                    new BlackboxVideoMetadata(serialList2, now, 36.092268, 127.481175),
                     new BlackboxVideoMetadata(serialList2, now, 37.501475, 127.039515)));
         }
 
