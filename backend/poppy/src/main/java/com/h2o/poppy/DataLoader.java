@@ -37,7 +37,8 @@ public class DataLoader implements CommandLineRunner {
     private void loadDummyData() {
         userRepository.saveAll(List.of(
                 new User("ssafy", "1", "오승엽", "01012345678"),
-                new User("dlek567", "2", "유명렬", "01090123456")));
+                new User("dlek567", "2", "유명렬", "01090123456"),
+                new User("gggg", "2", "김정은", "01095253456")));
 
         managerRepository.saveAll(List.of(
                 new Manager("samsung", "1", "황유경", "01012345678"),
@@ -50,13 +51,14 @@ public class DataLoader implements CommandLineRunner {
 
         User user1 = userRepository.findById(1L).orElse(null);
         User user2 = userRepository.findById(2L).orElse(null);
+        User user3 = userRepository.findById(3L).orElse(null);
         SerialList serial1 = serialListRepository.findById(1L).orElse(null);
         SerialList serial2 = serialListRepository.findById(2L).orElse(null);
         SerialList serial3 = serialListRepository.findById(3L).orElse(null);
 
         usersSerialsRepository.saveAll(List.of(
                 new UsersSerials(user1, serial1),
-                new UsersSerials(user1, serial3),
+                new UsersSerials(user3, serial3),
                 new UsersSerials(user2, serial2)));
 
         Date now = new Date();
