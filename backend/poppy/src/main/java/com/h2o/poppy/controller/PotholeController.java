@@ -2,7 +2,6 @@ package com.h2o.poppy.controller;
 
 import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.service.AddressService;
-import com.h2o.poppy.service.DirectoryService;
 import com.h2o.poppy.service.PotholeService;
 import com.h2o.poppy.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,19 +94,19 @@ public class PotholeController {
 
     @PostMapping("/choose")
     public Object chooseGet(@RequestBody PotholeDto data) {
-        List<PotholeDto> filterdDate = potholeService.chooseGet(data);
-        boolean success = filterdDate != null; // PK가 0보다 크다면 성공으로 간주
+        List<PotholeDto> filteredDate = potholeService.chooseGet(data);
+        boolean success = filteredDate != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
             private final boolean success;
-            private final List<PotholeDto> filterdDate;
+            private final List<PotholeDto> filteredDate;
 
-            getResponse(boolean success, List<PotholeDto> filterdDate) {
+            getResponse(boolean success, List<PotholeDto> filteredDate) {
                 this.success = success;
-                this.filterdDate = filterdDate;
+                this.filteredDate = filteredDate;
             }
         }
-        return new getResponse(success, filterdDate);
+        return new getResponse(success, filteredDate);
     }
 
     @GetMapping("before-state")
