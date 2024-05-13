@@ -17,64 +17,12 @@ import numpy as np
 from imusensor.MPU9250 import MPU9250
 from imusensor.filters import kalman
 
-address = 0x68
-bus = smbus.SMBus(1)
-imu = MPU9250.MPU9250(bus, address)
-imu.begin()
-
-imu.loadCalibDataFromFile("/home/jetson/Desktop/calib.json")
-
-sensorfusion = kalman.Kalman()
-
-imu.readSensor()
-imu.computeOrientation()
-sensorfusion.roll = imu.roll
-sensorfusion.pitch = imu.pitch
-sensorfusion.yaw = imu.yaw
-
-count = 0
-
-rollo = 0
-rolle = 0
-pitcho = 0
-pitche = 0
-yawo = 0
-yawe = 0
-crush = 0
-currTime = time.time()
-# IMU Sensor
+from multiprocessing import Process, Manager
 
 # Send to server
 gpsd.connect()
 url = 'https://k10c106.p.ssafy.io/api/potholes'
 # Send to server
-
-# def sensor():
-#     imu.readSensor()
-#     imu.computeOrientation()
-#     newTime = time.time()
-#     dt = newTime - currTime
-#     currTime = newTime
-#     sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2],\
-# 												imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
-#     print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
-    
-#     if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
-#         print("crush")
-#         global crush
-#         crush = 1
-
-#     if count/2 == 0:
-#         rolle = sensorfusion.roll
-#         pitche = sensorfusion.pitch
-#         yawe = sensorfusion.yaw
-#     else:
-#         rollo = sensorfusion.roll
-#         pitcho = sensorfusion.pitch
-#         yawo = sensorfusion.yaw
-	
-#     count += 1
-#     time.sleep(0.1)
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -104,6 +52,74 @@ from utils.general import (
     xyxy2xywh,
 )
 from utils.torch_utils import select_device, smart_inference_mode
+
+#imu sensor 변수
+address = 0x68
+bus = smbus.SMBus(1)
+imu = MPU9250.MPU9250(bus, address)
+imu.begin()
+
+imu.loadCalibDataFromFile("/home/jetson/Desktop/calib.json")
+
+sensorfusion = kalman.Kalman()
+
+imu.readSensor()
+imu.computeOrientation()
+sensorfusion.roll = imu.roll
+sensorfusion.pitch = imu.pitch
+sensorfusion.yaw = imu.yaw
+
+def sensor_run():
+    # IMU Sensor detect
+    # global count
+    # global rollo
+    # global rolle
+    # global pitcho
+    # global pitche
+    # global yawo
+    # global yawe
+    # global crush
+    # global currTime
+    count = 0
+
+    rollo = 0
+    rolle = 0
+    pitcho = 0
+    pitche = 0
+    yawo = 0
+    yawe = 0
+    crush = 0
+    currTime = time.time()
+
+    while True:
+        imu.readSensor()
+        imu.computeOrientation()
+
+        newTime = time.time()
+        dt = newTime - currTime
+        currTime = newTime
+
+        sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2], imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
+
+        # print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
+
+        if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 or abs(pitche - pitcho) > 5 or abs(yawe - yawo) > 5:
+            print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
+            print("crush")
+
+        if count/2 == 0:
+            rolle = sensorfusion.roll
+            pitche = sensorfusion.pitch
+            yawe = sensorfusion.yaw
+        else:
+            rollo = sensorfusion.roll
+            pitcho = sensorfusion.pitch
+            yawo = sensorfusion.yaw
+        
+        count += 1
+        time.sleep(0.1)
+    # IMU Sensor detect
+
 
 @smart_inference_mode()
 def run(
@@ -216,28 +232,6 @@ def run(
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
-            # IMU Sensor detect
-            imu.readSensor()
-            imu.computeOrientation()
-            newTime = time.time()
-            dt = newTime - currTime
-            currTime = newTime
-            sensorfusion.computeAndUpdateRollPitchYaw(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.GyroVals[2], imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt)
-            print("Kalmanroll:{0} KalmanPitch:{1} KalmanYaw:{2} ".format(sensorfusion.roll, sensorfusion.pitch, sensorfusion.yaw))
-            if rolle != 0 and rollo != 0 and pitche !=0 and pitcho !=0 and yawe != 0 and yawo != 0 and abs(rolle - rollo) > 5 and abs(pitche - pitcho) < 5 and abs(yawe - yawo) < 5:
-                print("crush")
-
-            if count/2 == 0:
-                rolle = sensorfusion.roll
-                pitche = sensorfusion.pitch
-                yawe = sensorfusion.yaw
-            else:
-                rollo = sensorfusion.roll
-                pitcho = sensorfusion.pitch
-                yawo = sensorfusion.yaw
-            
-            count += 1
-    
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, frame = path[i], im0s[i].copy(), dataset.count
@@ -325,8 +319,8 @@ def run(
                         #save_path = str(Path(save_path).with_suffix(".mp4"))  # force *.mp4 suffix on results videos
                         #vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
                     #vid_writer[i].write(im0)
-                    #cv2.imwrite(save_path, im0)
                     
+                    #cv2.imwrite(save_path, im0)
                     cv2.imwrite(fileName, im0)
                     with open(fileName, 'rb') as img:
                         files = {'file': (fileName, img)}  
@@ -337,7 +331,6 @@ def run(
                             print("success")
                         except requests.exceptions.RequestException as e:
                             print(f'오류 발생: {e}')
-
 
         # Print time (inference-only)
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
@@ -396,5 +389,20 @@ def main(opt):
 
 
 if __name__ == "__main__":
+    manager = Manager()
+    d = manager.dict()
+
     opt = parse_opt()
-    main(opt)
+    #main(opt)
+
+    processModel = Process(target=main, kwargs={'opt':opt})
+    processSensor = Process(target=sensor_run)
+
+    processModel.start()
+    processSensor.start()
+
+    print("All processes started")
+
+    processModel.join()
+    processSensor.join()    
+
