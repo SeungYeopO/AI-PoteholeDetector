@@ -49,8 +49,10 @@ public class BlackboxVideoMetadataController {
 
         String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
         boolean success = fileName != null;
+        System.out.println(success);
 
         if(success){
+            System.out.println(fileName);
             s3Service.createFolder(fileName);
             s3Service.uploadFile(fileName,video);
         }
