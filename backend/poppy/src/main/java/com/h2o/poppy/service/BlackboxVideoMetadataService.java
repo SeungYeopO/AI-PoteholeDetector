@@ -63,6 +63,7 @@ public class BlackboxVideoMetadataService {
             SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
             BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude);
             blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
+            System.out.println(blackboxVideoMetadata);
             return serialNumber;
         }catch (Exception e){
             e.printStackTrace();
