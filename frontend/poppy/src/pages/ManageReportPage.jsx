@@ -1,8 +1,10 @@
 import styled from "styled-components";
+import React from "react";
 import SideNav from "../components/SideNav";
 import { useState, useEffect } from "react";
 import closeBtnImg from '../assets/modal/closeBtn.png'
 import { useNavigate } from "react-router-dom";
+import spinner from '../assets/background/loading1.gif'
 
 const Background = styled.div`
 
@@ -127,6 +129,7 @@ const ModalHeader = styled.div`
 const CloseImg = styled.img`
   cursor: pointer;
   width : 2.9rem;
+  margin-top : 0.2rem;
   height : 2.9rem;
   margin-right: 1rem;
 `
@@ -235,6 +238,13 @@ const PageText = styled.div`
   align-items : center;
   
 `
+const Loading = styled.div`
+   width : 90%;
+  height : 87%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
   const ManageReportPage = () => {
   const navigate = useNavigate();
   const itemsPerPage = 8;
@@ -253,35 +263,37 @@ const PageText = styled.div`
   const currentDate = new Date();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/api/potholes/before-state',{
-            method : 'GET',
-            headers : {
-              "Content-Type" : "application/json",
+        setIsLoading(true); 
+        setTimeout(async () => {
+          const response = await fetch('/api/potholes/before-state', {
+            method: 'GET',
+            headers: {
+              "Content-Type": "application/json",
             }
-          } 
-        );
-        if (!response.ok) {
-          throw new Error('일단 try 구문은 돌았음');
-        }
-        const jsonData = await response.json();
-        console.log('포트홀정보',jsonData.state1Potholes);
-        setData(jsonData.state1Potholes);
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
+          });
+          if (!response.ok) {
+            throw new Error('일단 try 구문은 돌았음');
+          }
+          const jsonData = await response.json();
+          console.log('포트홀정보', jsonData.state1Potholes);
+          setData(jsonData.state1Potholes);
+          setTotalPages(Math.max(Math.ceil(jsonData.state1Potholes.length / itemsPerPage), 1));
+          setIsLoading(false); 
+        }, 500); 
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
-    fetchData();
-  }, []); 
   
-
+    fetchData();
+  }, []);
+  
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -330,21 +342,22 @@ const PageText = styled.div`
     const value = company[Math.floor(Math.random() * company.length)];
     console.log(value);
     setRandomCompany(value);
-    console.log(new Date(currentDate.getTime()))
+    console.log(new Date(currentDate.getTime()));
+ 
     
-    // 시작 예정일 설정
-    const startDate = new Date(currentDate.getTime());
-    const startDaysToAdd = Math.floor(Math.random() * 4) + 2; 
-    startDate.setDate(startDate.getDate() + startDaysToAdd);
-    setStartDate(formatDate(startDate));
-    console.log('시작예정일:', startDate);
+    // // 시작 예정일 설정
+    // const startDate = new Date(currentDate.getTime());
+    // const startDaysToAdd = Math.floor(Math.random() * 4) + 2; 
+    // startDate.setDate(startDate.getDate() + startDaysToAdd);
+    // setStartDate(formatDate(startDate));
+    // console.log('시작예정일:', startDate);
 
-    // 완료 예정일 설정
-    const endDate = new Date(startDate.getTime()); 
-    const endDaysToAdd = Math.floor(Math.random() * 4) + 7; 
-    endDate.setDate(endDate.getDate() + endDaysToAdd);
-    console.log('완료예정일:', formatDate(endDate));
-    setEndDate(formatDate(endDate));
+    // // 완료 예정일 설정
+    // const endDate = new Date(startDate.getTime()); 
+    // const endDaysToAdd = Math.floor(Math.random() * 4) + 7; 
+    // endDate.setDate(endDate.getDate() + endDaysToAdd);
+    // console.log('완료예정일:', formatDate(endDate));
+    // setEndDate(formatDate(endDate));
 
     const userData = {
       potholePk : selectedGrid.potholePk,
@@ -361,6 +374,7 @@ const PageText = styled.div`
       if (response.ok){
         const responseData = await response.json();
         console.log(responseData); 
+        window.location.reload();
       }else{
         console.log('데이터수정실패')
       }
@@ -368,48 +382,78 @@ const PageText = styled.div`
       console.error('에러발생', error);
     }
   };
- 
+
+  const gotoDelete = async () => {
+    try {
+      const response = await fetch(`/api/potholes/${selectedGrid.potholePk}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (response.ok) {
+        console.log('데이터 삭제 성공');
+        window.location.reload();
+      } else {
+        console.log('데이터 삭제 실패');
+      }
+    } catch (error) {
+      console.error('에러 발생:', error);
+    }
+  };
+
   return (
     <Background>
        <Container>
           <SideNav />
           <Content>
             <TimeArea>{currentDateTime.toLocaleDateString()} {currentTime.toLocaleTimeString()} 현재</TimeArea>
-            <GridArea>
-            {currentData && currentData.map((item, index) => (
-              <GridCard key={index} onClick={() => handleGridClick(item)}>
-                  <ContentBox>
-                    <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`}></PotholeImg>
-                    <ListBox>
-                      <List>신고시각</List>
-                      <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
-                      <List>신고위치</List>
-                      <List>{item.province} {item.city} {item.street}</List>
-                    </ListBox>
-                  </ContentBox>
-              </GridCard>
-            ))}  
-            </GridArea>
-            <Page>
-              <PageBtnArea>
-                  <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </PrevBtn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </PageBtn>
-                ))}
-                <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </NextBtn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-            </Page>
+            {isLoading ? (
+  <Loading>
+    <h1>잠시만 기다려 주세요...</h1>
+    <img src={spinner} alt="loading"></img>
+  </Loading>
+) : (
+  <React.Fragment>
+    <GridArea>
+      {currentData && currentData.map((item, index) => (
+        <GridCard key={index} onClick={() => handleGridClick(item)}>
+          <ContentBox>
+            <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`} alt="pothole"></PotholeImg>
+            <ListBox>
+              <List>신고시각</List>
+              <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
+              <List>신고위치</List>
+              <List>{item.province} {item.city} {item.street}</List>
+            </ListBox>
+          </ContentBox>
+        </GridCard>
+      ))}  
+    </GridArea>
+    <Page>
+      <PageBtnArea>
+        <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+          이전
+        </PrevBtn>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+            {index + 1}
+          </PageBtn>
+        ))}
+        <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+          다음
+        </NextBtn>
+      </PageBtnArea>
+      <PageNumArea>
+      </PageNumArea>
+      <PageText>
+        페이지: {currentPage} / {totalPages}
+      </PageText>
+    </Page>
+  </React.Fragment>
+)}
+
           </Content>
        </Container>
        {ismodalOpen && selectedGrid !== null && (
@@ -451,7 +495,7 @@ const PageText = styled.div`
                 {/*각 버튼 클릭시 백에 요청할거 정해지면 추가 */}
                 <Btn onClick={gotoProcess}>공사요청</Btn>
                 {/* 공사요청 시 랜덤으로 시작일, 예정일 보내주는걸로 api 요청 */}
-                <Btn>반려</Btn>
+                <Btn onClick={gotoDelete}>반려</Btn>
               </BtnArea>
             </BtnBox>
           </ModalContent>

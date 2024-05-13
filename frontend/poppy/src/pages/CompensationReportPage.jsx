@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import Calender from 'react-calendar';
 import calendarImg from '../assets/modal/calenderImg.png';
 import '../../node_modules/react-calendar/dist/Calendar.css';
+import spinner from '../assets/background/loading1.gif';
+import React from "react";
 
 
 const Background = styled.div`
@@ -339,6 +341,13 @@ const TitleInput = styled.input`
     font-weight: 300;
   }
 `
+const Loading = styled.div`
+  width : 95%;
+  height: 73%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
 const ContentInput = styled.textarea`
   width: 90%;
   height: 90%;
@@ -369,6 +378,7 @@ const CompensationReportPage = () => {
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [returnTitle, setReturnTitle] = useState('');
   const [returnContent, setReturnContent] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const formatDate = (date) => {
@@ -385,6 +395,7 @@ const CompensationReportPage = () => {
     } else {
       setIsModalOpen(false);
     }
+    
   };
   const handleDdateClick = (value) => {
     setSelectedDate(value);
@@ -394,16 +405,21 @@ const CompensationReportPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/api/accident-report/no-check'  
-        );
-        if (!response.ok) {
-          throw new Error('일단 try 구문은 돌았음');
-        }
-        const jsonData = await response.json();
-        console.log('데이터', jsonData.noCheckState);
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
-        setData(jsonData.noCheckState);    
+        setIsLoading(true);
+        setTimeout(async () => {
+          const response = await fetch(
+            '/api/accident-report/no-check'  
+          );
+          if (!response.ok) {
+            throw new Error('일단 try 구문은 돌았음');
+          }
+          const jsonData = await response.json();
+          console.log('데이터', jsonData.noCheckState);
+          setTotalPages(Math.max(Math.ceil(jsonData.noCheckState.length / itemsPerPage), 1));
+          setData(jsonData.noCheckState); 
+          setIsLoading(false);   
+        }, 500)
+    
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -451,6 +467,17 @@ const CompensationReportPage = () => {
     setReturnContent(event.target.value);
 
   }
+
+  const format2Date = (date) => {
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else{
+      return null;
+    }
+  }
   return (
     <Background>
         <SideNav />
@@ -464,7 +491,14 @@ const CompensationReportPage = () => {
               </DateTable>
             </DateBox>
         </TimeArea>
-        <ListArea>
+        {isLoading ? (
+            <Loading>
+            <h1>잠시만 기다려 주세요...</h1>
+            <img src={spinner} alt="loading" />
+          </Loading>
+        ) : (
+          <React.Fragment>
+              <ListArea>
           <SortedList>
                 <ListHeader>
                   <Info>순번</Info>
@@ -476,11 +510,10 @@ const CompensationReportPage = () => {
                 <Lists key={index} onClick={()=> handleListClick(item)}>
                   <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
                   <Info width="48%">{item.reportName}</Info>
-                  <Info width="20%">{item.report}</Info>
+                  <Info width="20%">{item.userName}</Info>
                   <Info width="20%">{item.reportDate.slice(0,10)}</Info>
                 </Lists>
               ))}
-          
               </SortedList>
         </ListArea>
             <Page>
@@ -503,6 +536,10 @@ const CompensationReportPage = () => {
             페이지: {currentPage} / {totalPages}
           </PageText>
             </Page>
+          </React.Fragment>
+
+        )}
+       
         </Content>
         {ismodalOpen && (
         <CalenderModal>

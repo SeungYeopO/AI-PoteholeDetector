@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import Calender from 'react-calendar';
 import '../../node_modules/react-calendar/dist/Calendar.css';
 import closeBtnImg from '../assets/modal/closeBtn.png';
+import reloadImg from '../assets/modal/reload.png'
+import spinner from '../assets/background/loading1.gif'
+import React from "react";
 
 const Background = styled.div`
   display : flex;
@@ -53,9 +56,10 @@ const LocationBox = styled.div`
 `
 const StateBox = styled.div`
   display : flex;
-  width : 15%;
+  justify-content : space-around;
+  width : 13%;
   height : 30%;
-  background-color : lightgrey;
+  /* background-color : lightgrey; */
 `
 const SearchBtn = styled.div`
   cursor: pointer;
@@ -64,8 +68,8 @@ const SearchBtn = styled.div`
   display : flex;
   justify-content : center;
   align-items : center;
-  width : 6%;
-  height : 30%;
+  width : 45%;
+  height : 100%;
   background-color : green;
 `
 const AreaDrop = styled.select`
@@ -349,6 +353,26 @@ const CloseImg = styled.img`
   height : 2.9rem;
   margin-right: 1rem;
 `
+const ReFilterBtn = styled.div`
+  width : 30%;
+  height : 100%;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
+const RefilterImg = styled.img`
+  width : 2.7rem;
+  height : 2.7rem;
+  /* background-color : red; */
+`
+const Loading = styled.div`
+  width : 95%;
+  height: 73%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
 
 const ManageDonePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -366,21 +390,27 @@ const ManageDonePage = () => {
   const currentData = data.slice(startIndex, endIndex);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedList, setSelectedList] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/dummydata/dummydata.json'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
-        );
-        if (!response.ok) {
-          throw new Error('일단 try 구문은 돌았음');
-        }
-        const jsonData = await response.json();
-        console.log('데이터', jsonData);
-        console.log(Math.ceil(jsonData.length / itemsPerPage))
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
-        setData(jsonData);    
+        setIsLoading(true);
+        setTimeout(async () => {
+          const response = await fetch(
+            '/api/potholes/after-state'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+          );
+          if (!response.ok) {
+            throw new Error('일단 try 구문은 돌았음');
+          }
+          const jsonData = await response.json();
+          console.log('데이터', jsonData.state1Potholes);
+          setData(jsonData.state1Potholes); 
+          console.log(Math.ceil(jsonData.length / itemsPerPage))
+          setTotalPages(Math.max(Math.ceil(jsonData.state1Potholes.length / itemsPerPage), 1));
+          setIsLoading(false);
+        }, 500)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -401,14 +431,14 @@ const ManageDonePage = () => {
         const jsonData = await response.json();
         console.log(jsonData);
         setAreas(jsonData);
-
       } catch(error) {
         console.log('에러발생', error);
       }
-    };
-    
+    };   
     fetchData();
   }, []);
+
+
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -468,6 +498,58 @@ const ManageDonePage = () => {
     setIsInfoModalOpen(false);
   }
 
+  const format2Date = (date) => {
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else{
+      return null;
+    }
+  }
+
+  const gotoRefilter = () => {
+    window.location.reload();
+}
+
+const gotoSearch = async () => {
+    
+  const userData = {
+    state : '공사완료',
+    province : selectedRegion,
+    city : selectedDistrict,
+    detectedAt : format2Date(selectedDate)
+  };
+  try {
+    setIsLoading(true);
+    setTimeout(async () =>  {
+      const response = await fetch('/api/potholes/choose', {
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if (response.ok){
+        const responseData = await response.json();
+        console.log('여기서 걸림');
+        console.log('조회된 데이터', responseData.filterdDate)
+        console.log(format2Date(selectedDate));
+        setData(responseData.filterdDate);
+        setIsLoading(false);
+
+      }else{
+        console.log('데이터조회실패')
+      }
+    }, 500)
+  }catch (error) {
+    console.error('에러발생', error);
+  }
+
+}
+
+
   return (
     <Background>
     <SideNav />
@@ -498,10 +580,20 @@ const ManageDonePage = () => {
                </AreaDrop>
               </DropArea>
             </LocationBox>
-            <SearchBtn>검색</SearchBtn>
+            <StateBox>
+             <SearchBtn onClick={gotoSearch} >검색</SearchBtn>
+             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg}></RefilterImg></ReFilterBtn> 
+            </StateBox>
           </SortedBox>
         </SortedArea>
-        <ResultArea>
+        {isLoading ? (
+          <Loading>
+            <h1>잠시만 기다려 주세요...</h1>
+            <img src={spinner} alt="" />
+          </Loading>
+        ):(
+          <React.Fragment>
+             <ResultArea>
             <SortedList>
               <ListHeader>
                 <Info>상태</Info>
@@ -509,15 +601,16 @@ const ManageDonePage = () => {
                 <Info width="20%">신고시각</Info>
                 <Info>담당자명</Info>
               </ListHeader>
-            {currentData && currentData.map((item, index) => (
-              <Lists key={index} onClick={()=> handleListClick(item)}>
-                <Info>공사완료</Info>
-                <Info width="48%">{item.reportLocation}</Info>
-                <Info width="20%">{item.reportTime}</Info>
-                <Info>김싸피</Info>
-              </Lists>
-            ))}
-        
+           {currentData &&  currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+              currentData.map((item, index) => ( 
+                <Lists key={index} onClick={()=> handleListClick(item)}>
+                  <Info>{item.state}</Info>
+                  <Info width="40%">{item.province} {item.city} {item.street}</Info>
+                  <Info width="28%">{item.detectedAt.slice(0,10)}  {item.detectedAt.slice(11,16)}</Info>
+                  <Info>김싸피</Info>
+                </Lists>
+              ))
+            ) }
             </SortedList>
         </ResultArea>
         <Page>
@@ -540,6 +633,10 @@ const ManageDonePage = () => {
             페이지: {currentPage} / {totalPages}
           </PageText>
         </Page>
+
+          </React.Fragment>
+        )}
+       
     </Content>
     {ismodalOpen && (
         <CalenderModal>
