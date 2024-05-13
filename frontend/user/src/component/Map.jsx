@@ -78,6 +78,12 @@ function Map() {
     onRouteRef.current = onRoute; // onRoute 값이 변경될 때마다 ref 업데이트
   }, [onRoute]);
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   // 현재 위치와 주어진 포인트 간의 거리 계산 함수 (단위: km)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // 지구 반지름(km)
@@ -149,17 +155,10 @@ function Map() {
   };
 
   useEffect(() => {
-    /*
-    지금까지 한것 : 포트홀에 대한 index를 받고, 10개 전의 index를 받아서 가지고 있을 수는 있음
-    그래서 이제는 현재 내 gps 정보를 받아와서 potholeAlert의 0번부터 찾아가면서 두 점의 거리가 가까워지면 알람을 띄우고 potholeAlert의 0번을 없애는 과정이 필요해 
-    
-    
-    */
     console.log(potholeAlerts);
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        console.log(latitude, longitude);
         setUserPosition({ lat: latitude, lon: longitude });
         checkPotholeProximity(latitude, longitude);
       },
@@ -171,7 +170,6 @@ function Map() {
   }, [potholeAlerts]);
 
   const checkPotholeProximity = (latitude, longitude) => {
-    console.log(latitude, longitude);
     if (potholeAlerts.length > 0) {
       const firstAlert = potholeAlerts[0];
       const distance = calculateDistance(
@@ -246,6 +244,8 @@ function Map() {
         height: "100%",
         zoom: mapZoom,
       });
+
+      mapRef.current.setOptions({ zoomControl: false });
       lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
       let touchStartTime = 0; // 터치 시작 시간을 기록할 변수
 
@@ -829,6 +829,7 @@ function Map() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             style={{
               height: "40px",
               fontSize: "18px",
