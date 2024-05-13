@@ -19,23 +19,23 @@ import java.util.List;
 public interface AccidentReportRepository extends JpaRepository<AccidentReport, Long> {
 
     //유저기반 get list
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.userPk.userPk = :userId")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.userPk.userPk = :userId")
     List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByUserId(@Param("userId") Long userId);
 
     // 1개 report번호로 조회
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.reportPk = :reportPk")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.reportPk = :reportPk")
     AccidentReportJoinMetaDataDto getAccidentReportInfoByReportPk(@Param("reportPk") Long reportPk);
 
     // 미확인 get
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.state = :nowState")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.state = :nowState")
     List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByNoCheck(@Param("nowState") String nowState);
 
     // 반려,보상성공 get
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.state != :nowState")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.state != :nowState")
     List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByCheck(@Param("nowState") String nowState);
 
     // 날짜 필터링 조회
-    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportName, ar.reportContent,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE YEAR(ar.reportDate) = :year AND MONTH(ar.reportDate) = :month AND DAY(ar.reportDate) = :day")
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE YEAR(ar.reportDate) = :year AND MONTH(ar.reportDate) = :month AND DAY(ar.reportDate) = :day")
     List<AccidentReportDto> getAccidentReportInfoByDate(@Param("year") int year, @Param("month") int month, @Param("day") int day);
 
     //상태 변경
