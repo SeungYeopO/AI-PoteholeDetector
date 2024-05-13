@@ -37,7 +37,8 @@ public class DataLoader implements CommandLineRunner {
     private void loadDummyData() {
         userRepository.saveAll(List.of(
                 new User("ssafy", "1", "오승엽", "01012345678"),
-                new User("dlek567", "2", "유명렬", "01090123456")));
+                new User("dlek567", "2", "유명렬", "01090123456"),
+                new User("gggg", "2", "김정은", "01095253456")));
 
         managerRepository.saveAll(List.of(
                 new Manager("samsung", "1", "황유경", "01012345678"),
@@ -45,15 +46,19 @@ public class DataLoader implements CommandLineRunner {
 
         serialListRepository.saveAll(List.of(
                 new SerialList("BB12345678"),
+                new SerialList("BB47125156"),
                 new SerialList("BB98765432")));
 
         User user1 = userRepository.findById(1L).orElse(null);
         User user2 = userRepository.findById(2L).orElse(null);
+        User user3 = userRepository.findById(3L).orElse(null);
         SerialList serial1 = serialListRepository.findById(1L).orElse(null);
         SerialList serial2 = serialListRepository.findById(2L).orElse(null);
+        SerialList serial3 = serialListRepository.findById(3L).orElse(null);
 
         usersSerialsRepository.saveAll(List.of(
                 new UsersSerials(user1, serial1),
+                new UsersSerials(user3, serial3),
                 new UsersSerials(user2, serial2)));
 
         Date now = new Date();
@@ -83,9 +88,10 @@ public class DataLoader implements CommandLineRunner {
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
+        SerialList serialList3 = serialListRepository.findById(3L).orElse(null);
 
         // Create instances of BlackboxVideoMetadata and save them
-        if (serialList1 != null && serialList2 != null) {
+        if (serialList1 != null && serialList2 != null && serialList3 != null) {
             blackboxVideoMetadataRepository.saveAll(List.of(
                     new BlackboxVideoMetadata(serialList1, now, 35.202370, 126.810139),
                     new BlackboxVideoMetadata(serialList1, now, 33.555664, 126.796320),
@@ -98,12 +104,12 @@ public class DataLoader implements CommandLineRunner {
                     new BlackboxVideoMetadata(serialList2, now, 37.456733, 126.705120),
                     new BlackboxVideoMetadata(serialList2, now, 36.327580, 126.427247),
                     new BlackboxVideoMetadata(serialList2, now, 35.216768, 128.142013),
-                    new BlackboxVideoMetadata(serialList2, now, 37.130705,128.537282),
-                    new BlackboxVideoMetadata(serialList2, now, 36.642488, 127.489675),
+                    new BlackboxVideoMetadata(serialList3, now, 37.130705,128.537282),
+                    new BlackboxVideoMetadata(serialList3, now, 36.642488, 127.489675),
                     new BlackboxVideoMetadata(serialList2, now, 37.880579, 127.729987),
                     new BlackboxVideoMetadata(serialList1, now, 36.098999, 127.490736),
                     new BlackboxVideoMetadata(serialList2, now, 36.099268, 127.483175),
-                    new BlackboxVideoMetadata(serialList2, now, 36.092268, 127.481175),
+                    new BlackboxVideoMetadata(serialList2, now, 36.092268, 127.483175),
                     new BlackboxVideoMetadata(serialList2, now, 37.501475, 127.039515)));
         }
 
