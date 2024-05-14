@@ -171,12 +171,14 @@ public class AccidentReportController {
     @Setter
     static class DateRequest {
         private Date reportDate;
+        private String state;
     }
 
     @PostMapping("/date")
     public Object dateGet(@RequestBody DateRequest request) {
         Date targetDate = request.getReportDate();
-        List<AccidentReportJoinMetaDataDto> dateList = accidentReportService.getDate(targetDate);
+        String state = request.getState();
+        List<AccidentReportJoinMetaDataDto> dateList = accidentReportService.getDate(targetDate, state);
         boolean success = dateList != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
