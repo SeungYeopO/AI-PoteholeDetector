@@ -128,8 +128,6 @@ public class DataLoader implements CommandLineRunner {
         Pothole pothole13 = potholeRepository.findById(13L).orElse(null);
         Pothole pothole14 = potholeRepository.findById(14L).orElse(null);
         Pothole pothole15 = potholeRepository.findById(15L).orElse(null);
-        Pothole pothole16 = potholeRepository.findById(16L).orElse(null);
-        Pothole pothole17 = potholeRepository.findById(17L).orElse(null);
 
         BlackboxVideoMetadata BlackboxVideoMetadata1 = blackboxVideoMetadataRepository.findById(1L).orElse(null);
         BlackboxVideoMetadata BlackboxVideoMetadata2 = blackboxVideoMetadataRepository.findById(2L).orElse(null);
@@ -155,17 +153,17 @@ public class DataLoader implements CommandLineRunner {
                 new AccidentReport(user1, pothole3, BlackboxVideoMetadata3, "3번제목","3번내용", date1, "미확인",null),
                 new AccidentReport(user1, pothole4, BlackboxVideoMetadata4, "4번제목","4번내용", date1, "미확인",null),
                 new AccidentReport(user1, pothole5, BlackboxVideoMetadata5, "5번제목","5번내용", date1, "미확인",null),
-                new AccidentReport(user1, pothole6, BlackboxVideoMetadata6, "6번제목","6번내용", date1, "반려","그냥"),
+                new AccidentReport(user1, pothole6, BlackboxVideoMetadata6, "6번제목","6번내용", date1, "미확인",null),
                 new AccidentReport(user1, pothole7, BlackboxVideoMetadata7, "7번제목","7번내용", date2, "반려","그냥"),
                 new AccidentReport(user2, pothole8, BlackboxVideoMetadata8, "8번제목","8번내용", date2, "반려","그냥"),
                 new AccidentReport(user2, pothole9, BlackboxVideoMetadata9, "9번제목","9번내용", date2, "반려","그냥"),
                 new AccidentReport(user2, pothole10, BlackboxVideoMetadata10, "10번제목","10번내용", date2, "반려","그냥"),
-                new AccidentReport(user2, pothole11, BlackboxVideoMetadata11, "11번제목","11번내용", date2, "보상완료",null),
+                new AccidentReport(user2, pothole11, BlackboxVideoMetadata11, "11번제목","11번내용", date2, "미확인",null),
                 new AccidentReport(user2, pothole12, BlackboxVideoMetadata12, "12번제목","12번내용", date2, "보상완료",null),
                 new AccidentReport(user2, pothole13, BlackboxVideoMetadata13, "13번제목","13번내용", date2, "보상완료",null),
                 new AccidentReport(user2, pothole14, BlackboxVideoMetadata14, "14번제목","14번내용", date2, "보상완료",null),
                 new AccidentReport(user2, pothole14, BlackboxVideoMetadata15, "15번제목","15번내용", date2, "보상완료",null),
                 new AccidentReport(user2, pothole14, BlackboxVideoMetadata16, "16번제목","16번내용", date2, "미확인",null),
-                new AccidentReport(user2, pothole15, BlackboxVideoMetadata17, "17번제목","17번내용",date2,"반려",null)));
+                new AccidentReport(user2, pothole15, BlackboxVideoMetadata17, "17번제목","17번내용",date2,"반려","그냥")));
     }
 }
