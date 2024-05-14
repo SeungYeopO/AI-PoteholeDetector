@@ -54,7 +54,7 @@ public class BlackboxVideoMetadataController {
         if(success){
             System.out.println(fileName);
             s3Service.createFolder(fileName);
-            s3Service.uploadFile(fileName,video);
+            s3Service.videoUploadFile(fileName,video);
         }
     }
 
