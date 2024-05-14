@@ -111,7 +111,7 @@ public class AccidentReportService {
     }
 
     // 날짜 필터링 조회
-    public List<AccidentReportDto> getDate(Date targetDate){
+    public List<AccidentReportJoinMetaDataDto> getDate(Date targetDate){
         try{
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(targetDate); // Date 객체를 Calendar로 설정
@@ -119,9 +119,13 @@ public class AccidentReportService {
             int year = calendar.get(Calendar.YEAR); // 년도 추출
             int month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
             int day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
-            List<AccidentReportDto> accidentReportDto = accidentReportRepository.getAccidentReportInfoByDate(year,month,day);
+            System.out.println(year);
+            System.out.println(month);
+            System.out.println(day);
+            List<AccidentReportJoinMetaDataDto> accidentReportDto = accidentReportRepository.getAccidentReportInfoByDate(year,month,day);
             return accidentReportDto;
         }catch (Exception e){
+            e.printStackTrace();
             return null;
         }
     }

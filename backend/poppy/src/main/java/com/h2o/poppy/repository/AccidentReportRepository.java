@@ -36,8 +36,8 @@ public interface AccidentReportRepository extends JpaRepository<AccidentReport, 
 
     // 날짜 필터링 조회
     @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE YEAR(ar.reportDate) = :year AND MONTH(ar.reportDate) = :month AND DAY(ar.reportDate) = :day")
-    List<AccidentReportDto> getAccidentReportInfoByDate(@Param("year") int year, @Param("month") int month, @Param("day") int day);
-
+    List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByDate(@Param("year") int year, @Param("month") int month, @Param("day") int day);
+    
     //상태 변경
     @Transactional
     @Modifying
