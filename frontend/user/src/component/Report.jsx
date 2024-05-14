@@ -349,6 +349,7 @@ const Report = () => {
   const [currentVideo, setCurrentVideo] = useState(""); // 현재 선택된 비디오
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const Navigate = useNavigate();
 
   const [selectedVideos, setSelectedVideos] = useState([]);
 
@@ -444,7 +445,8 @@ const Report = () => {
           "Content-Type": "multipart/form-data", // 멀티파트 형식으로 요청
         },
       });
-      if (response.data.success === "true") Navigate("/reports");
+      console.log(response.data.success);
+      if (response.data.success === true) Navigate("/reports");
     } catch (error) {
       console.error("Upload failed", error);
     }

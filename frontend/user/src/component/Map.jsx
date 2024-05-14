@@ -45,7 +45,8 @@ function Map() {
   const location = useLocation();
   const { user } = useAuth();
   const onRouteRef = useRef(onRoute);
-
+  const [tmapAppStarted, setTmapAppStarted] = useState(false); // 티맵 앱 시작 상태
+  let endX, endY;
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -493,7 +494,7 @@ function Map() {
 
   const handleLocationSelect = async (lat, lng, convertRequired) => {
     resettingMap();
-    let endX, endY;
+
     if (!convertRequired) {
       const epsg3857 = new Tmapv2.Point(lng, lat);
       const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
@@ -644,6 +645,13 @@ function Map() {
     marker();
     setShowResults(false);
     setDestinationSelected(true);
+  };
+
+  const onTmapApp = async () => {
+    setTmapAppStarted(true); // 티맵 앱이 시작됨을 나타냄
+    console.log(endX, endY);
+    window.location.href =
+      "https://apis.openapi.sk.com/tmap/app/routes?appKey=ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5&name=SKT타워&lon=${endX}&lat=${endY}";
   };
 
   function simpleDistance(lat1, lon1, lat2, lon2) {
@@ -875,7 +883,7 @@ function Map() {
           onClick={handleMapClick}
         />
       )}
-      {selectedRoute && (
+      {selectedRoute && !tmapAppStarted && (
         <div
           style={{
             position: "fixed",
@@ -915,6 +923,7 @@ function Map() {
             }}
           >
             <button
+              onClick={onTmapApp}
               style={{
                 color: "black",
                 fontSize: "16px",
