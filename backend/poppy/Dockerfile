@@ -13,4 +13,6 @@ ARG JAR_FILE_NAME=poppy-0.0.1-SNAPSHOT.jar
 
 RUN cp ./build/libs/${JAR_FILE_NAME} ./app.jar
 
+RUN apt-get update && apt-get install -y ffmpeg
+
 ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"]
