@@ -170,6 +170,7 @@ const ReportList = () => {
     const fetchReports = async () => {
       try {
         const response = await axios.get(`/api/accident-report/user/${user}`);
+        console.log(response.data.result);
         setReports(response.data.result); // 데이터를 상태에 저장
       } catch (error) {
         console.error("Failed to fetch reports:", error);
