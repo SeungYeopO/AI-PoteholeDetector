@@ -31,6 +31,9 @@ public class BlackboxVideoMetadata {
     @Column(name = "longitude", nullable = true)
     private Double longitude;
 
+    @Column(name = "file_name", length = 255)
+    private String fileName;
+
     @OneToOne(mappedBy = "videoPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AccidentReport accidentReport;
 
@@ -38,11 +41,12 @@ public class BlackboxVideoMetadata {
     public BlackboxVideoMetadata() {
     }
 
-    public BlackboxVideoMetadata(SerialList serialPk, Date detectedAt, Double latitude, Double longitude) {
+    public BlackboxVideoMetadata(SerialList serialPk, Date detectedAt, Double latitude, Double longitude, String fileName) {
         this.serialPk = serialPk;
         this.detectedAt = detectedAt;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.fileName = fileName;
     }
 
 }

@@ -15,16 +15,18 @@ public class BlackboxVideoMetadataDto {
     private Date detectedAt;
     private Double latitude;
     private Double longitude;
+    private String fileName;
     private AccidentReport accidentReport;
 
     public BlackboxVideoMetadataDto() {
     }
 
-    public BlackboxVideoMetadataDto(Long videoPk, Long serialPk, Date detectedAt, Double latitude, Double longitude) {
+    public BlackboxVideoMetadataDto(Long videoPk, Long serialPk, Date detectedAt, Double latitude, Double longitude, String fileName) {
         this.videoPk = videoPk;
         this.serialPk = serialPk;
         this.detectedAt = detectedAt;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.fileName = fileName;
     }
 }

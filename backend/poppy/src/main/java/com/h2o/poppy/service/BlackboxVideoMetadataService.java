@@ -13,6 +13,7 @@ import com.h2o.poppy.repository.UsersSerialsRepository;
 import org.hibernate.boot.model.internal.ListBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,7 @@ public class BlackboxVideoMetadataService {
         blackboxVideoMetadataDto.setDetectedAt(blackboxVideoMetadata.getDetectedAt());
         blackboxVideoMetadataDto.setLatitude(blackboxVideoMetadata.getLatitude());
         blackboxVideoMetadataDto.setLongitude(blackboxVideoMetadata.getLongitude());
+        blackboxVideoMetadataDto.setFileName(blackboxVideoMetadata.getFileName());
         return blackboxVideoMetadataDto;
     }
 
@@ -58,10 +60,11 @@ public class BlackboxVideoMetadataService {
 
 
     // 삽입
-    public String saveData(double latitude,double longitude, String serialNumber) {
+    public String saveData(double latitude, double longitude, String serialNumber, MultipartFile video) {
         try{
             SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
-            BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude);
+            String fileName = video.getOriginalFilename();
+            BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude, fileName);
             blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
             System.out.println(blackboxVideoMetadata);
             return serialNumber;

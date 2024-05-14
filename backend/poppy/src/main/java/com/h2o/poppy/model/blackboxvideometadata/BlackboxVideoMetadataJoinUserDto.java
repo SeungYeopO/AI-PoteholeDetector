@@ -16,17 +16,19 @@ public class BlackboxVideoMetadataJoinUserDto {
     private Date detectedAt;
     private Double latitude;
     private Double longitude;
+    private String fileName;
     private AccidentReport accidentReport;
 
     public BlackboxVideoMetadataJoinUserDto() {
     }
 
-    public BlackboxVideoMetadataJoinUserDto(Long videoPk, Long serialPk, String serialNumber, Date detectedAt, Double latitude, Double longitude) {
+    public BlackboxVideoMetadataJoinUserDto(Long videoPk, Long serialPk, String serialNumber, Date detectedAt, Double latitude, Double longitude, String fileName) {
         this.videoPk = videoPk;
         this.serialPk = serialPk;
         this.serialNumber = serialNumber;
         this.detectedAt = detectedAt;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.fileName = fileName;
     }
 }

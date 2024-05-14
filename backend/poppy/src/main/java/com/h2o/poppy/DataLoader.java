@@ -93,24 +93,24 @@ public class DataLoader implements CommandLineRunner {
         // Create instances of BlackboxVideoMetadata and save them
         if (serialList1 != null && serialList2 != null && serialList3 != null) {
             blackboxVideoMetadataRepository.saveAll(List.of(
-                    new BlackboxVideoMetadata(serialList1, now, 35.202370, 126.810139),
-                    new BlackboxVideoMetadata(serialList1, now, 33.555664, 126.796320),
-                    new BlackboxVideoMetadata(serialList1, now, 38.181005, 128.549175),
-                    new BlackboxVideoMetadata(serialList1, now, 35.1990838,  129.2066338),
-                    new BlackboxVideoMetadata(serialList1, now, 35.897045,  128.851677),
-                    new BlackboxVideoMetadata(serialList1, now, 37.467655,  126.946325),
-                    new BlackboxVideoMetadata(serialList1, now, 36.334859, 126.620023),
-                    new BlackboxVideoMetadata(serialList2, now, 36.102575,  127.499691),
-                    new BlackboxVideoMetadata(serialList2, now, 37.456733, 126.705120),
-                    new BlackboxVideoMetadata(serialList2, now, 36.327580, 126.427247),
-                    new BlackboxVideoMetadata(serialList2, now, 35.216768, 128.142013),
-                    new BlackboxVideoMetadata(serialList3, now, 37.130705,128.537282),
-                    new BlackboxVideoMetadata(serialList3, now, 36.642488, 127.489675),
-                    new BlackboxVideoMetadata(serialList2, now, 37.880579, 127.729987),
-                    new BlackboxVideoMetadata(serialList1, now, 36.098999, 127.490736),
-                    new BlackboxVideoMetadata(serialList2, now, 36.099268, 127.483175),
-                    new BlackboxVideoMetadata(serialList2, now, 36.092268, 127.483175),
-                    new BlackboxVideoMetadata(serialList2, now, 37.501475, 127.039515)));
+                    new BlackboxVideoMetadata(serialList1, now, 35.202370, 126.810139, null),
+                    new BlackboxVideoMetadata(serialList1, now, 33.555664, 126.796320, null),
+                    new BlackboxVideoMetadata(serialList1, now, 38.181005, 128.549175, null),
+                    new BlackboxVideoMetadata(serialList1, now, 35.1990838,  129.2066338, null),
+                    new BlackboxVideoMetadata(serialList1, now, 35.897045,  128.851677, null),
+                    new BlackboxVideoMetadata(serialList1, now, 37.467655,  126.946325, null),
+                    new BlackboxVideoMetadata(serialList1, now, 36.334859, 126.620023, null),
+                    new BlackboxVideoMetadata(serialList2, now, 36.102575,  127.499691, null),
+                    new BlackboxVideoMetadata(serialList2, now, 37.456733, 126.705120, null),
+                    new BlackboxVideoMetadata(serialList2, now, 36.327580, 126.427247, null),
+                    new BlackboxVideoMetadata(serialList2, now, 35.216768, 128.142013, null),
+                    new BlackboxVideoMetadata(serialList3, now, 37.130705,128.537282, null),
+                    new BlackboxVideoMetadata(serialList3, now, 36.642488, 127.489675, null),
+                    new BlackboxVideoMetadata(serialList2, now, 37.880579, 127.729987, null),
+                    new BlackboxVideoMetadata(serialList1, now, 36.098999, 127.490736, null),
+                    new BlackboxVideoMetadata(serialList2, now, 36.099268, 127.483175, null),
+                    new BlackboxVideoMetadata(serialList2, now, 36.092268, 127.483175, null),
+                    new BlackboxVideoMetadata(serialList2, now, 37.501475, 127.039515, null)));
         }
 
         Pothole pothole1 = potholeRepository.findById(1L).orElse(null);

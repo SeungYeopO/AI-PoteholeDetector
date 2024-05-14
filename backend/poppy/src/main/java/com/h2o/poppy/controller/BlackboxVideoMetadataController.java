@@ -47,7 +47,7 @@ public class BlackboxVideoMetadataController {
                            @RequestParam("serialNumber") String serialNumber,
                            @RequestParam("file") MultipartFile video) throws IOException {
 
-        String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber);
+        String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
         boolean success = fileName != null;
         System.out.println(success);
 
