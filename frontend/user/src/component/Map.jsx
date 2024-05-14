@@ -72,48 +72,32 @@ function Map() {
   }
 
   useEffect(() => {
-    requestNotificationPermission(); // 컴포넌트가 마운트될 때 권한 요청
-
-    const savedState = JSON.parse(localStorage.getItem("mapState"));
-    if (savedState) {
-      setSearchQuery(savedState.searchQuery);
-      setSearchResults(savedState.searchResults);
-      setShowResults(savedState.showResults);
-      setSelectedRoute(savedState.selectedRoute);
-      setDestinationSelected(savedState.destinationSelected);
-      setSearchPerformed(savedState.searchPerformed);
-      setLocationName(savedState.locationName);
-      setShowModal(savedState.showModal);
-      setSeletedLat(savedState.selectedLat);
-      setSeletedLng(savedState.selectedLng);
-      setUserPosition(savedState.userPosition);
-      setPotholeAlerts(savedState.potholeAlerts);
-      setShowAlertOverlay(savedState.showAlertOverlay);
-      setOnRoute(savedState.onRoute);
-      setTmapAppStarted(savedState.tmapAppStarted);
-    }
-  }, []);
-
-  useEffect(() => {
-    // 상태가 변경될 때 로컬 스토리지에 저장
-    const mapState = {
-      searchQuery,
-      searchResults,
-      showResults,
-      selectedRoute,
-      destinationSelected,
-      searchPerformed,
-      locationName,
-      showModal,
-      selectedLat,
-      selectedLng,
-      userPosition,
-      potholeAlerts,
-      showAlertOverlay,
-      onRoute,
-      tmapAppStarted,
+    const handleBeforeUnload = () => {
+      const mapState = {
+        searchQuery,
+        searchResults,
+        showResults,
+        selectedRoute,
+        destinationSelected,
+        searchPerformed,
+        locationName,
+        showModal,
+        selectedLat,
+        selectedLng,
+        userPosition,
+        potholeAlerts,
+        showAlertOverlay,
+        onRoute,
+        tmapAppStarted,
+      };
+      localStorage.setItem("mapState", JSON.stringify(mapState));
     };
-    localStorage.setItem("mapState", JSON.stringify(mapState));
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, [
     searchQuery,
     searchResults,
@@ -131,6 +115,28 @@ function Map() {
     onRoute,
     tmapAppStarted,
   ]);
+
+  useEffect(() => {
+    const savedState = JSON.parse(localStorage.getItem("mapState"));
+    if (savedState) {
+      setSearchQuery(savedState.searchQuery);
+      setSearchResults(savedState.searchResults);
+      setShowResults(savedState.showResults);
+      setSelectedRoute(savedState.selectedRoute);
+      setDestinationSelected(savedState.destinationSelected);
+      setSearchPerformed(savedState.searchPerformed);
+      setLocationName(savedState.locationName);
+      setShowModal(savedState.showModal);
+      setSeletedLat(savedState.selectedLat);
+      setSeletedLng(savedState.selectedLng);
+      setUserPosition(savedState.userPosition);
+      setPotholeAlerts(savedState.potholeAlerts);
+      setShowAlertOverlay(savedState.showAlertOverlay);
+      setOnRoute(savedState.onRoute);
+      setTmapAppStarted(savedState.tmapAppStarted);
+      setKnownow(savedState.knownow);
+    }
+  }, []);
 
   useEffect(() => {
     onRouteRef.current = onRoute; // onRoute 값이 변경될 때마다 ref 업데이트
