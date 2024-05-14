@@ -46,6 +46,7 @@ function Map() {
   const { user } = useAuth();
   const onRouteRef = useRef(onRoute);
   const [tmapAppStarted, setTmapAppStarted] = useState(false); // 티맵 앱 시작 상태
+  const [knownow, setKnownow] = useState(false);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -442,7 +443,7 @@ function Map() {
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [knownow]);
 
   const handleMapClick = () => {
     // SearchResults 컴포넌트가 열려있으면 닫음
