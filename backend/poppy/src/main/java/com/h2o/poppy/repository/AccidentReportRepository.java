@@ -34,10 +34,14 @@ public interface AccidentReportRepository extends JpaRepository<AccidentReport, 
     @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE ar.state != :nowState")
     List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByCheck(@Param("nowState") String nowState);
 
-    // 날짜 필터링 조회
+    // 날짜 필터링 조회 - 미확인
     @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE (:year is null or (YEAR(ar.reportDate) = :year AND MONTH(ar.reportDate) = :month AND DAY(ar.reportDate) = :day)) and ar.state = :state")
-    List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByDate(@Param("state") String state, @Param("year") int year, @Param("month") int month, @Param("day") int day);
- 
+    List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByDateNoCheck(@Param("state") String state, @Param("year") int year, @Param("month") int month, @Param("day") int day);
+
+    // 날짜 필터링 조회 - 반려, 성공
+    @Query("SELECT new com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto(ar.reportPk, ar.userPk.userName, ar.potholePk.potholePk, ar.videoPk.videoPk, ar.videoPk.serialPk.serialNumber, ar.videoPk.latitude, ar.videoPk.longitude, ar.reportContent, ar.reportName,  ar.reportDate, ar.state, ar.rejectionReason) FROM AccidentReport ar WHERE (:year is null or (YEAR(ar.reportDate) = :year AND MONTH(ar.reportDate) = :month AND DAY(ar.reportDate) = :day)) and ar.state != :state")
+    List<AccidentReportJoinMetaDataDto> getAccidentReportInfoByDateYesCheck(@Param("state") String state, @Param("year") int year, @Param("month") int month, @Param("day") int day);
+
     //상태 변경
     @Transactional
     @Modifying

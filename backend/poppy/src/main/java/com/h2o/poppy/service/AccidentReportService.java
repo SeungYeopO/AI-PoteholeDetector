@@ -118,10 +118,13 @@ public class AccidentReportService {
             int year = calendar.get(Calendar.YEAR); // 년도 추출
             int month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
             int day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
-            System.out.println(year);
-            System.out.println(month);
-            System.out.println(day);
-            List<AccidentReportJoinMetaDataDto> accidentReportDto = accidentReportRepository.getAccidentReportInfoByDate(state, year,month,day);
+            List<AccidentReportJoinMetaDataDto> accidentReportDto = null;
+            if(state.equals("미확인")){
+                accidentReportDto = accidentReportRepository.getAccidentReportInfoByDateNoCheck(state, year,month,day);
+            }
+            else if(state.equals("반려") || state.equals("보상완료")){
+                accidentReportDto = accidentReportRepository.getAccidentReportInfoByDateYesCheck("미확인", year,month,day);
+            }
             return accidentReportDto;
         }catch (Exception e){
             return null;
