@@ -18,7 +18,7 @@ let startY = 37.5652045;
 let timeoutId;
 let map;
 let potholeAlert = [];
-
+let endX, endY;
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +46,7 @@ function Map() {
   const { user } = useAuth();
   const onRouteRef = useRef(onRoute);
   const [tmapAppStarted, setTmapAppStarted] = useState(false); // 티맵 앱 시작 상태
-  let endX, endY;
+
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -650,8 +650,13 @@ function Map() {
   const onTmapApp = async () => {
     setTmapAppStarted(true); // 티맵 앱이 시작됨을 나타냄
     console.log(endX, endY);
-    window.location.href =
-      "https://apis.openapi.sk.com/tmap/app/routes?appKey=ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5&name=SKT타워&lon=${endX}&lat=${endY}";
+    const appKey = "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5";
+    const name = "그랜드유치원";
+    const encodedName = encodeURIComponent(name);
+    const url = `https://apis.openapi.sk.com/tmap/app/routes?appKey=${appKey}&name=${encodedName}&lon=${endX}&lat=${endY}`;
+
+    // URL 방문
+    window.location.href = url;
   };
 
   function simpleDistance(lat1, lon1, lat2, lon2) {

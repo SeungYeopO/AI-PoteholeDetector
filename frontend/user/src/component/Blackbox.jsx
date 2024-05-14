@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import blackboxImg from "../../public/img/blackbox.png";
 import Navbar from "./Navbar";
 import { useAuth } from "./AuthContext";
+import videojs from "video.js";
 
 const Background = styled.div`
   position: fixed;
@@ -231,7 +232,6 @@ const Blackbox = () => {
       }
       const data = await response.json();
       console.log(data);
-      console.log(data.result[8].latitude);
       setVideoList(data.result); // 상태 업데이트
     } catch (error) {
       console.error("비디오 데이터를 불러오는 데 실패했습니다:", error);
@@ -282,6 +282,9 @@ const Blackbox = () => {
                       height: "4rem",
                     }}
                     src={`https://d1vcrv9kpqlkt7.cloudfront.net/${video.serialNumber}/${video.fileName}`}
+                    type="video/mp4"
+                    crossOrigin="anonymous"
+                    muted
                   ></video>
                 </StateArea>
                 <ListInfoArea>
@@ -309,6 +312,7 @@ const Blackbox = () => {
               src={currentVideo}
               controls
               autoPlay
+              muted
               style={{ width: "100%" }}
             ></video>
           </ModalContent>
