@@ -434,7 +434,7 @@ const Loading = styled.div`
     <Page>
       <PageBtnArea>
         <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
-          이전
+        이전
         </PrevBtn>
         {Array.from({ length: totalPages }, (_, index) => (
           <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
@@ -481,10 +481,10 @@ const Loading = styled.div`
                           <TableCell1>신고시각</TableCell1>
                           <TableCell2>{selectedGrid.detectedAt.slice(0,10)} {selectedGrid.detectedAt.slice(11,19)}</TableCell2>
                         </TableRow>
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell1>담당부서</TableCell1>
                           <TableCell2>미정</TableCell2>
-                        </TableRow>
+                        </TableRow> */}
                       </tbody>
                     </ModalTable>
                   )}

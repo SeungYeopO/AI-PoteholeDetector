@@ -2,7 +2,7 @@ import styled from "styled-components";
 import SideNav from "../components/SideNav_ver2";
 import { useState, useEffect } from "react";
 import closeBtnImg from '../assets/modal/closeBtn.png'
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import Calender from 'react-calendar';
 import calendarImg from '../assets/modal/calenderImg.png';
 import '../../node_modules/react-calendar/dist/Calendar.css';
@@ -34,6 +34,7 @@ const TimeArea = styled.div`
   font-size : 1.1rem;
   display : flex;
   align-items : center;  
+  justify-content : center;
 `
 const ListArea = styled.div` 
   margin-left : 2rem;
@@ -63,7 +64,8 @@ const BoxName = styled.div`
   align-items : center;
  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #8d8c8c;
+   background-color : #ffffff;
+  border : 1px solid #A1A1A1;
   font-size : 1.4rem;
 
 `
@@ -80,7 +82,7 @@ const SortInfo = styled.div`
   display : flex;
   text-indent : 0.3rem;
   align-items : center;
-  font-size : 1.1rem;
+  font-size : 1.2rem;
   
 `
 const CalenderImg = styled.img`
@@ -190,6 +192,7 @@ const ModalHeader = styled.div`
   border-top-left-radius : 1rem;
   flex-direction : row;
   justify-content : space-between;
+  align-items : center;
 `
 const ModalContent = styled.div`
   display : flex;
@@ -261,6 +264,13 @@ const BtnArea2 = styled.div`
   height : 17%;
   /* background-color : gray; */
 
+`
+const Box = styled.div`
+  width : 100%;
+  height : 100%;
+  /* background-color : yellow; */
+  display : flex;
+  align-items : center;
 `
 const SubFile = styled.div`
   display : flex;
@@ -363,6 +373,22 @@ const ContentInput = styled.textarea`
     font-weight: 300;
   }
 `
+const SearchBtn = styled.div`
+  cursor: pointer;
+  margin-left : 1rem;
+  border-radius : 1rem;
+  width : 5%;
+  height : 45%;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
+  font-size : 1.3rem;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+
+  
+`
+
 const CompensationReportPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -379,7 +405,7 @@ const CompensationReportPage = () => {
   const [returnTitle, setReturnTitle] = useState('');
   const [returnContent, setReturnContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const [imageList, setImageList] = useState([]);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -388,20 +414,22 @@ const CompensationReportPage = () => {
     return `${year}.${month}.${day}`;
   }
 
-  const modalOpen = () => {
-    console.log('click')
-    if(ismodalOpen === false) {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-    }
-    
-  };
   const handleDdateClick = (value) => {
     setSelectedDate(value);
     setIsModalOpen(false);
   }
   
+
+  const modalOpen = () => {
+    console.log('click');
+    if(ismodalOpen === false) {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(false);
+      }
+    
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -440,13 +468,40 @@ const CompensationReportPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
   }
 
-  const handleListClick = (item) => {
+  const handleListClick = async (item) => {
     setIsInfoModalOpen(true);
     console.log(item);
-    setSelectedList(item);
+
+    try {
+      const response = await fetch(`/api/accident-report/${item.reportPk}`);
+  
+      if (response.ok) {
+        const jsonData = await response.json();
+        console.log('한개 리스트 데이터', jsonData.imageFileNameList);
+        setSelectedList(jsonData.result);
+
+        const totalURLs = jsonData.imageFileNameList.map(imageURL => {
+          const totalURL = 'http://d1vcrv9kpqlkt7.cloudfront.net/' + imageURL
+          return totalURL;
+        })
+        const blobURLs = totalURLs.map((url) => {
+          const blob = new Blob([url], {type : 'image/*'})
+          const imageURL = URL.createObjectURL(blob);
+          return imageURL
+        })
+        setImageList(blobURLs);
+      }
+       else {
+        console.log('리스트 실패')
+;      }
+    } catch (error) {
+      console.error('에러발생', error);
+    }
   }
   
+  
   const closeModal = () => {
+    console.log(imageList);
     setIsInfoModalOpen(false);
   }
   const closeReturnModal = () => {
@@ -478,18 +533,115 @@ const CompensationReportPage = () => {
       return null;
     }
   }
+
+  const gotoSearch = () => {
+
+    const userData = {
+      reportDate : format2Date(selectedDate),
+      state : '미확인'
+    };
+    try {
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report/date', {
+          method : "POST",
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok){
+          const responseData = await response.json();
+          console.log('조회된 데이터', responseData.dateList);
+          setData(responseData.dateList)
+          setIsLoading(false);
+        } else{
+          console.log('데이터 조회 실패');
+        }
+      }, 500)
+    } catch (error){
+      console.log('에러발생', error);
+    }
+
+  }
+  
+  const gotoApprove = () => {
+    const userData = {
+      reportPk : selectedList.reportPk,
+      state : '보상승인',
+      rejectionReason : null
+    };
+    try{
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report',{
+          method : 'PATCH',
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok) {
+          setIsLoading(false);
+          const responseData = await response.json();
+          console.log('수정 성공', responseData);
+
+          window.location.reload();
+        } else{
+          console.log('수정 실패')
+        }
+      },500)
+    } catch(error){
+      console.log('오류발생', error);
+    }
+  }
+
+  const gotoSend = () => {
+    const userData = {
+      reportPk : selectedList.reportPk,
+      state : '반려',
+      rejectionReason : `Title : ${returnTitle} , Content : ${returnContent}`
+    };
+
+    try{
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report',{
+          method : 'PATCH',
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok) {
+          setIsLoading(false);
+          const responseData = await response.json();
+          console.log('수정 성공', responseData);
+          window.location.reload();
+        } else{
+          console.log('수정 실패')
+        }
+      },500)
+    } catch(error){
+      console.log('오류발생', error);
+    }
+  }
+
   return (
     <Background>
         <SideNav />
         <Content>
         <TimeArea>
-        <DateBox>
-             <BoxName>날짜</BoxName>
-              <DateTable>
-                <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
-                <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
-              </DateTable>
-            </DateBox>
+          <Box>
+            <DateBox>
+                <BoxName>날짜</BoxName>
+                  <DateTable>
+                    <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
+                    <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
+                  </DateTable>
+                </DateBox>
+                <SearchBtn onClick={gotoSearch}>조회</SearchBtn>
+          </Box>
         </TimeArea>
         {isLoading ? (
             <Loading>
@@ -506,14 +658,16 @@ const CompensationReportPage = () => {
                   <Info width="20%">작성자</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
-              {currentData && currentData.map((item, index) => (
-                <Lists key={index} onClick={()=> handleListClick(item)}>
-                  <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
-                  <Info width="48%">{item.reportName}</Info>
-                  <Info width="20%">{item.userName}</Info>
-                  <Info width="20%">{item.reportDate.slice(0,10)}</Info>
-                </Lists>
-              ))}
+              {currentData && currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+                currentData.map((item, index) => (
+                  <Lists key={index} onClick={()=> handleListClick(item)}>
+                    <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
+                    <Info width="48%">{item.reportName}</Info>
+                    <Info width="20%">{item.userName}</Info>
+                    <Info width="20%">{item.reportDate.slice(0,10)}</Info>
+                  </Lists>
+                ))
+              ) } 
               </SortedList>
         </ListArea>
             <Page>
@@ -543,7 +697,7 @@ const CompensationReportPage = () => {
         </Content>
         {ismodalOpen && (
         <CalenderModal>
-            <Calender onChange={handleDdateClick}  />
+            <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
         </CalenderModal>
       )}
        {selectedList&&isInfoModalOpen && (<ListDetailModal>
@@ -554,16 +708,20 @@ const CompensationReportPage = () => {
           <ModalContent height="89%" marginTop="0rem">
             <ArticleArea>
               <ArticleList>{selectedList.reportName}</ArticleList>
-              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.writer}</ArticleList>
+              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.userName}</ArticleList>
               <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.reportContent}</ArticleList>
             </ArticleArea>
             <PlusFileArea>
               <SubFile>[첨부파일]</SubFile>
+              {imageList && imageList.map((item, index) => (
+                  <a key={index} href={item} download="image">
+                    <SubFile fontSize="1.3rem" color="#004FC7">{item}</SubFile>
+                  </a>
+                ))}
               <SubFile fontSize="1.3rem" color="#004FC7">{selectedList.video}</SubFile>
-              <SubFile fontSize="1.3rem" color="#004FC7">{selectedList.photo}</SubFile>
             </PlusFileArea>
             <BtnArea>
-              <Btn1>보상승인</Btn1>
+              <Btn1 onClick={gotoApprove}>보상승인</Btn1>
               <Btn1 onClick={openReturnModalOpen}>반려</Btn1>
             </BtnArea>
           </ModalContent>
@@ -583,7 +741,7 @@ const CompensationReportPage = () => {
             </ReturnModalContent>
           </ModalContent>
           <BtnArea2 height="17%">
-            <Btn2>제출</Btn2>
+            <Btn2 onClick = {gotoSend}> 최종 제출</Btn2>
           </BtnArea2>
         </ReturnModal>)}
     </Background>

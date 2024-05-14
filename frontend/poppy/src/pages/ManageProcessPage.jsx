@@ -7,7 +7,9 @@ import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../assets/modal/calenderImg.png';
 import closeBtnImg from '../assets/modal/closeBtn.png';
 import reloadImg from '../assets/modal/reload.png'
-import spinner from '../assets/background/loading1.gif'
+import spinner from '../assets/background/loading1.gif';
+import reloadImg1 from '../assets/background/reload.png';
+import reloadImg2 from '../assets/background/reload3.png';
 
 
 const Background = styled.div`
@@ -85,7 +87,8 @@ const SearchBtn = styled.div`
   align-items : center;
   width : 45%;
   height : 100%;
-  background-color : green;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
 `
 const AreaDrop = styled.select`
   width : 44%;
@@ -106,7 +109,8 @@ const BoxName = styled.div`
   align-items : center;
  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #8d8c8c;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
   font-size : 1.4rem;
 
 `
@@ -117,13 +121,15 @@ const BoxName1 = styled.div`
   width : 12.5%;
   height : 100%;
   font-size : 1.4rem;
-  background-color : #8d8c8c;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
 `
 const DateTable = styled.div`
-  background-color :  white;
+  background-color :  #ffffff;
   width : 75%;
   height : 100%;
   display : flex;
+  border : 1px solid #A1A1A1;
   
 `
 const StateDrop = styled.select`
@@ -139,6 +145,7 @@ const DropArea = styled.div`
   display : flex;
   align-items : center;
   justify-content : space-between;
+  
   
 `
 const ListHeader = styled.div`
@@ -354,6 +361,7 @@ const ModalTitle = styled.div`
 ` 
 
 const ReFilterBtn = styled.div`
+  cursor: pointer;
   width : 30%;
   height : 100%;
   /* background-color : yellow; */
@@ -362,8 +370,8 @@ const ReFilterBtn = styled.div`
   align-items : center;
 `
 const RefilterImg = styled.img`
-  width : 2.7rem;
-  height : 2.7rem;
+  width : 2.1rem;
+  height : 2.1rem;
   /* background-color : red; */
 `
 
@@ -535,6 +543,7 @@ const ManageProcessPage = () => {
       if (response.ok){
         const responseData = await response.json();
         console.log(responseData); 
+        window.location.reload();
       }else{
         console.log('데이터수정실패')
       }
@@ -565,9 +574,9 @@ const ManageProcessPage = () => {
         if (response.ok){
           const responseData = await response.json();
           console.log('여기서 걸림');
-          console.log('조회된 데이터', responseData.filterdDate)
+          console.log('조회된 데이터', responseData.filteredDate)
           console.log(format2Date(selectedDate));
-          setData(responseData.filterdDate);
+          setData(responseData.filteredDate);
           setIsLoading(false);
   
         }else{
@@ -621,7 +630,7 @@ const ManageProcessPage = () => {
             </LocationBox>
             <StateBox>
             <SearchBtn onClick={gotoSearch}>검색</SearchBtn>
-             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg}></RefilterImg></ReFilterBtn> 
+             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg2}></RefilterImg></ReFilterBtn> 
             </StateBox>
           </SortedBox>
         </SortedArea>
@@ -636,8 +645,8 @@ const ManageProcessPage = () => {
             <SortedList>
               <ListHeader>
                 <Info>상태</Info>
-                <Info width="48%">신고위치</Info>
-                <Info width="20%">신고시각</Info>
+                <Info width="40%">신고위치</Info>
+                <Info width="28%">신고시각</Info>
                 <Info>담당자명</Info>
               </ListHeader>
             {currentData &&  currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
@@ -703,10 +712,10 @@ const ManageProcessPage = () => {
                           <TableCell1>신고시각</TableCell1>
                           <TableCell2>{selectedList.detectedAt.slice(0,10)} {selectedList.detectedAt.slice(11,19)}</TableCell2>
                         </TableRow>
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell1>담당부서</TableCell1>
                           <TableCell2>아직모름(백에서처리)</TableCell2>
-                        </TableRow>
+                        </TableRow> */}
                         <TableRow>
                           <TableCell1>시공업체</TableCell1>
                           <TableCell2>삼성건설</TableCell2>
