@@ -186,7 +186,10 @@ const Blackbox = () => {
   }, [videoList, selectedDate]);
 
   const handleVideoClick = (video) => {
-    const videoUrl = `https://d1vcrv9kpqlkt7.cloudfront.net/${video.serialNumber}/${video.latitude}_${video.longitude}.mp4`;
+    console.log(video.serialNumber);
+    console.log(video.fileName);
+    const videoUrl = `https://d1vcrv9kpqlkt7.cloudfront.net/${video.serialNumber}/${video.fileName}`;
+    console.log(videoUrl);
     setCurrentVideo(videoUrl);
     setShowModal(true);
   };
@@ -228,6 +231,7 @@ const Blackbox = () => {
       }
       const data = await response.json();
       console.log(data);
+      console.log(data.result[8].latitude);
       setVideoList(data.result); // 상태 업데이트
     } catch (error) {
       console.error("비디오 데이터를 불러오는 데 실패했습니다:", error);
@@ -277,7 +281,7 @@ const Blackbox = () => {
                       width: "6rem",
                       height: "4rem",
                     }}
-                    src={`https://d1vcrv9kpqlkt7.cloudfront.net/${video.serialNumber}/${video.latitude}_${video.longitude}.mp4`}
+                    src={`https://d1vcrv9kpqlkt7.cloudfront.net/${video.serialNumber}/${video.fileName}`}
                   ></video>
                 </StateArea>
                 <ListInfoArea>
