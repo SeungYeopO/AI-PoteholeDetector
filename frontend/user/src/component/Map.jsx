@@ -533,6 +533,7 @@ function Map() {
     setOnRoute(false);
     centerMapOnUser(); // 사용자 위치로 맵 중심 이동
     setSearchPerformed(false);
+    setTmapAppStarted(false);
     mapRef.current.setZoom(16);
   };
 
