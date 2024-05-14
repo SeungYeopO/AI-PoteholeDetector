@@ -176,14 +176,14 @@ public class AccidentReportController {
     @PostMapping("/date")
     public Object dateGet(@RequestBody DateRequest request) {
         Date targetDate = request.getReportDate();
-        List<AccidentReportDto> dateList = accidentReportService.getDate(targetDate);
+        List<AccidentReportJoinMetaDataDto> dateList = accidentReportService.getDate(targetDate);
         boolean success = dateList != null; // PK가 0보다 크다면 성공으로 간주
         @Getter
         class getResponse {
             private final boolean success;
-            private final List<AccidentReportDto> dateList;
+            private final List<AccidentReportJoinMetaDataDto> dateList;
 
-            getResponse(boolean success, List<AccidentReportDto> dateList) {
+            getResponse(boolean success, List<AccidentReportJoinMetaDataDto> dateList) {
                 this.success = success;
                 this.dateList = dateList;
             }
