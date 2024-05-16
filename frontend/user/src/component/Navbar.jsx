@@ -18,12 +18,12 @@ const Nav = styled.div`
   width: 100%;
   height: 10%;
   justify-content: space-around;
-  background: #d7dbec;
+  background: #FFE58A;
 `;
 const Content = styled.div`
-  width: 17%;
+  width: 15%;
   height: 100%;
-  background-color: ${(props) => (props.active ? "#eeb7bc" : "#d7dbec")};
+  background-color: ${(props) => (props.active ? "#FFC700" : "#FFE58A")};
   /* background-color : lightcoral; */
   display: flex;
   flex-direction: column;
@@ -63,8 +63,9 @@ cursor: pointer;
 width : 35%;
 height : 80%;
 border-radius : 1.5rem;
-background-color : #db6464;
+background-color : #FFC700;
 font-size : 1.5rem;
+color : white;
 justify-content : center;
 align-items : center;
 display : flex;
@@ -166,6 +167,9 @@ function Navbar() {
         <Icon onClick={clickLogout} src={icon5}></Icon>
         <Text>로그아웃</Text>
       </Content>
+     
+      
+      
       {modalOpen && (
         <LogoOutModal>
           <LogoutText>로그아웃 하시겠습니까?</LogoutText>

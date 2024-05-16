@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
-import logo from '../../public/img/loginpoppy.png';
+import logo from '../../public/img/loginlogo.png';
 
 function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
@@ -38,7 +38,7 @@ const Background = styled.div`
   overflow: hidden;
   display: flex;
   align-items: center;
-  background-color: #FDF891;
+  background-color: #FFC700;
   flex-direction : column;
 `;
 
@@ -50,15 +50,17 @@ const Container = styled.div`
   justify-content: space-around;
   align-items: center;
   /* background-color : red; */
+  margin-bottom : 1rem;
 `;
 
 const LoginTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 4.2rem;
-  width: 60%;
+  font-size: 5rem;
+  width: 65%;
   height: 20%;
+  /* background-color : red; */
 `;
 
 const ContentBox = styled.div`
@@ -111,6 +113,7 @@ const Text = styled.div`
   justify-content: left;
   align-items: center;
   font-size: 1.5rem;
+  font-weight : 500;
   width: 30%;
   height: 40%;
 `;
@@ -125,13 +128,14 @@ const SubmitBtn = styled.button`
   height: 13%;
   border : none;
   background-color: #ffffff;
-  font-family: "BlackHanSans";
+  font-family: "Nanum";
   font-size: 2rem;
 `;
 
 const Foot = styled.div`
 `
 const LoginLogo = styled.div`
+  margin-top : 2rem;
   width : 90%;
   height : 20%;
   /* background-color : red; */
@@ -141,8 +145,8 @@ const LoginLogo = styled.div`
   
 `
 const LogoImg = styled.img`
-  width : 23rem;
-  height : 7rem;
+  width : 11rem;
+  height : 11rem;
 `
 
 const Login = () => {

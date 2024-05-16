@@ -11,7 +11,7 @@ const Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color :#FDF891;
+  background-color :#FFC700;
   flex-direction : column;
   position : fixed;
   left : 0;
@@ -68,7 +68,8 @@ const SubmitBtn = styled.button`
   width : 35%;
   height : 9%;
   background-color : #ffffff;
-  font-family :  'BlackHanSans';
+  font-family :  'Nanum';
+  color : white;
   font-size : 2rem;
   border : none;
 
