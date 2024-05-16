@@ -11,6 +11,7 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,6 +83,7 @@ public class S3Service {
     }
 
     // 비디오 파일 업로드
+    @Async
     public void videoUploadFile(String folderName, File originalFile, String originFileName, String videoType) throws IOException {
         String bucketName = "poppys3";
         String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
@@ -89,11 +91,11 @@ public class S3Service {
         File reencodedFile = null;
 
         try {
-            //FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\ffmpeg-2024-05-08-git-e8e84dc325-full_build\\bin\\ffmpeg.exe");
-            //FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\ffmpeg-2024-05-08-git-e8e84dc325-full_build\\bin\\ffprobe.exe");
+            FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffmpeg.exe");
+            FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffprobe.exe");
 
-            FFmpeg ffmpeg = new FFmpeg("/usr/bin/ffmpeg");
-            FFprobe ffprobe = new FFprobe("/usr/bin/ffprobe");
+//            FFmpeg ffmpeg = new FFmpeg("/usr/bin/ffmpeg");
+//            FFprobe ffprobe = new FFprobe("/usr/bin/ffprobe");
 
             reencodedFile = File.createTempFile("reencoded_", "_" + originFileName);
 

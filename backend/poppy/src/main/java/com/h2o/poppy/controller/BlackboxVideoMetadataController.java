@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/video-data")
-@EnableAsync
 public class BlackboxVideoMetadataController {
 
 
@@ -50,17 +49,6 @@ public class BlackboxVideoMetadataController {
                                  @RequestParam("serialNumber") String serialNumber,
                                  @RequestParam("file") MultipartFile video) throws IOException {
 
-        // 비동기 작업 실행
-        return asyncSaveData(latitude, longitude, serialNumber, video);
-    }
-
-    @Async
-    public Future<Void> asyncSaveData(double latitude,
-                                      double longitude,
-                                      String serialNumber,
-                                      MultipartFile video) throws IOException {
-
-        // 비동기 작업 내용
         File originalFile = File.createTempFile("original_", "_" + video.getOriginalFilename());
         video.transferTo(originalFile);
         String originFileName = video.getOriginalFilename();
