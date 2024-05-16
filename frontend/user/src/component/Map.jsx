@@ -22,30 +22,7 @@ let endX, endY;
 let name;
 
 const styles = {
-  backButton: {
-    backgroundColor: "#d7dbec", // Content 컴포넌트의 활성화된 배경색과 일치
-    color: "black",
-    border: "none",
-    width: "100px",
-    height: "40px",
-    textAlign: "center",
-    textDecoration: "none",
-    display: "inline-block",
-    fontSize: "16px",
-    margin: "4px 0px",
-    cursor: "pointer",
-    borderRadius: "5px",
-  },
-  searchInput: {
-    height: "40px",
-    fontSize: "18px",
-    flexGrow: 1,
-    padding: "0 5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    marginRight: "0px",
-  },
-  searchContainer: {
+  searchWrapper: {
     position: "absolute",
     top: "10px",
     left: "50%",
@@ -55,10 +32,46 @@ const styles = {
     gap: "5px",
     zIndex: 1000,
     padding: "0 10px",
-    marginLeft: "5px",
+    "@media (max-width: 600px)": {
+      top: "5px",
+      padding: "0 5px",
+    },
+  },
+  backButton: {
+    backgroundColor: "#d7dbec",
+    color: "black",
+    border: "none",
+    width: "90px",
+    height: "40px",
+    textAlign: "center",
+    textDecoration: "none",
+    display: "inline-block",
+    fontSize: "16px",
+    margin: "4px 0px",
+    cursor: "pointer",
+    borderRadius: "5px",
+    "@media (max-width: 600px)": {
+      width: "80px",
+      height: "35px",
+      fontSize: "14px",
+    },
+  },
+  searchInput: {
+    height: "40px",
+    fontSize: "14px",
+    flexGrow: 1,
+    padding: "0 5px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    marginRight: "0px",
+    minWidth: "150px", // 최소 너비 설정
+    "@media (max-width: 600px)": {
+      height: "35px",
+      fontSize: "12px",
+    },
   },
   searchButton: {
-    backgroundColor: "#d7dbec", // Content 컴포넌트의 활성화된 배경색과 일치\
+    backgroundColor: "#d7dbec",
     color: "black",
     border: "none",
     height: "40px",
@@ -68,6 +81,11 @@ const styles = {
     margin: "4px 0px",
     cursor: "pointer",
     borderRadius: "5px",
+    "@media (max-width: 600px)": {
+      height: "35px",
+      width: "50px",
+      fontSize: "16px",
+    },
   },
   infoButtonWrapper: {
     position: "fixed",
@@ -606,6 +624,16 @@ function Map() {
     return points;
   }
 
+  const trafficColors = {
+    0: "#000000", // 교통 정보가 없을 때
+    1: "#009900", // 원활
+    2: "#7A8E0A", // 서행
+    3: "#8E8111", // 정체
+    4: "#FF0000", // 극심한 정체
+  };
+
+  const defaultColor = "#0000FF";
+
   const handleLocationSelect = async (
     lat,
     lng,
@@ -661,6 +689,7 @@ function Map() {
         detailPosFlag: "2",
         resCoordType: "WGS84GEO",
         sort: "index",
+        trafficInfo: "Y",
       }),
     };
 
@@ -718,15 +747,26 @@ function Map() {
         });
         console.log(routeData);
 
-        const pathPoints = resultData
-          .map((feature) => {
-            return feature.geometry.coordinates.map((coord) => {
-              return new Tmapv2.LatLng(coord[1], coord[0]); // 좌표를 Tmapv2.LatLng 객체로 직접 변환
+        resultData.forEach((feature) => {
+          const trafficInfo = feature.geometry.traffic || []; // 트래픽 정보가 없을 경우 빈 배열
+          if (trafficInfo.length > 0) {
+            trafficInfo.forEach((trafficSegment) => {
+              const [startIdx, endIdx, congestion, speed] = trafficSegment;
+              const segmentPoints = feature.geometry.coordinates
+                .slice(startIdx, endIdx + 1)
+                .map((coord) => {
+                  return new Tmapv2.LatLng(coord[1], coord[0]);
+                });
+              drawLine(segmentPoints, congestion); // 혼잡도를 drawLine에 전달
             });
-          })
-          .flat()
-          .filter((point) => point.lat() !== 0 && point.lng() !== 0);
-        drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
+          } else {
+            // 트래픽 정보가 없을 경우 기본 색상으로 경로 그리기
+            const pathPoints = feature.geometry.coordinates.map((coord) => {
+              return new Tmapv2.LatLng(coord[1], coord[0]);
+            });
+            drawLine(pathPoints, null); // 트래픽 정보가 없음을 표시
+          }
+        });
 
         setSelectedRoute({
           distance: response.features[0].properties.totalDistance / 1000,
@@ -824,7 +864,7 @@ function Map() {
   }
 
   function drawLine(arrPoint, traffic) {
-    const lineColor = "#FF0000"; // 빨간색으로 설정
+    const lineColor = trafficColors[traffic] || defaultColor; // 트래픽 정보가 없을 때 기본 색상 사용
     const filteredPoints = arrPoint.filter(
       (point) => point.lat() !== 0 && point.lng() !== 0
     ); // 0인 좌표 다시 한번 걸러내기
@@ -935,7 +975,7 @@ function Map() {
           }}
         />
       </div>
-      <div style={styles.searchContainer}>
+      <div style={styles.searchWrapper}>
         {searchPerformed && (
           <button onClick={handleBack} style={styles.backButton}>
             뒤로 가기
@@ -953,6 +993,21 @@ function Map() {
           검색
         </button>
       </div>
+      {showResults && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50px",
+            width: "100%",
+            zIndex: 1000,
+          }}
+        >
+          <SearchResults
+            results={searchResults}
+            onSelectLocation={handleLocationSelect}
+          />
+        </div>
+      )}
       {showResults && (
         <div
           style={{
