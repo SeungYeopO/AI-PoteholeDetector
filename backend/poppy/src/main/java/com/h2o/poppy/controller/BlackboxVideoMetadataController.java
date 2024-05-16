@@ -6,6 +6,8 @@ import com.h2o.poppy.service.BlackboxVideoMetadataService;
 import com.h2o.poppy.service.S3Service;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/video-data")
+@EnableAsync
 public class BlackboxVideoMetadataController {
 
 
@@ -42,6 +45,7 @@ public class BlackboxVideoMetadataController {
 
     // 비디오 등록 (블랙박스에서 위경도, 시리얼 넘버 보내면 자동 등록)
     @PostMapping
+    @Async
     public void saveData(@RequestParam("latitude") double latitude,
                            @RequestParam("longitude") double longitude,
                            @RequestParam("serialNumber") String serialNumber,
