@@ -27,13 +27,13 @@ public class BlackboxVideoMetadataController {
         this.s3Service = s3Service;
     }
 
-    // 전체 포트홀 읽기
+    // 전체 비디오메타데이터 읽기
     @GetMapping
     public List<BlackboxVideoMetadataDto> getAllVideo() {
         return blackboxVideoMetadataService.getAllBlackboxVideoMetadata();
     }
 
-    // 포트홀 1명 정보 보기
+    // 비디오메타데이터 1개 정보 보기
     @GetMapping("/{videoPk}")
     public BlackboxVideoMetadataDto getIdVideo(@PathVariable Long videoPk) {
         return blackboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
