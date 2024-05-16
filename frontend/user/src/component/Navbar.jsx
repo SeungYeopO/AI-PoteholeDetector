@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import icon1 from "../../public/icons/navicon1.png";
@@ -45,8 +46,64 @@ const Icon = styled.img`
   /* background-color : blue; */
 `;
 
+const LogoutText = styled.div`
+  width : 80%;
+  height : 60%;
+  margin-top : 1rem;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  font-size : 1.5rem;
+
+  
+`
+const LogoutBtn = styled.div`
+cursor: pointer;
+width : 35%;
+height : 80%;
+border-radius : 1.5rem;
+background-color : #db6464;
+font-size : 1.5rem;
+justify-content : center;
+align-items : center;
+display : flex;
+
+  
+`
+const LogoutBtnArea = styled.div`
+  width : 70%;
+  height : 30%;
+  /* background-color : red; */
+  margin-bottom : 1rem;
+  display : flex;
+  justify-content : space-around;
+  align-items : center;
+  
+`
+const LogoOutModal = styled.div`
+  background-color: white;
+  opacity : 98%;
+  border-radius : 1rem;
+  border : 1px solid gray;
+  width: 25rem; 
+  height: 13rem; 
+  position: fixed;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display : flex;
+  flex-direction : column;
+  justify-content : space-around;
+  align-items : center;
+
+  
+`
+
 function Navbar() {
   const location = useLocation();
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -65,12 +122,21 @@ function Navbar() {
   const gotoBlackbox = () => {
     navigate("/blackbox");
   };
+  
+  const clickLogout = () => {
+    setModalOpen(true);
+  }
 
   const gotoLogout = () => {
+
     logout();
     console.log("로그아웃");
     navigate("/");
   };
+  const logoutCloseModalOpen = () => {
+    setModalOpen(false);
+   }
+
 
   return (
     <Nav>
@@ -97,9 +163,18 @@ function Navbar() {
         <Text>블랙박스</Text>
       </Content>
       <Content>
-        <Icon onClick={gotoLogout} src={icon5}></Icon>
+        <Icon onClick={clickLogout} src={icon5}></Icon>
         <Text>로그아웃</Text>
       </Content>
+      {modalOpen && (
+        <LogoOutModal>
+          <LogoutText>로그아웃 하시겠습니까?</LogoutText>
+          <LogoutBtnArea>
+              <LogoutBtn onClick={gotoLogout}>예</LogoutBtn>
+              <LogoutBtn onClick={logoutCloseModalOpen} >아니오 </LogoutBtn>
+          </LogoutBtnArea>
+        </LogoOutModal>
+        )}
     </Nav>
   );
 }
