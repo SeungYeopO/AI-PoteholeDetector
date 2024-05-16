@@ -91,11 +91,11 @@ public class S3Service {
         File reencodedFile = null;
 
         try {
-            FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffmpeg.exe");
-            FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffprobe.exe");
+            //FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffmpeg.exe");
+            //FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\Desktop\\ffmpeg\\bin\\ffprobe.exe");
 
-//            FFmpeg ffmpeg = new FFmpeg("/usr/bin/ffmpeg");
-//            FFprobe ffprobe = new FFprobe("/usr/bin/ffprobe");
+            FFmpeg ffmpeg = new FFmpeg("/usr/bin/ffmpeg");
+            FFprobe ffprobe = new FFprobe("/usr/bin/ffprobe");
 
             reencodedFile = File.createTempFile("reencoded_", "_" + originFileName);
 

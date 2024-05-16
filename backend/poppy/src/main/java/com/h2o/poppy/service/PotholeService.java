@@ -81,6 +81,7 @@ public class PotholeService {
 
     }
 
+
     private String extractRoadName(String jsonString, String lat, String lon) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -95,6 +96,7 @@ public class PotholeService {
             return null;
         }
     }
+
 
     public String findFullRoadName(String args, String lat, String lon) {
         try{
@@ -140,6 +142,7 @@ public class PotholeService {
         }
     }
 
+
     public String saveData(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon ) {
         try{
             GeometryFactory geometryFactory = new GeometryFactory();
@@ -160,6 +163,39 @@ public class PotholeService {
             else return null;
         }
         catch (Exception e){
+            return null;
+        }
+    }
+
+    public String saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon ) {
+        try{
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
+
+            Pothole pothole = new Pothole();
+            pothole.setLocation(point);
+            pothole.setIsPothole(false);
+            pothole.setProvince(upperAddrName);
+            pothole.setCity(middleAddrName);
+            pothole.setStreet(lowerAddrName);
+            pothole.setDetectedAt(new Date());
+            pothole.setState("사용자신고");
+            potholeRepository.save(pothole);
+            long nowPk = pothole.getPotholePk();
+
+            if(nowPk!=0)return String.valueOf(nowPk);
+            else return null;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+
+    public String changeStateByUserPothole(Long potholePk){
+        try{
+            potholeRepository.updateByUserPothole(potholePk);
+            return "미확인";
+        }catch (Exception e){
             return null;
         }
     }
@@ -196,7 +232,7 @@ public class PotholeService {
 
             if(nowDate!=null){
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(nowDate); 
+                calendar.setTime(nowDate);
                 year = calendar.get(Calendar.YEAR);
                 month = calendar.get(Calendar.MONTH) + 1;
                 day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -262,6 +298,7 @@ public class PotholeService {
         }
     }
 
+
     public boolean rejectData(Long potholePk) {
         try {
             potholeRepository.updateIsPothole(potholePk);
@@ -270,6 +307,7 @@ public class PotholeService {
             return false;
         }
     }
+
 
     public List<PotholeDto> getBoundary(double targetLatitude,double targetLongitude, double size){
         try{
@@ -280,17 +318,27 @@ public class PotholeService {
         }
     }
 
+
     public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude){
         try{
             List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
 
             if (potholes.isEmpty()) {
-                return new ArrayList<>();
+                return new ArrayList<>(); // 빈 리스트 반환
             } else {
                 return potholes;
             }
         }catch (Exception e){
             return null;
+        }
+    }
+
+    public Long deletePothole(Long potholePk){
+        try{
+            potholeRepository.deleteById(potholePk);
+            return potholePk;
+        }catch (Exception e){
+            return 0L;
         }
     }
 
