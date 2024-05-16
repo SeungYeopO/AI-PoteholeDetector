@@ -167,6 +167,7 @@ const SaveBtn = styled.div`
   align-items: center;
   font-size: 1.7rem;
   color: white;
+  margin-bottom : 0.5rem;
 `;
 const VideoListModal = styled.div`
   background-color: #d3d3d3;
