@@ -36,7 +36,7 @@ public class PotholeController {
         private double longitude;
         private MultipartFile file;
     }
-
+    // 포트홀 등록
     @PostMapping
     public void saveData(@RequestParam("latitude") double latitude,
                          @RequestParam("longitude") double longitude,
@@ -71,6 +71,60 @@ public class PotholeController {
             s3Service.createFolder(road);
             s3Service.uploadFile(road, image);
         }
+    }
+
+
+    @PostMapping("/by-user")
+    public void saveDataByUser(@RequestParam("latitude") double latitude,
+                         @RequestParam("longitude") double longitude,
+                         @RequestParam("file") MultipartFile image) throws IOException {
+        String lat = Double.toString(latitude);
+        String lon = Double.toString(longitude);
+
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final long potholePk;
+
+            getResponse(boolean success, long potholePk) {
+                this.success = success;
+                this.potholePk = potholePk;
+            }
+        }
+
+        String road = potholeService.callTmapApi(lat, lon);
+
+        int directoryResult = addressService.saveAddress(road);
+        boolean checkGPS = true;
+
+        if (directoryResult == 2) {
+            checkGPS = potholeService.checkGPSdata(latitude, longitude);
+        }
+
+        long potholePk = 0;
+        if(checkGPS){
+            String[] words = road.split(" ");
+            String stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon);
+            s3Service.createFolder(road);
+            s3Service.uploadFile(road, image);
+        }
+    }
+
+    @PatchMapping("/user-upload/{potholePk}")
+    public Object changeStateByUserPothole(@PathVariable Long potholePk){
+        String result = potholeService.changeStateByUserPothole(potholePk);
+        boolean success = result != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final String result;
+
+            getResponse(boolean success, String result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
     }
 
     @GetMapping
@@ -209,6 +263,7 @@ public class PotholeController {
         return new DeleteDataResponse(result);
     }
 
+
     @Getter
     @Setter
     static class boundaryRequest {
@@ -289,5 +344,23 @@ public class PotholeController {
             }
         }
         return new getResponse(success, potholeList);
+    }
+
+    @DeleteMapping("/{potholePk}")
+    public Object deletePothoel(@PathVariable long potholePk){
+
+        Long result = potholeService.deletePothole(potholePk);
+        boolean success = result != 0L;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final Long result;
+
+            getResponse(boolean success, Long result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
     }
 }
