@@ -149,7 +149,7 @@ const FileText = styled.div`
 const FileBtn = styled.div`
   width: 15%;
   height: 70%;
-  background-color: lightcoral;
+  background-color: #FFC700;
   border-radius: 1rem;
   display: flex;
   justify-content: center;
@@ -161,7 +161,7 @@ const SaveBtn = styled.div`
   width: 22%;
   height: 75%;
   border-radius: 1.6rem;
-  background-color: #949eff;
+  background-color: lightcoral;
   display: flex;
   justify-content: center;
   align-items: center;

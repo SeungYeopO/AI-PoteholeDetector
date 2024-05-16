@@ -39,7 +39,7 @@ const ContentBox = styled.div`
   /* background-color : yellow; */
 `;
 const DateBox = styled.div`
-  margin-left: 0.5rem;
+  justify-content : center;
   width: 100%;
   height: 10%;
   /* background-color : pink;   */
@@ -58,7 +58,7 @@ const BoxName = styled.div`
   align-items: center;
   width: ${(props) => props.width || "25%"};
   height: 100%;
-  background-color: #8d8c8c;
+  background-color: #FFC700;
   font-size: 1.4rem;
 `;
 const DateTable = styled.div`
@@ -99,7 +99,7 @@ const Box = styled.div`
   width: 80%;
   display: flex;
   height: 60%;
-  border: 1px solid darkgray;
+  border: 2px solid #FFC700;
 `;
 const List = styled.div`
   display: flex;

@@ -102,7 +102,7 @@ const InputBox = styled.input`
 
   &::placeholder {
     color: #6f6c6c;
-    font-family: "BlackHanSans";
+    font-family: "Nanum";
     font-size: 1.3rem;
     font-weight: 300;
   }
