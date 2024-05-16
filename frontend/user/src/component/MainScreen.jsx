@@ -15,12 +15,12 @@ const Background = styled.div`
 
 const Container = styled.div`
   width : 80%;
-  height : 80%;
+  height : 73%;
   /* background-color : pink; */
   display : flex;
   flex-direction : column;
   align-items : center;
-  justify-content : space-around;
+  justify-content : space-between;
 `
 const LogoBox = styled.div`
   display : flex;
@@ -28,7 +28,7 @@ const LogoBox = styled.div`
   justify-content : center;
   margin-top : 3rem;
   width : 80%;
-  height : 45%;
+  height : 40%;
   /* background-color : lightcoral; */
 `
 
@@ -55,8 +55,8 @@ const LinkBox = styled.div`
 
 `
 const LogoImg = styled.img`
-  width : 22rem;
-  height : 22rem;
+  width : 20rem;
+  height : 20rem;
   
 `
 
