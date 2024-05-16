@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useNavigate} from 'react-router-dom';
 import backImg from '../assets/background/loginBackImg3.jpg';
 import Logo from '../assets/background/Loginlogo1.png'
-import logo from '../assets/background/logoImg.png'
-
+import logo from '../assets/background/logoImg.png';
+import { useEffect } from "react";
+import { useCookies } from 'react-cookie';
 
 const Background = styled.div`
   background-image : url(${backImg});
@@ -105,10 +106,47 @@ const SaveBtn = styled.div`
   font-size : 1.8rem;
 `
 
+
 const LoginPage = () => {
   const [userId, setuserId] = useState('');
   const [password, setPassword] = useState('');
+  const [cookies, setCookies] = useCookies([]);
   let navigate = useNavigate();
+
+  useEffect( () => {
+    if(cookies.managerPk) {
+      console.log('쿠키에 정보 있음');
+      navigate('/manager/mode');
+    
+    } else{
+      console.log('쿠키에 정보 없음')
+    }
+
+  },[])
+
+  const setCookie = (name, value) => {
+    const options = {
+      path: '/',
+      maxAge: 86400,
+      secure: true
+    };
+
+    let cookieString = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+    for (let key in options) {
+      cookieString += "; " + key;
+      let optionValue = options[key];
+      if (optionValue !== true) {
+
+        cookieString += "=" + optionValue;
+      } else {
+        console.log('쿠키 못넣음')
+      }
+    }
+
+    document.cookie = cookieString;
+
+  } 
 
   const handleIdChnage = (event) => {
     const id = event.target.value;
@@ -121,6 +159,14 @@ const LoginPage = () => {
     console.log(pw);
     setPassword(pw);
   }
+
+  const handleOnKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      gotoLogin();
+    }
+  }
+
   
   const gotoLogin = async () => {
     const userData = {
@@ -138,6 +184,7 @@ const LoginPage = () => {
       if(response.ok){
         const responseData = await response.json();
         console.log('로그인 성공', responseData);
+        setCookie('managerPk', responseData.managerPk);
         navigate('/manager/mode')
       }else{
         console.log('로그인 실패')
@@ -157,7 +204,7 @@ const LoginPage = () => {
           <LoginText>관리자 로그인</LoginText>
           <LoginArea>
             <LoginInput onChange={handleIdChnage} placeholder="관리자 아이디를 입력하세요"></LoginInput>
-            <LoginInput type="password" onChange={handlePWChange} placeholder="관리자 암호를 입력하세요"></LoginInput>
+            <LoginInput type="password" onKeyDown={handleOnKeyDown}  onChange={handlePWChange} placeholder="관리자 암호를 입력하세요"></LoginInput>
           </LoginArea>
           <SaveBtn onClick={gotoLogin}>로그인</SaveBtn>
         </LoginDiv>
