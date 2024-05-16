@@ -653,7 +653,8 @@ function Map() {
     const url = `https://apis.openapi.sk.com/tmap/app/routes?appKey=${appKey}&name=${encodedName}&lon=${endX}&lat=${endY}`;
 
     // URL 방문
-    window.location.href = url;
+    // window.location.href = url;
+    window.open(url, "_blank");
   };
 
   function simpleDistance(lat1, lon1, lat2, lon2) {
