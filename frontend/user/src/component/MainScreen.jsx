@@ -49,6 +49,7 @@ const LinkBox = styled.div`
   justify-content : center;
   font-size : 3rem;
   width : 100%;
+  font-weight: 500;
   height : 35%;
   background-color : #ffffff;
   border-radius : 1.5rem;
@@ -87,7 +88,7 @@ const MainScreen = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#FDF891"
+        backgroundColor: "#FFC700"
         
       }}>
         <Container>
