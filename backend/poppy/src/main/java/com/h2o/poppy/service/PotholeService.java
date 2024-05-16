@@ -47,12 +47,10 @@ public class PotholeService {
         this.potholeRepository = potholeRepository;
     }
 
-    //위도 경도로 도로 찾기
     public String callTmapApi(String lat, String lon) {
         try{
             String url = "https://apis.openapi.sk.com/tmap/road/nearToRoad";
 
-            // 쿼리 매개변수 설정
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                     .queryParam("version", "1")
                     .queryParam("lat", lat)
@@ -75,7 +73,6 @@ public class PotholeService {
             ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
             String responseBody = response.getBody();
 
-            // "roadName" 필드만 추출
             String roadName = extractRoadName(responseBody,lat,lon);
             return roadName;
         }catch (Exception e){
@@ -84,8 +81,6 @@ public class PotholeService {
 
     }
 
-
-    //위 반환도로이름 파싱해서 도로이름만 추출하기
     private String extractRoadName(String jsonString, String lat, String lon) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -101,8 +96,6 @@ public class PotholeService {
         }
     }
 
-
-    //전체 주소 찾기
     public String findFullRoadName(String args, String lat, String lon) {
         try{
             String url = "https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword=" + args + "&searchType=all&searchtypCd=R&centerLon=" + lon + "&centerLat=" + lat + "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&radius=1&page=1&count=20&multiPoint=N&poiGroupYn=N";
@@ -147,11 +140,8 @@ public class PotholeService {
         }
     }
 
-
-    // 포트홀 등록
     public String saveData(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon ) {
         try{
-            // GeometryFactory를 사용하여 Point 생성
             GeometryFactory geometryFactory = new GeometryFactory();
             Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
 
@@ -174,18 +164,14 @@ public class PotholeService {
         }
     }
 
-
-    // 이미있는 포트홀 검사
     public boolean checkGPSdata(double lat, double lon){
 
         List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat,lon);
-        //System.out.println(potholes.get(0).getPotholePk());
         if(potholes.isEmpty())return true;
         else return false;
     }
 
 
-    // 전체 get
     public List<PotholeDto> getAllPothole() {
         try {
             List<Pothole> getPothole = potholeRepository.findAll();
@@ -197,7 +183,6 @@ public class PotholeService {
         }
     }
 
-    // 선택사항 필터후 반환
     public List<PotholeDto> chooseGet(PotholeDto data){
         try {
             String nowState = data.getState();
@@ -211,10 +196,10 @@ public class PotholeService {
 
             if(nowDate!=null){
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(nowDate); // Date 객체를 Calendar로 설정
-                year = calendar.get(Calendar.YEAR); // 년도 추출
-                month = calendar.get(Calendar.MONTH) + 1; // 월 추출 (월은 0부터 시작하므로 +1)
-                day = calendar.get(Calendar.DAY_OF_MONTH); // 일 추출
+                calendar.setTime(nowDate); 
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH) + 1;
+                day = calendar.get(Calendar.DAY_OF_MONTH);
             }
 
             List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity, year,month,day);
@@ -225,7 +210,6 @@ public class PotholeService {
         }
     }
 
-    // 1인 get
     public PotholeDto getIdPothole(Long potholePk) {
         try{
             PotholeDto potholeDto = potholeRepository.getPotholeByPotholeId(potholePk);
@@ -236,7 +220,6 @@ public class PotholeService {
 
     }
 
-    //공사상태 get(공사대기)
     public List<PotholeDto> getState1Pothole(String nowState){
         try{
             List<PotholeDto> statePotholes = potholeRepository.getPotholeByNowState(nowState);
@@ -247,35 +230,28 @@ public class PotholeService {
         }
     }
 
-    // 공사상태(날짜) 변경
     public String changeState(PotholeDto data){
         try{
             long potholePk = data.getPotholePk();
             String nowState = data.getState();
 
-            LocalDate now = LocalDate.now(); // 현재 날짜를 가져옴
-            // 현재 날짜를 기준으로 Instant 객체 생성
+            LocalDate now = LocalDate.now();
             Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
 
-            // Instant를 Date로 변환
             Date currentDate = Date.from(instantNow);
-            // 2~5일 사이의 임의의 값을 더하여 새로운 날짜 생성
             Random random = new Random();
             int daysToAdd = random.nextInt(4) + 2;
             LocalDate exLocalDate = now.plusDays(daysToAdd);
 
-            // LocalDate를 Date로 변환
             Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
             Date exDate = Date.from(instant);
 
             if(nowState==null)return null;
             if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
             String changeState =null;
-            // 공사시작 버튼 누른경우
             if(nowState.equals("공사중")){
                 potholeRepository.updateIngState(potholePk,"공사중",currentDate,exDate);
                 changeState = "공사중";
-            // 공사완료 버튼 누른경우
             }else if(nowState.equals("공사완료")){
                 potholeRepository.updateFnishState(potholePk,"공사완료",currentDate);
                 changeState = "공사완료";
@@ -286,8 +262,6 @@ public class PotholeService {
         }
     }
 
-
-    // 삭제
     public boolean rejectData(Long potholePk) {
         try {
             potholeRepository.updateIsPothole(potholePk);
@@ -297,8 +271,6 @@ public class PotholeService {
         }
     }
 
-
-    // 바운더리 포트홀 조회
     public List<PotholeDto> getBoundary(double targetLatitude,double targetLongitude, double size){
         try{
             List<PotholeDto> pothole = potholeRepository.findPothlesbySize(targetLatitude,targetLongitude,size);
@@ -308,14 +280,12 @@ public class PotholeService {
         }
     }
 
-
-    // 경로상 포트홀 탐색
     public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude){
         try{
             List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
 
             if (potholes.isEmpty()) {
-                return new ArrayList<>(); // 빈 리스트 반환
+                return new ArrayList<>();
             } else {
                 return potholes;
             }

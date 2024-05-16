@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,39 +31,39 @@ public class BlackboxVideoMetadataController {
         this.s3Service = s3Service;
     }
 
-    // 전체 비디오메타데이터 읽기
     @GetMapping
     public List<BlackboxVideoMetadataDto> getAllVideo() {
         return blackboxVideoMetadataService.getAllBlackboxVideoMetadata();
     }
 
-    // 비디오메타데이터 1개 정보 보기
     @GetMapping("/{videoPk}")
     public BlackboxVideoMetadataDto getIdVideo(@PathVariable Long videoPk) {
         return blackboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
     }
 
 
-    // 비디오 등록 (블랙박스에서 위경도, 시리얼 넘버 보내면 자동 등록)
     @PostMapping
     @Async
     public void saveData(@RequestParam("latitude") double latitude,
-                           @RequestParam("longitude") double longitude,
-                           @RequestParam("serialNumber") String serialNumber,
-                           @RequestParam("file") MultipartFile video) throws IOException {
+                         @RequestParam("longitude") double longitude,
+                         @RequestParam("serialNumber") String serialNumber,
+                         @RequestParam("file") MultipartFile video) throws IOException {
 
-        String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
-        boolean success = fileName != null;
+        File originalFile = File.createTempFile("original_", "_" + video.getOriginalFilename());
+        video.transferTo(originalFile);
+        String originFileName = video.getOriginalFilename();
+        String videoType = video.getContentType();
+        String folderName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
+        boolean success = folderName != null;
         System.out.println(success);
 
         if(success){
-            System.out.println(fileName);
-            s3Service.createFolder(fileName);
-            s3Service.videoUploadFile(fileName,video);
+            System.out.println(folderName);
+            s3Service.createFolder(folderName);
+            s3Service.videoUploadFile(folderName,originalFile,originFileName,videoType);
         }
     }
 
-    // 수정
     @PutMapping
     public Object updateData(@RequestBody BlackboxVideoMetadataDto data) {
         long videoPk = blackboxVideoMetadataService.updateData(data);
@@ -77,7 +78,6 @@ public class BlackboxVideoMetadataController {
         return new UpdateDataResponse(videoPk);
     }
 
-    // 삭제
     @DeleteMapping("/{videoPk}")
     public Object deleteData(@PathVariable Long videoPk) {
         boolean result = blackboxVideoMetadataService.deleteData(videoPk);
@@ -93,11 +93,10 @@ public class BlackboxVideoMetadataController {
         return new DeleteDataResponse(result);
     }
 
-    // 사용자의 비디오 조회 userPk 입력
     @GetMapping("/user/{userPk}")
     public Object getByUserPk(@PathVariable Long userPk){
         List<BlackboxVideoMetadataJoinUserDto> result = blackboxVideoMetadataService.getByUserPk(userPk);
-        boolean success = result !=null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = result !=null; 
 
         @Getter
         class SaveResponse {

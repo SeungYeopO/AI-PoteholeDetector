@@ -36,7 +36,7 @@ public class PotholeController {
         private double longitude;
         private MultipartFile file;
     }
-    // 포트홀 등록
+
     @PostMapping
     public void saveData(@RequestParam("latitude") double latitude,
                          @RequestParam("longitude") double longitude,
@@ -61,7 +61,6 @@ public class PotholeController {
         boolean checkGPS = true;
 
         if (directoryResult == 2) {
-            //경로가 이미 존재
             checkGPS = potholeService.checkGPSdata(latitude, longitude);
         }
 
@@ -74,11 +73,10 @@ public class PotholeController {
         }
     }
 
-    // 전체 포트홀 읽기
     @GetMapping
     public Object getAllPothole() {
         List<PotholeDto> getAllPotholes = potholeService.getAllPothole();
-        boolean success = getAllPotholes != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = getAllPotholes != null;
         @Getter
         class getResponse {
             private final boolean success;
@@ -95,7 +93,7 @@ public class PotholeController {
     @PostMapping("/choose")
     public Object chooseGet(@RequestBody PotholeDto data) {
         List<PotholeDto> filteredDate = potholeService.chooseGet(data);
-        boolean success = filteredDate != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = filteredDate != null;
         @Getter
         class getResponse {
             private final boolean success;
@@ -112,7 +110,7 @@ public class PotholeController {
     @GetMapping("before-state")
     public Object getState1Potholes() {
         List<PotholeDto> State1Potholes = potholeService.getState1Pothole("미확인");
-        boolean success = State1Potholes != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = State1Potholes != null;
         @Getter
         class getResponse {
             private final boolean success;
@@ -129,7 +127,7 @@ public class PotholeController {
     @GetMapping("ing-state")
     public Object getState2Potholes() {
         List<PotholeDto> getState2Potholes = potholeService.getState1Pothole("공사중");
-        boolean success = getState2Potholes != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = getState2Potholes != null;
         @Getter
         class getResponse {
             private final boolean success;
@@ -146,7 +144,7 @@ public class PotholeController {
     @GetMapping("after-state")
     public Object getState3Potholes() {
         List<PotholeDto> getState3Potholes = potholeService.getState1Pothole("공사완료");
-        boolean success = getState3Potholes != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = getState3Potholes != null;
         @Getter
         class getResponse {
             private final boolean success;
@@ -160,7 +158,6 @@ public class PotholeController {
         return new getResponse(success, getState3Potholes);
     }
 
-    // 공사대기 - 공사중 - 공사완료 변경
     @PatchMapping
     public Object changeState(@RequestBody PotholeDto data) {
         String changeState = potholeService.changeState(data);
@@ -178,7 +175,6 @@ public class PotholeController {
         return new stateResponse(success, changeState);
     }
 
-    // 포트홀 1개 정보 보기
     @GetMapping("/{potholePk}")
     public Object getIdPothole(@PathVariable Long potholePk) {
 
@@ -198,7 +194,6 @@ public class PotholeController {
 
     }
 
-    // 삭제 -> 반려
     @PutMapping("/{potholePk}")
     public Object deleteData(@PathVariable Long potholePk) {
         boolean result = potholeService.rejectData(potholePk);
@@ -214,14 +209,12 @@ public class PotholeController {
         return new DeleteDataResponse(result);
     }
 
-
-    // 특정 바운더리 포트홀 검색
     @Getter
     @Setter
     static class boundaryRequest {
         private double latitude;
         private double longitude;
-        private double size; // km
+        private double size;
     }
     @PostMapping("search-boundary")
     public Object getBoundary(@RequestBody boundaryRequest data){
@@ -244,8 +237,6 @@ public class PotholeController {
         return new getResponse(success, result);
     }
 
-
-    // 경로상 포트홀 탐색
     @Getter
     @Setter
     static class traceRequest {

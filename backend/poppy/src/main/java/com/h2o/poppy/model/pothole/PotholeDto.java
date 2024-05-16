@@ -25,7 +25,7 @@ public class PotholeDto {
     private Date expectAt;
     private Date endAt;
     public PotholeDto() {
-        // 매개변수 없는 생성자 내용
+        
     }
 
     public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt) {

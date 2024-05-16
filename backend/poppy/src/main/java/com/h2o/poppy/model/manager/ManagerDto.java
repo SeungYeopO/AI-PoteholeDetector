@@ -18,7 +18,6 @@ public class ManagerDto {
     private String phoneNumber;
 
 
-    // Constructors
     public ManagerDto() {
     }
 

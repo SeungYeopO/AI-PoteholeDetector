@@ -17,7 +17,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Manager findByPassword(String password);
     Manager findManagerPkByLoginId(String loginId);
 
-    //수정
     @Transactional
     @Modifying
     @Query("UPDATE Manager e SET e.password = :newData WHERE e.managerPk = :managerPk")

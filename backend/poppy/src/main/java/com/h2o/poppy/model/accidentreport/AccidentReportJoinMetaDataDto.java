@@ -23,7 +23,6 @@ public class AccidentReportJoinMetaDataDto {
     private Date reportDate;
     private String state;
     private String rejectionReason;
-    // Constructors
 
     public AccidentReportJoinMetaDataDto(Long reportPk, String userName, Long potholePk, Long videoPk, String serialNumber,Double latitude,Double longitude, String reportContent, String reportName, Date reportDate,String state,String rejectionReason) {
         this.reportPk = reportPk;
