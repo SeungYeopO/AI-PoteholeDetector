@@ -59,4 +59,10 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
     int updateByUserPothole(@Param("potholePk") long Pk);
 
     void deleteById(Long potholePk);
+
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE pt.state = '사용자등록' and pt.isPothole = false")
+    List<PotholeDto> getPotholesByUserUpload();
+
+    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province,  pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE pt.state = '사용자등록' and pt.potholePk = :potholePk and  pt.isPothole = false")
+    PotholeDto getPotholeByUserUploadOne(@Param("potholePk") long potholePk);
 }
