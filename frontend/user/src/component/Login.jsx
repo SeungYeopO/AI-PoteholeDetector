@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
+import logo from '../../public/img/loginpoppy.png';
 
 function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
@@ -37,13 +38,13 @@ const Background = styled.div`
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #949eff;
+  background-color: #FDF891;
+  flex-direction : column;
 `;
 
 const Container = styled.div`
   width: 85%;
-  height: 65%;
+  height: 70%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -55,7 +56,7 @@ const LoginTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 4rem;
+  font-size: 4.2rem;
   width: 60%;
   height: 20%;
 `;
@@ -67,11 +68,12 @@ const ContentBox = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  /* background-color : red; */
 `;
 
 const Box = styled.div`
   width: 95%;
-  height: 35%;
+  height: 30%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -79,13 +81,12 @@ const Box = styled.div`
 `;
 
 const InputBox = styled.input`
-  width: 95%;
-  height: 40%;
+  width: 90%;
+  height: 45%;
   border-radius: 1.1rem;
   border: none;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   border: solid 1px #f5eaea;
-  opacity: 70%;
   font-size: 1.4rem;
   font-family: "BlackHanSans";
   text-indent: 0.3rem;
@@ -114,13 +115,26 @@ const SubmitBtn = styled.button`
   margin-top : 5rem;
   width: 35%;
   height: 13%;
-  background-color: #dcc80d;
+  border : none;
+  background-color: #ffffff;
   font-family: "BlackHanSans";
   font-size: 2rem;
-  border: none;
 `;
 
 const Foot = styled.div`
+`
+const LoginLogo = styled.div`
+  width : 90%;
+  height : 20%;
+  /* background-color : red; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  
+`
+const LogoImg = styled.img`
+  width : 23rem;
+  height : 7rem;
 `
 
 const Login = () => {
@@ -162,6 +176,9 @@ const Login = () => {
 
   return (
     <Background>
+      <LoginLogo>
+        <LogoImg src={logo}></LogoImg>
+      </LoginLogo>
       <Container>
         <LoginTitle>로그인</LoginTitle>
         <ContentBox>
