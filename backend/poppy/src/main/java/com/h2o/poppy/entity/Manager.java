@@ -28,7 +28,6 @@ public class Manager {
     @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
-    // 생성자
     public Manager() {
     }
 
@@ -39,5 +38,4 @@ public class Manager {
         this.phoneNumber = phoneNumber;
     }
 
-    // Getter와 Setter는 Lombok을 사용하여 자동 생성될 것입니다.
 }

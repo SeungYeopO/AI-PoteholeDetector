@@ -27,7 +27,7 @@ public class Pothole implements Serializable {
     private Long potholePk;
 
     @Column(name = "location", nullable = false)
-    private Geometry location;  // JTS의 Point 타입 사용
+    private Geometry location;
 
     @Column(name = "is_pothole", nullable = true)
     private Boolean isPothole;
@@ -63,11 +63,9 @@ public class Pothole implements Serializable {
     @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReports;
 
-    // 생성자
     public Pothole() {
     }
 
-    // 매개변수를 모두 포함한 생성자
     public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt) {
         GeometryFactory geometryFactory = new GeometryFactory();
         this.location = geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 경도, 위도 순서 주의

@@ -37,7 +37,6 @@ public class BlackboxVideoMetadata {
     @OneToOne(mappedBy = "videoPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AccidentReport accidentReport;
 
-    // 생성자
     public BlackboxVideoMetadata() {
     }
 

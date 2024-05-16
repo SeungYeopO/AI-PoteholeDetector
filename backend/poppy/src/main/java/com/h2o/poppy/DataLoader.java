@@ -62,10 +62,10 @@ public class DataLoader implements CommandLineRunner {
                 new UsersSerials(user2, serial2)));
 
         Date now = new Date();
-        Date date1 = new Date(2022 - 1900, 3, 25, 14, 30, 0); // 2022년 4월 25일 오후 2시 30분
-        Date date2 = new Date(2022 - 1900, 5, 46, 22, 30, 0); // 2022년 4월 25일 오후 2시 30분
-        Date date3 = new Date(2024 - 1900, 3, 10, 22, 30, 0); // 2022년 4월 25일 오후 2시 30분
-        Date date4 = new Date(2024 - 1900, 4, 16, 22, 30, 0); // 2022년 4월 25일 오후 2시 30분
+        Date date1 = new Date(2022 - 1900, 3, 25, 14, 30, 0);
+        Date date2 = new Date(2022 - 1900, 5, 46, 22, 30, 0); 
+        Date date3 = new Date(2024 - 1900, 3, 10, 22, 30, 0); 
+        Date date4 = new Date(2024 - 1900, 4, 16, 22, 30, 0); 
 
         potholeRepository.saveAll(List.of(
                 new Pothole(35.202370, 126.810139, true, "광주", "광산구", "하남산단6번로", date1, "미확인",null,null,null),
@@ -90,7 +90,6 @@ public class DataLoader implements CommandLineRunner {
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
         SerialList serialList3 = serialListRepository.findById(3L).orElse(null);
 
-        // Create instances of BlackboxVideoMetadata and save them
         if (serialList1 != null && serialList2 != null && serialList3 != null) {
             blackboxVideoMetadataRepository.saveAll(List.of(
                     new BlackboxVideoMetadata(serialList1, now, 35.202370, 126.810139, null),

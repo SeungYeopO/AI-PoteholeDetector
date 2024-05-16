@@ -20,7 +20,6 @@ public interface BlackboxVideoMetadataRepository extends JpaRepository<BlackboxV
     @Query("SELECT new com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto(bvm.videoPk, bvm.serialPk.serialPk, bvm.detectedAt, bvm.latitude, bvm.longitude, bvm.fileName) FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk")
     BlackboxVideoMetadataDto getBlackboxVideoMetadataByVideoId(@Param("videoPk") Long Pk);
 
-
     @Transactional
     @Modifying
     @Query("UPDATE BlackboxVideoMetadata e SET e.latitude = :newData WHERE e.videoPk = :videoPk")
@@ -31,7 +30,6 @@ public interface BlackboxVideoMetadataRepository extends JpaRepository<BlackboxV
     @Query("UPDATE BlackboxVideoMetadata e SET e.longitude = :newData WHERE e.videoPk = :videoPk")
     int updatelongitude(@Param("videoPk") long Pk, @Param("newData") double newValue);
 
-    // 사용자 pk입력에 대한 비디오 추출
     @Query("SELECT new com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto(bvm.videoPk, bvm.serialPk.serialPk, bvm.serialPk.serialNumber, bvm.detectedAt, bvm.latitude, bvm.longitude, bvm.fileName) FROM BlackboxVideoMetadata bvm WHERE bvm.serialPk = (SELECT us.serialPk FROM UsersSerials us WHERE us.userPk.userPk = :userPk)")
     List<BlackboxVideoMetadataJoinUserDto> findByJoinUserPk(@Param("userPk") Long userPk);
 }

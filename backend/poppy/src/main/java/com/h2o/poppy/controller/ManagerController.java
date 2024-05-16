@@ -21,19 +21,16 @@ public class ManagerController {
         this.managerService = managerService;
     }
 
-    //전체 매니저 읽기
     @GetMapping
     public List<ManagerDto> getAllManager() {
         return managerService.getAllManager();
     }
 
-    // 매니저 1명 정보 보기
     @GetMapping("/{managerPk}")
     public ManagerDto getIdManager(@PathVariable Long managerPk) {
         return managerService.getIdManager(managerPk);
     }
 
-    // 아이디 중복 검사
     @PostMapping("/duplicate-id")
     public Object duplicateId(@RequestBody ManagerDto data) {
         boolean result = managerService.duplicateId(data.getLoginId());
@@ -48,11 +45,10 @@ public class ManagerController {
         return new duplicateIdResponse(result);
     }
 
-    // 관리자 회원가입
     @PostMapping
     public Object saveData(@RequestBody Manager data) {
         long managerPk = managerService.saveData(data);
-        boolean success = managerPk > 0; // PK가 0보다 크다면 성공으로 간주
+        boolean success = managerPk > 0;
 
         @Getter
         class SaveResponse {
@@ -67,7 +63,6 @@ public class ManagerController {
         return new SaveResponse(success, managerPk);
     }
 
-    //수정
     @PutMapping("/{managerPk}")
     public Object updateData(@PathVariable long managerPk, @RequestBody ManagerDto data) {
         data.setManagerPk(managerPk);
@@ -87,7 +82,6 @@ public class ManagerController {
         return new UpdateDataResponse(state);
     }
 
-    //삭제
     @DeleteMapping("/{managerPk}")
     public Object deleteData(@PathVariable Long managerPk) {
         boolean result = managerService.deleteData(managerPk);
@@ -103,7 +97,6 @@ public class ManagerController {
         return new DeleteDataResponse(result);
     }
 
-    // 로그인
     @PostMapping("/login")
     public Object login(@RequestBody ManagerDto data) {
         long managerPk = managerService.login(data);

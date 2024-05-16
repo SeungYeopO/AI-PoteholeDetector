@@ -17,22 +17,19 @@ public class AddressService {
     }
 
     public int saveAddress(String address) {
-        // 입력된 주소가 null 이거나 빈 문자열인지 검사
         if (!StringUtils.hasText(address)) {
             System.out.println("Invalid address input.");
-            return 0; // 유효하지 않은 입력 처리
+            return 0;
         }
 
-        // 데이터베이스에 이미 같은 ID의 주소가 있는지 확인
         if (addressRepository.existsById(address)) {
             System.out.println("Address already exists in the database.");
-            return 2; // 이미 존재하는 주소
+            return 2;
         }
 
-        // 새 주소 객체를 생성하고 저장
         Address newAddress = new Address(address);
         addressRepository.save(newAddress);
         System.out.println("Address saved to database successfully.");
-        return 1; // 성공적으로 저장됨
+        return 1;
     }
 }
