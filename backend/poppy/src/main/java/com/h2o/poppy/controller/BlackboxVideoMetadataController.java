@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -43,25 +45,37 @@ public class BlackboxVideoMetadataController {
 
 
     @PostMapping
-    @Async
-    public void saveData(@RequestParam("latitude") double latitude,
-                         @RequestParam("longitude") double longitude,
-                         @RequestParam("serialNumber") String serialNumber,
-                         @RequestParam("file") MultipartFile video) throws IOException {
+    public Future<Void> saveData(@RequestParam("latitude") double latitude,
+                                 @RequestParam("longitude") double longitude,
+                                 @RequestParam("serialNumber") String serialNumber,
+                                 @RequestParam("file") MultipartFile video) throws IOException {
 
+        // 비동기 작업 실행
+        return asyncSaveData(latitude, longitude, serialNumber, video);
+    }
+
+    @Async
+    public Future<Void> asyncSaveData(double latitude,
+                                      double longitude,
+                                      String serialNumber,
+                                      MultipartFile video) throws IOException {
+
+        // 비동기 작업 내용
         File originalFile = File.createTempFile("original_", "_" + video.getOriginalFilename());
         video.transferTo(originalFile);
         String originFileName = video.getOriginalFilename();
         String videoType = video.getContentType();
-        String folderName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
+        String folderName = blackboxVideoMetadataService.saveData(latitude, longitude, serialNumber, video);
         boolean success = folderName != null;
         System.out.println(success);
 
-        if(success){
+        if (success) {
             System.out.println(folderName);
             s3Service.createFolder(folderName);
-            s3Service.videoUploadFile(folderName,originalFile,originFileName,videoType);
+            s3Service.videoUploadFile(folderName, originalFile, originFileName, videoType);
         }
+
+        return CompletableFuture.completedFuture(null);
     }
 
     @PutMapping
