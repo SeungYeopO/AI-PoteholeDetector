@@ -5,6 +5,8 @@ import closeBtnImg from '../assets/modal/closeBtn.png'
 import { useNavigate } from "react-router-dom";
 import Calender from 'react-calendar';
 import calendarImg from '../assets/modal/calenderImg.png';
+import spinner from '../assets/background/loading1.gif';
+import React from "react";
 
 import '../../node_modules/react-calendar/dist/Calendar.css';
 
@@ -62,7 +64,8 @@ const BoxName = styled.div`
   align-items : center;
  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #8d8c8c;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
   font-size : 1.4rem;
 
 `
@@ -79,7 +82,7 @@ const SortInfo = styled.div`
   display : flex;
   text-indent : 0.3rem;
   align-items : center;
-  font-size : 1.1rem;
+  font-size : 1.2rem;
   
 `
 const CalenderImg = styled.img`
@@ -155,6 +158,29 @@ const Btn = styled.button`
   cursor: pointer;
   
 `
+const SearchBtn = styled.div`
+  cursor: pointer;
+  margin-left : 1rem;
+  border-radius : 1rem;
+  width : 5%;
+  height : 45%;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
+  font-size : 1.3rem;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+
+  
+`
+
+const Box = styled.div`
+  width : 100%;
+  height : 100%;
+  /* background-color : yellow; */
+  display : flex;
+  align-items : center;
+`
 const PageNumArea = styled.div`
 
 `
@@ -163,6 +189,25 @@ const PageText = styled.div`
   justify-content : center;
   align-items : center;
   `
+
+  const Loading = styled.div`
+  width : 95%;
+  height: 73%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
+const CalenderModal = styled.div`
+  /* background-color: white; */
+  opacity: 98%;
+  border-radius: 1rem;
+  width: 20rem; 
+  height: 15rem; 
+  position: absolute; /* 부모 요소를 기준으로 위치를 절대값으로 지정 */
+  top: calc(25% - 12.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
+  left: calc(40% - 10.4rem); /* CalenderImg 버튼의 위치에 따라 조정 */
+  z-index: 1000;
+`
 
 const CompensationDonePage = () => {
   const [data, setData] = useState([]);
@@ -177,21 +222,26 @@ const CompensationDonePage = () => {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedList, setSelectedList] = useState(null);
   const [color, setColoredData] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/data/articledata.json'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+        setIsLoading(true);
+        setTimeout(async () => {
+           const response = await fetch(
+          '/api/accident-report/yes-check'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
         );
         if (!response.ok) {
           throw new Error('일단 try 구문은 돌았음');
         }
         const jsonData = await response.json();
-        console.log('데이터', jsonData);
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
-        setData(jsonData);
+        console.log('데이터', jsonData.yesCheckState);
+        setTotalPages(Math.max(Math.ceil(jsonData.yesCheckState.length / itemsPerPage), 1));
+        setData(jsonData.yesCheckState);
+        setIsLoading(false);
+        }, 500)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -206,6 +256,17 @@ const CompensationDonePage = () => {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}.${month}.${day}`;
   };
+
+  const format2Date = (date) => {
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else{
+      return null;
+    }
+  }
 
   const modalOpen = () => {
     console.log('click')
@@ -237,21 +298,65 @@ const CompensationDonePage = () => {
     setIsInfoModalOpen(false);
   };
   
+  const handleDdateClick = (value) => {
+    setSelectedDate(value);
+    setIsModalOpen(false);
+  }
+  
+  const gotoSearch = () => {
+    const userData = {
+      reportDate : format2Date(selectedDate),
+      state : '보상완료'
+    };
+    try {
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report/date', {
+          method : "POST",
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok){
+          const responseData = await response.json();
+          console.log('조회된 데이터', responseData.dateList);
+          setData(responseData.dateList)
+    
+          setIsLoading(false);
+        } else{
+          console.log('데이터 조회 실패');
+        }
+      }, 500)
+    } catch (error){
+      console.log('에러발생', error);
+    }
+  }
 
   return (
     <Background>
         <SideNav />
         <Content>
         <TimeArea>
-          <DateBox>
-             <BoxName>날짜</BoxName>
-              <DateTable>
-                <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
-                <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
-              </DateTable>
-            </DateBox>
+           <Box>
+            <DateBox>
+              <BoxName>날짜</BoxName>
+                <DateTable>
+                  <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
+                  <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
+                </DateTable>
+              </DateBox>
+              <SearchBtn onClick={gotoSearch}>조회</SearchBtn>
+           </Box>
         </TimeArea>
-        <ListArea>
+        {isLoading ? (
+             <Loading>
+             <h1>잠시만 기다려 주세요...</h1>
+             <img src={spinner} alt="loading" />
+           </Loading>
+        ) : (
+          <React.Fragment>
+             <ListArea>
           <SortedList>
                 <ListHeader>
                   <Info>상태</Info>
@@ -259,14 +364,16 @@ const CompensationDonePage = () => {
                   <Info width="20%">작성자</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
-              {currentData && currentData.map((item, index) => (
-                <Lists key={index} onClick={()=> handleListClick(item)}>
-                  <Info color={color}>{item.state}</Info>
-                  <Info width="48%">{item.title}</Info>
-                  <Info width="20%">{item.writer}</Info>
-                  <Info width="20%">{item.date}</Info>
-                </Lists>
-              ))}
+              {currentData && currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+                currentData.map((item, index) => (
+                  <Lists key={index} onClick={()=> handleListClick(item)}>
+                    <Info color={color}>{item.state}</Info>
+                    <Info width="48%">{item.reportContent}</Info>
+                    <Info width="20%">{item.userName}</Info>
+                    <Info width="20%">{item.reportDate.slice(0,10)}</Info>
+                  </Lists>
+                ))
+              ) }
               </SortedList>
         </ListArea>
         <Page>
@@ -289,7 +396,16 @@ const CompensationDonePage = () => {
             페이지: {currentPage} / {totalPages}
           </PageText>
             </Page>
+
+          </React.Fragment>
+        ) }
+       
         </Content>
+        {ismodalOpen && (
+        <CalenderModal>
+            <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
+        </CalenderModal>
+      )}
     </Background>
   );
 };

@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import logoImg from '../assets/sidenav/logo.png'
 import logo from '../assets/background/logoImg2.png'
 import profileImg from '../assets/sidenav/profile.png'
+import { useState } from "react";
 
 
 const SideBox = styled.div`
@@ -64,6 +64,7 @@ const UserInfoBox = styled.div`
   height : 10%;
   margin-bottom : 1rem;
   justify-content : space-between;
+  cursor: pointer;
 `
 
 const LogoImg = styled.img`
@@ -102,7 +103,58 @@ const ProfileName = styled.div`
   align-items : center;
   justify-content : left;
 
+`
+const LogoOutModal = styled.div`
+  background-color: white;
+  opacity : 98%;
+  border-radius : 1rem;
+  border : 1px solid gray;
+  width: 25rem; 
+  height: 13rem; 
+  position: fixed;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display : flex;
+  flex-direction : column;
+  justify-content : space-around;
+  align-items : center;
 
+  
+`
+const LogoutText = styled.div`
+  width : 80%;
+  height : 60%;
+  margin-top : 1rem;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  font-size : 1.5rem;
+
+  
+`
+const LogoutBtnArea = styled.div`
+  width : 70%;
+  height : 30%;
+  /* background-color : red; */
+  margin-bottom : 1rem;
+  display : flex;
+  justify-content : space-around;
+  align-items : center;
+  
+`
+const LogoutBtn = styled.div`
+cursor: pointer;
+width : 35%;
+height : 80%;
+border-radius : 1.5rem;
+background-color : #db6464;
+font-size : 1.5rem;
+justify-content : center;
+align-items : center;
+display : flex;
 
   
 `
@@ -110,6 +162,7 @@ const ProfileName = styled.div`
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const gotoManageReport = () => {
     navigate('/manager/report')
@@ -126,6 +179,23 @@ const SideNav = () => {
   const gotoModeSelect = () => {
     navigate('/manager/mode');
   }
+
+  const gotoLogout = () => {
+    try {
+      document.cookie = "managerPk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = "/manager/login";
+    } catch {
+      console.log("로그아웃 실패");
+    }
+
+  }
+   const logoutModalOpen = () => {
+    setModalOpen(true);
+   }
+   const logoutCloseModalOpen = () => {
+    setModalOpen(false);
+   }
+
   return (
     <SideBox>
       <LogoBox>
@@ -137,11 +207,20 @@ const SideNav = () => {
         <List onClick={gotoManageProcess} active={location.pathname === "/manager/process"}>처리내역</List>
         <List onClick={gotoManageDone} active={location.pathname === "/manager/done"}>완료내역</List> 
       </ListBox>
-      <UserInfoBox>
+      <UserInfoBox  onClick={logoutModalOpen}>
         <ProfileImg src={profileImg}></ProfileImg>
         <ProfileName>김싸피</ProfileName>
       </UserInfoBox>
-
+      {modalOpen && (
+        <LogoOutModal>
+          <LogoutText>로그아웃 하시겠습니까?</LogoutText>
+          <LogoutBtnArea>
+              <LogoutBtn onClick={gotoLogout}>예</LogoutBtn>
+              <LogoutBtn onClick={logoutCloseModalOpen} >아니오 </LogoutBtn>
+          </LogoutBtnArea>
+        </LogoOutModal>
+        )}
+        
     </SideBox>
   );
 };

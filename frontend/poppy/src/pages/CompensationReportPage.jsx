@@ -2,10 +2,12 @@ import styled from "styled-components";
 import SideNav from "../components/SideNav_ver2";
 import { useState, useEffect } from "react";
 import closeBtnImg from '../assets/modal/closeBtn.png'
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import Calender from 'react-calendar';
 import calendarImg from '../assets/modal/calenderImg.png';
 import '../../node_modules/react-calendar/dist/Calendar.css';
+import spinner from '../assets/background/loading1.gif';
+import React from "react";
 
 
 const Background = styled.div`
@@ -32,6 +34,7 @@ const TimeArea = styled.div`
   font-size : 1.1rem;
   display : flex;
   align-items : center;  
+  justify-content : center;
 `
 const ListArea = styled.div` 
   margin-left : 2rem;
@@ -61,7 +64,8 @@ const BoxName = styled.div`
   align-items : center;
  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #8d8c8c;
+   background-color : #ffffff;
+  border : 1px solid #A1A1A1;
   font-size : 1.4rem;
 
 `
@@ -78,7 +82,7 @@ const SortInfo = styled.div`
   display : flex;
   text-indent : 0.3rem;
   align-items : center;
-  font-size : 1.1rem;
+  font-size : 1.2rem;
   
 `
 const CalenderImg = styled.img`
@@ -171,7 +175,7 @@ const ListDetailModal = styled.div`
   border-radius : 1rem;
   border : 1px solid gray;
   width: 55rem; 
-  height: 35rem; 
+  height: 40rem; 
   position: fixed;
   top: 50%; 
   left: 50%; 
@@ -188,6 +192,7 @@ const ModalHeader = styled.div`
   border-top-left-radius : 1rem;
   flex-direction : row;
   justify-content : space-between;
+  align-items : center;
 `
 const ModalContent = styled.div`
   display : flex;
@@ -236,9 +241,9 @@ const PlusFileArea = styled.div`
   display : flex;
   flex-direction : column;
   justify-content : space-between;
-  align-items : center;
+  /* align-items : center; */
   width : 90%;
-  height : 25%;
+  height : 30%;
   /* background-color : lightgreen; */
   
 `
@@ -247,7 +252,7 @@ const BtnArea = styled.div`
   justify-content : space-around;
   align-items : center;
   width : 60%;
-  height : ${(props) => props.height || '15%'};
+  height : ${(props) => props.height || '10%'};
   /* background-color : lightcoral; */
   
 `
@@ -260,9 +265,17 @@ const BtnArea2 = styled.div`
   /* background-color : gray; */
 
 `
+const Box = styled.div`
+  width : 100%;
+  height : 100%;
+  /* background-color : yellow; */
+  display : flex;
+  align-items : center;
+`
 const SubFile = styled.div`
   display : flex;
   align-items : center;
+  text-align : left;
   width : 100%;
   height : 30%;
   /* background-color : darkgreen; */
@@ -339,6 +352,13 @@ const TitleInput = styled.input`
     font-weight: 300;
   }
 `
+const Loading = styled.div`
+  width : 95%;
+  height: 73%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+`
 const ContentInput = styled.textarea`
   width: 90%;
   height: 90%;
@@ -354,6 +374,22 @@ const ContentInput = styled.textarea`
     font-weight: 300;
   }
 `
+const SearchBtn = styled.div`
+  cursor: pointer;
+  margin-left : 1rem;
+  border-radius : 1rem;
+  width : 5%;
+  height : 45%;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
+  font-size : 1.3rem;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+
+  
+`
+
 const CompensationReportPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -369,7 +405,9 @@ const CompensationReportPage = () => {
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [returnTitle, setReturnTitle] = useState('');
   const [returnContent, setReturnContent] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageList, setImageList] = useState([]);
+  const [blobImageList, setBlobImageList] = useState([]);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -378,32 +416,40 @@ const CompensationReportPage = () => {
     return `${year}.${month}.${day}`;
   }
 
-  const modalOpen = () => {
-    console.log('click')
-    if(ismodalOpen === false) {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-    }
-  };
   const handleDdateClick = (value) => {
     setSelectedDate(value);
     setIsModalOpen(false);
   }
   
+
+  const modalOpen = () => {
+    console.log('click');
+    if(ismodalOpen === false) {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(false);
+      }
+    
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/api/accident-report/no-check'  
-        );
-        if (!response.ok) {
-          throw new Error('일단 try 구문은 돌았음');
-        }
-        const jsonData = await response.json();
-        console.log('데이터', jsonData.noCheckState);
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
-        setData(jsonData.noCheckState);    
+        setIsLoading(true);
+        setTimeout(async () => {
+          const response = await fetch(
+            '/api/accident-report/no-check'  
+          );
+          if (!response.ok) {
+            throw new Error('일단 try 구문은 돌았음');
+          }
+          const jsonData = await response.json();
+          console.log('데이터', jsonData.noCheckState);
+          setTotalPages(Math.max(Math.ceil(jsonData.noCheckState.length / itemsPerPage), 1));
+          setData(jsonData.noCheckState); 
+          setIsLoading(false);   
+        }, 500)
+    
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -424,13 +470,46 @@ const CompensationReportPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
   }
 
-  const handleListClick = (item) => {
+  const handleListClick = async (item) => {
     setIsInfoModalOpen(true);
     console.log(item);
-    setSelectedList(item);
-  }
+
+    try {
+        const response = await fetch(`/api/accident-report/${item.reportPk}`);
+  
+        if (response.ok) {
+            const jsonData = await response.json();
+            console.log('조회 리스트 데이터,', jsonData)
+            console.log('한개 리스트 데이터', jsonData.imageFileNameList);
+            setSelectedList(jsonData.result);
+            setImageList(jsonData.imageFileNameList);
+
+            const blobURLs = await Promise.all(jsonData.imageFileNameList.map(async (imageURL) => {
+                try {
+                    const response = await fetch(`http://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`);
+                    if (!response.ok) {
+                        throw new Error('이미지 데이터 가져오기 실패');
+                    }
+                    const imageBlob = await response.blob();
+                    const blobURL = URL.createObjectURL(imageBlob);
+                    return blobURL;
+                } catch (error) {
+                    console.error('이미지 데이터 가져오기 오류:', error);
+                    return null; 
+                }
+            }));
+            setBlobImageList(blobURLs); 
+        } else {
+            console.log('리스트 실패');
+        }
+    } catch (error) {
+        console.error('에러발생', error);
+    }
+}
+
   
   const closeModal = () => {
+    console.log(imageList);
     setIsInfoModalOpen(false);
   }
   const closeReturnModal = () => {
@@ -451,20 +530,135 @@ const CompensationReportPage = () => {
     setReturnContent(event.target.value);
 
   }
+
+  const format2Date = (date) => {
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else{
+      return null;
+    }
+  }
+
+  const gotoSearch = () => {
+
+    const userData = {
+      reportDate : format2Date(selectedDate),
+      state : '미확인'
+    };
+    try {
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report/date', {
+          method : "POST",
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok){
+          const responseData = await response.json();
+          console.log('조회된 데이터', responseData.dateList);
+          setData(responseData.dateList)
+          setIsLoading(false);
+        } else{
+          console.log('데이터 조회 실패');
+        }
+      }, 500)
+    } catch (error){
+      console.log('에러발생', error);
+    }
+
+  }
+  
+  const gotoApprove = () => {
+    const userData = {
+      reportPk : selectedList.reportPk,
+      state : '보상승인',
+      rejectionReason : null
+    };
+    try{
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report',{
+          method : 'PATCH',
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok) {
+          setIsLoading(false);
+          const responseData = await response.json();
+          console.log('수정 성공', responseData);
+
+          window.location.reload();
+        } else{
+          console.log('수정 실패')
+        }
+      },500)
+    } catch(error){
+      console.log('오류발생', error);
+    }
+  }
+
+  const gotoSend = () => {
+    const userData = {
+      reportPk : selectedList.reportPk,
+      state : '반려',
+      rejectionReason : `Title : ${returnTitle} , Content : ${returnContent}`
+    };
+
+    try{
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await fetch('/api/accident-report',{
+          method : 'PATCH',
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if(response.ok) {
+          setIsLoading(false);
+          const responseData = await response.json();
+          console.log('반려 수정 성공', responseData);
+          window.location.reload();
+        } else{
+          console.log('수정 실패')
+        }
+      },500)
+    } catch(error){
+      console.log('오류발생', error);
+    }
+  }
+
   return (
     <Background>
         <SideNav />
         <Content>
         <TimeArea>
-        <DateBox>
-             <BoxName>날짜</BoxName>
-              <DateTable>
-                <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
-                <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
-              </DateTable>
-            </DateBox>
+          <Box>
+            <DateBox>
+                <BoxName>날짜</BoxName>
+                  <DateTable>
+                    <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
+                    <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
+                  </DateTable>
+                </DateBox>
+                <SearchBtn onClick={gotoSearch}>조회</SearchBtn>
+          </Box>
         </TimeArea>
-        <ListArea>
+        {isLoading ? (
+            <Loading>
+            <h1>잠시만 기다려 주세요...</h1>
+            <img src={spinner} alt="loading" />
+          </Loading>
+        ) : (
+          <React.Fragment>
+              <ListArea>
           <SortedList>
                 <ListHeader>
                   <Info>순번</Info>
@@ -472,15 +666,16 @@ const CompensationReportPage = () => {
                   <Info width="20%">작성자</Info>
                   <Info width="20%">작성일</Info>
                 </ListHeader>
-              {currentData && currentData.map((item, index) => (
-                <Lists key={index} onClick={()=> handleListClick(item)}>
-                  <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
-                  <Info width="48%">{item.reportName}</Info>
-                  <Info width="20%">{item.report}</Info>
-                  <Info width="20%">{item.reportDate.slice(0,10)}</Info>
-                </Lists>
-              ))}
-          
+              {currentData && currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+                currentData.map((item, index) => (
+                  <Lists key={index} onClick={()=> handleListClick(item)}>
+                    <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
+                    <Info width="48%">{item.reportName}</Info>
+                    <Info width="20%">{item.userName}</Info>
+                    <Info width="20%">{item.reportDate.slice(0,10)}</Info>
+                  </Lists>
+                ))
+              ) } 
               </SortedList>
         </ListArea>
             <Page>
@@ -503,10 +698,14 @@ const CompensationReportPage = () => {
             페이지: {currentPage} / {totalPages}
           </PageText>
             </Page>
+          </React.Fragment>
+
+        )}
+       
         </Content>
         {ismodalOpen && (
         <CalenderModal>
-            <Calender onChange={handleDdateClick}  />
+            <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
         </CalenderModal>
       )}
        {selectedList&&isInfoModalOpen && (<ListDetailModal>
@@ -517,16 +716,20 @@ const CompensationReportPage = () => {
           <ModalContent height="89%" marginTop="0rem">
             <ArticleArea>
               <ArticleList>{selectedList.reportName}</ArticleList>
-              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.writer}</ArticleList>
+              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.userName}</ArticleList>
               <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.reportContent}</ArticleList>
             </ArticleArea>
             <PlusFileArea>
               <SubFile>[첨부파일]</SubFile>
+              {imageList&& blobImageList && blobImageList.map((blobURL, index) => (
+                  <a key={index} href={blobURL} download={imageList[index]}>
+                    <SubFile fontSize="1.3rem" color="#004FC7">{imageList[index]}</SubFile>
+                  </a>
+                ))}
               <SubFile fontSize="1.3rem" color="#004FC7">{selectedList.video}</SubFile>
-              <SubFile fontSize="1.3rem" color="#004FC7">{selectedList.photo}</SubFile>
             </PlusFileArea>
             <BtnArea>
-              <Btn1>보상승인</Btn1>
+              <Btn1 onClick={gotoApprove}>보상승인</Btn1>
               <Btn1 onClick={openReturnModalOpen}>반려</Btn1>
             </BtnArea>
           </ModalContent>
@@ -546,7 +749,7 @@ const CompensationReportPage = () => {
             </ReturnModalContent>
           </ModalContent>
           <BtnArea2 height="17%">
-            <Btn2>제출</Btn2>
+            <Btn2 onClick = {gotoSend}> 최종 제출</Btn2>
           </BtnArea2>
         </ReturnModal>)}
     </Background>

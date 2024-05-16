@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import React from "react";
 import SideNav from "../components/SideNav";
 import { useState, useEffect } from "react";
 import Calender from 'react-calendar';
@@ -6,6 +7,9 @@ import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../assets/modal/calenderImg.png';
 import closeBtnImg from '../assets/modal/closeBtn.png';
 import reloadImg from '../assets/modal/reload.png'
+import spinner from '../assets/background/loading1.gif';
+import reloadImg1 from '../assets/background/reload.png';
+import reloadImg2 from '../assets/background/reload3.png';
 
 
 const Background = styled.div`
@@ -83,7 +87,8 @@ const SearchBtn = styled.div`
   align-items : center;
   width : 45%;
   height : 100%;
-  background-color : green;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
 `
 const AreaDrop = styled.select`
   width : 44%;
@@ -104,7 +109,8 @@ const BoxName = styled.div`
   align-items : center;
  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #8d8c8c;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
   font-size : 1.4rem;
 
 `
@@ -115,13 +121,15 @@ const BoxName1 = styled.div`
   width : 12.5%;
   height : 100%;
   font-size : 1.4rem;
-  background-color : #8d8c8c;
+  background-color : #ffffff;
+  border : 1px solid #A1A1A1;
 `
 const DateTable = styled.div`
-  background-color :  white;
+  background-color :  #ffffff;
   width : 75%;
   height : 100%;
   display : flex;
+  border : 1px solid #A1A1A1;
   
 `
 const StateDrop = styled.select`
@@ -137,6 +145,7 @@ const DropArea = styled.div`
   display : flex;
   align-items : center;
   justify-content : space-between;
+  
   
 `
 const ListHeader = styled.div`
@@ -239,7 +248,7 @@ const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
   border-radius : 1rem;
-  border : 1px solid gray;
+  border : 1px solid darkgray;
   width: 55rem; 
   height: 30rem; 
   position: fixed;
@@ -305,7 +314,7 @@ const ModalImg = styled.img`
 const ModalTable = styled.table`
   width : 54%;
   height : 100%;
-  background-color :#A1A1A1;
+  background-color :#EFEFEF;
   border-collapse : collapse;
 `
 const BtnArea = styled.div`
@@ -352,6 +361,7 @@ const ModalTitle = styled.div`
 ` 
 
 const ReFilterBtn = styled.div`
+  cursor: pointer;
   width : 30%;
   height : 100%;
   /* background-color : yellow; */
@@ -360,17 +370,25 @@ const ReFilterBtn = styled.div`
   align-items : center;
 `
 const RefilterImg = styled.img`
-  width : 2.7rem;
-  height : 2.7rem;
+  cursor: pointer;
+  width : 2.1rem;
+  height : 2.1rem;
   /* background-color : red; */
+`
+
+const Loading = styled.div`
+  width : 95%;
+  height: 73%;
+  display : flex;
+  justify-content : center;
+  align-items : center;
 `
 const ManageProcessPage = () => {
   const [ismodalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [areas, setAreas] = useState([]);
-  const [selectedState, setSelectedState] = useState('');
   const [subAreas, setSubAreas] = useState([]);
   const [data, setData] = useState([]);
   const itemsPerPage = 10;
@@ -383,26 +401,27 @@ const ManageProcessPage = () => {
   const [selectedList, setSelectedList] = useState(null);
   const [randomCompany, setRandomCompany] = useState('');
   const company = ['아무건설', '싸피건설', '삼성건설', '난몰라건설', '뭐라해건설'];
-  const currentDate = new Date();
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [status, setStatus] = useState('');
-  const [color, setColor] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          '/api/potholes/ing-state'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
-        );
-        if (!response.ok) {
-          throw new Error('일단 try 구문은 돌았음');
-        }
-        const jsonData = await response.json();
-        console.log('데이터', jsonData.state1Potholes);
-        setData(jsonData.state1Potholes); 
-        console.log(Math.ceil(jsonData.length / itemsPerPage))
-        setTotalPages(Math.ceil(jsonData.length / itemsPerPage));
+        setIsLoading(true);
+        setTimeout(async () => {
+          const response = await fetch(
+            '/api/potholes/ing-state'  // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+          );
+          if (!response.ok) {
+            throw new Error('일단 try 구문은 돌았음');
+          }
+          const jsonData = await response.json();
+          console.log('데이터', jsonData.state1Potholes);
+          setData(jsonData.state1Potholes); 
+          console.log(Math.ceil(jsonData.length / itemsPerPage))
+          setTotalPages(Math.max(Math.ceil(jsonData.state1Potholes.length / itemsPerPage), 1));
+          setIsLoading(false);
+        }, 500)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -423,42 +442,10 @@ const ManageProcessPage = () => {
         const jsonData = await response.json();
         console.log(jsonData);
         setAreas(jsonData);
-        
-        const startDate = new Date(currentDate.getTime());
-        addRandomDays(startDate, 2, 5);
-        const endDate = new Date(startDate.getTime());
-        addRandomDays(endDate, 7, 10);
-        const formattedStartDate = formatDate(startDate);
-        const formattedEndDate = formatDate(endDate);
-        setStartDate(formattedStartDate);
-        setEndDate(formattedEndDate);
-  
-        let st = '';
-        let stcolor = '';
-        if (currentDate < startDate) {
-          st = '공사 중';
-          stcolor = 'black';
-        } else if (currentDate >= startDate && currentDate < endDate) {
-          st = '공사 중';
-          stcolor = 'green';
-        } else {
-          st = '공사 지연';
-          stcolor = 'red';
-        }
-
-        setStatus(st);
-        setColor(stcolor);
-
-        console.log('현재 날짜:', currentDate);
-        console.log('공사 시작일:', formattedStartDate);
-        console.log('공사 완료일:', formattedEndDate);
-        console.log('상태:', status);
-
       } catch(error) {
         console.log('에러발생', error);
       }
-    };
-    
+    };   
     fetchData();
   }, []);
 
@@ -486,13 +473,24 @@ const ManageProcessPage = () => {
     return `${year}.${month}.${day}`;
   }
 
+  const format2Date = (date) => {
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else{
+      return null;
+    }
+  }
+
   const handleRegionSelect = (event) => {
     console.log(event.target.value);
     console.log('상위지역', event.target.value);
     setSelectedRegion(event.target.value);
     const sub = areas.find((area) => area.name === event.target.value)?.subArea || [];
     setSubAreas(sub);
-    setSelectedDistrict("");
+    setSelectedDistrict(null);
 
   }
 
@@ -518,13 +516,7 @@ const ManageProcessPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
   }
   
-  const addRandomDays = (date, minDays, maxDays) => {
-    const randomDays = Math.floor(Math.random() * (maxDays - minDays + 1))+ minDays;
-    date.setDate(date.getDate() + randomDays);
-  };
   
-
-
 
   const handleListClick = (item) => {
     setIsInfoModalOpen(true);
@@ -552,6 +544,7 @@ const ManageProcessPage = () => {
       if (response.ok){
         const responseData = await response.json();
         console.log(responseData); 
+        window.location.reload();
       }else{
         console.log('데이터수정실패')
       }
@@ -562,26 +555,35 @@ const ManageProcessPage = () => {
   }
   
   const gotoSearch = async () => {
+    
     const userData = {
       state : '공사중',
-      Province : selectedRegion,
+      province : selectedRegion,
       city : selectedDistrict,
-      date : selectedDate,
+      detectedAt : format2Date(selectedDate)
     };
     try {
-      const response = await fetch('/api/potholes/choose', {
-        method : "POST",
-        headers : {
-          "Content-Type" : "application/json",
-        },
-        body : JSON.stringify(userData),
-      });
-      if (response.ok){
-        const responseData = await response.json();
-        console.log('데이터 조회성공', responseData);
-      }else{
-        console.log('데이터조회실패')
-      }
+      setIsLoading(true);
+      setTimeout(async () =>  {
+        const response = await fetch('/api/potholes/choose', {
+          method : "POST",
+          headers : {
+            "Content-Type" : "application/json",
+          },
+          body : JSON.stringify(userData),
+        });
+        if (response.ok){
+          const responseData = await response.json();
+          console.log('여기서 걸림');
+          console.log('조회된 데이터', responseData.filteredDate)
+          console.log(format2Date(selectedDate));
+          setData(responseData.filteredDate);
+          setIsLoading(false);
+  
+        }else{
+          console.log('데이터조회실패')
+        }
+      }, 500)
     }catch (error) {
       console.error('에러발생', error);
     }
@@ -591,14 +593,12 @@ const ManageProcessPage = () => {
   const closeModal = () => {
     setIsInfoModalOpen(false);
   }
-  // filter 해달라고 요청하는 로직 추가하기
-
+ 
   const gotoRefilter = () => {
-    setSelectedDate(null);
-    setSelectedRegion('');
-    setSelectedDistrict('');
+      window.location.reload();
   }
  
+
   return (
     <Background>
       <SideNav />
@@ -631,27 +631,35 @@ const ManageProcessPage = () => {
             </LocationBox>
             <StateBox>
             <SearchBtn onClick={gotoSearch}>검색</SearchBtn>
-             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg}></RefilterImg></ReFilterBtn> 
+             <ReFilterBtn onClick={gotoRefilter}><RefilterImg src={reloadImg2}></RefilterImg></ReFilterBtn> 
             </StateBox>
           </SortedBox>
         </SortedArea>
-        <ResultArea>
+        {isLoading ? (
+          <Loading>
+            <h1>잠시만 기다려 주세요...</h1>
+            <img src={spinner} alt="loading" />
+          </Loading>
+        ):(
+          <React.Fragment>
+             <ResultArea>
             <SortedList>
               <ListHeader>
                 <Info>상태</Info>
-                <Info width="48%">신고위치</Info>
-                <Info width="20%">신고시각</Info>
+                <Info width="40%">신고위치</Info>
+                <Info width="28%">신고시각</Info>
                 <Info>담당자명</Info>
               </ListHeader>
-            {currentData && currentData.map((item, index) => (
-              <Lists key={index} onClick={()=> handleListClick(item)}>
-              {status && (<Info color={color}>{status}</Info>)}
-                <Info width="48%">{item.province} {item.city} {item.street}</Info>
-                <Info width="20%">{item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</Info>
-                <Info>김싸피</Info>
-              </Lists>
-            ))}
-        
+            {currentData &&  currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+              currentData.map((item, index) => ( 
+                <Lists key={index} onClick={()=> handleListClick(item)}>
+                  <Info>{item.state}</Info>
+                  <Info width="40%">{item.province} {item.city} {item.street}</Info>
+                  <Info width="28%">{item.detectedAt.slice(0,10)}  {item.detectedAt.slice(11,16)}</Info>
+                  <Info>김싸피</Info>
+                </Lists>
+              ))
+            ) }
             </SortedList>
         </ResultArea>
         <Page>
@@ -674,15 +682,18 @@ const ManageProcessPage = () => {
             페이지: {currentPage} / {totalPages}
           </PageText>
         </Page>
+          </React.Fragment>
+        )}
+
       </Content>
       {ismodalOpen && (
         <CalenderModal>
-            <Calender onChange={handleDdateClick}  />
+            <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
         </CalenderModal>
       )}
-      {startDate&&randomCompany&&selectedList&&isInfoModalOpen && (<ListDetailModal>
+      {randomCompany&&selectedList&&isInfoModalOpen && (<ListDetailModal>
       <ModalHeader>
-            <ModalTitle>세부 신고 내역</ModalTitle>
+            <ModalTitle>세부 처리 내역</ModalTitle>
             <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
           </ModalHeader>
           <ModalContent>
@@ -702,10 +713,10 @@ const ManageProcessPage = () => {
                           <TableCell1>신고시각</TableCell1>
                           <TableCell2>{selectedList.detectedAt.slice(0,10)} {selectedList.detectedAt.slice(11,19)}</TableCell2>
                         </TableRow>
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell1>담당부서</TableCell1>
                           <TableCell2>아직모름(백에서처리)</TableCell2>
-                        </TableRow>
+                        </TableRow> */}
                         <TableRow>
                           <TableCell1>시공업체</TableCell1>
                           <TableCell2>삼성건설</TableCell2>
