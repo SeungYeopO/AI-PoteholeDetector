@@ -26,7 +26,6 @@ public class AccidentReportDto {
     private Date reportDate;
     private String state;
     private String rejectionReason;
-    // Constructors
 
     public AccidentReportDto(Long reportPk, Long userPk, Long potholePk, Long videoPk, String reportContent, String reportName, Date reportDate,String state,String rejectionReason) {
         this.reportPk = reportPk;

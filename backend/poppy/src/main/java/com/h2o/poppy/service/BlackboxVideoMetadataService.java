@@ -43,8 +43,6 @@ public class BlackboxVideoMetadataService {
     }
 
 
-
-    // 전체 get
     public List<BlackboxVideoMetadataDto> getAllBlackboxVideoMetadata() {
         List<BlackboxVideoMetadata> getBlackboxVideoMetadata = blackboxVideoMetadataRepository.findAll();
         return getBlackboxVideoMetadata.stream()
@@ -52,14 +50,11 @@ public class BlackboxVideoMetadataService {
                 .collect(Collectors.toList());
     }
 
-    // 1인 get
     public BlackboxVideoMetadataDto getIdBlackboxVideoMetadata(Long blackboxVideoMetadataPk) {
         BlackboxVideoMetadataDto blackboxVideoMetadataDto = blackboxVideoMetadataRepository.getBlackboxVideoMetadataByVideoId(blackboxVideoMetadataPk);
         return blackboxVideoMetadataDto;
     }
 
-
-    // 삽입
     public String saveData(double latitude, double longitude, String serialNumber, MultipartFile video) {
         try{
             SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
@@ -74,7 +69,6 @@ public class BlackboxVideoMetadataService {
         }
     }
 
-    // 수정
     public int updateData(BlackboxVideoMetadataDto data) {
         Long videoPk = data.getVideoPk();
         double latitude = data.getLatitude();
@@ -97,12 +91,11 @@ public class BlackboxVideoMetadataService {
             return state;
         } catch (Exception e) {
             System.out.println("update operation failed");
-            e.printStackTrace(); // 예외 스택 트레이스 출력
+            e.printStackTrace();
             return 0;
         }
     }
 
-    // 삭제
     public boolean deleteData(Long blackboxVideoMetadataPk) {
         try {
             blackboxVideoMetadataRepository.deleteById(blackboxVideoMetadataPk);
@@ -112,7 +105,6 @@ public class BlackboxVideoMetadataService {
         }
     }
 
-    // 사용자 pk입력으로 사용자 비디오 조회
     public List<BlackboxVideoMetadataJoinUserDto> getByUserPk(Long userPk){
         try{
             List<BlackboxVideoMetadataJoinUserDto> videoList = blackboxVideoMetadataRepository.findByJoinUserPk(userPk);

@@ -47,7 +47,6 @@ public class AccidentReportController {
         this.s3Service = s3Service;
     }
 
-    // 사고 신고 등록
     @PostMapping
     public Object saveData(@RequestParam("userPk") Long userPk,@RequestParam("videoPk") Long videoPk,@RequestParam("reportName") String reportName,@RequestParam("reportContent") String reportContent,@RequestParam("file") List<MultipartFile> image)throws IOException {
         AccidentReportJoinMetaDataDto result = accidentReportService.saveData(userPk,videoPk,reportName,reportContent);
@@ -62,7 +61,7 @@ public class AccidentReportController {
                 s3Service.uploadFile(serialNumber+"/"+reportPk, nowFile);
             }
         }
-        // 메서드 내 로컬 클래스 정의
+
         @Getter
         class SaveResponse {
             private final boolean success;
@@ -73,12 +72,11 @@ public class AccidentReportController {
                 this.result = result;
             }
         }
-        // 로컬 클래스 인스턴스 생성 및 반환
+
         return new SaveResponse(success, result);
     }
 
 
-    // 사용자가 확인하는거 ( 사용자 pk로 조회)
     @GetMapping("/user/{userPk}")
     public Object getIduser(@PathVariable Long userPk) {
 
@@ -89,7 +87,7 @@ public class AccidentReportController {
             success = true;
         else
             success = false;
-        // 메서드 내 로컬 클래스 정의
+
         @Getter
         class SaveResponse {
             private final boolean success;
@@ -100,11 +98,10 @@ public class AccidentReportController {
                 this.result = result;
             }
         }
-        // 로컬 클래스 인스턴스 생성 및 반환
+
         return new SaveResponse(success, result);
     }
 
-    // 관리자가 확인하는거 ( 리포트 pk로 조회) 1개만
     @GetMapping("/{reportPk}")
     public Object getIdReport(@PathVariable Long reportPk) {
 
@@ -124,7 +121,6 @@ public class AccidentReportController {
             if(!imageFileNameList.isEmpty()) imageFileNameList.remove(0);
         }
 
-        // 메서드 내 로컬 클래스 정의
         @Getter
         class SaveResponse {
             private final boolean success;
@@ -138,15 +134,15 @@ public class AccidentReportController {
                 this.videoFileName = videoFileName;
             }
         }
-        // 로컬 클래스 인스턴스 생성 및 반환
+
         return new SaveResponse(success, result, imageFileNameList,videoFileName);
     }
 
-    // 미확인 상태 get
+
     @GetMapping("/no-check")
     public Object getNoCheck() {
         List<AccidentReportJoinMetaDataDto> noCheckState = accidentReportService.getState("미확인");
-        boolean success = noCheckState != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = noCheckState != null; 
         @Getter
         class getResponse {
             private final boolean success;
@@ -160,11 +156,10 @@ public class AccidentReportController {
         return new getResponse(success, noCheckState);
     }
 
-    // 반려,보상완료 상태 get
     @GetMapping("/yes-check")
     public Object getYesCheck() {
         List<AccidentReportJoinMetaDataDto> yesCheckState = accidentReportService.getState("y");
-        boolean success = yesCheckState != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = yesCheckState != null; 
         @Getter
         class getResponse {
             private final boolean success;
@@ -178,7 +173,6 @@ public class AccidentReportController {
         return new getResponse(success, yesCheckState);
     }
 
-    // 날짜 필터링 post
     @Getter
     @Setter
     static class DateRequest {
@@ -191,7 +185,7 @@ public class AccidentReportController {
         Date targetDate = request.getReportDate();
         String state = request.getState();
         List<AccidentReportJoinMetaDataDto> dateList = accidentReportService.getDate(targetDate, state);
-        boolean success = dateList != null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = dateList != null; 
         @Getter
         class getResponse {
             private final boolean success;
@@ -205,7 +199,6 @@ public class AccidentReportController {
         return new getResponse(success, dateList);
     }
 
-    // 반려 - 신청완료 상태 변경
 
     @PatchMapping()
     public Object changeState(@RequestBody AccidentReportDto data) {
@@ -225,8 +218,6 @@ public class AccidentReportController {
     }
 
 
-
-    // 선택 비디오에 대한 포트홀 리스트 조회
     @GetMapping("/pothole-list/{videoPk}")
     public Object getPotholeList(@PathVariable Long videoPk){
         List<PotholeDto> result = accidentReportService.getPotholeList(videoPk);
@@ -241,7 +232,7 @@ public class AccidentReportController {
                 this.result = result;
             }
         }
-        // 로컬 클래스 인스턴스 생성 및 반환
+
         return new SaveResponse(success, result);
     }
 

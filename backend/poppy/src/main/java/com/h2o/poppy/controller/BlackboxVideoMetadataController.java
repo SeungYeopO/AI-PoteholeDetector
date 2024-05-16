@@ -27,20 +27,17 @@ public class BlackboxVideoMetadataController {
         this.s3Service = s3Service;
     }
 
-    // 전체 비디오메타데이터 읽기
     @GetMapping
     public List<BlackboxVideoMetadataDto> getAllVideo() {
         return blackboxVideoMetadataService.getAllBlackboxVideoMetadata();
     }
 
-    // 비디오메타데이터 1개 정보 보기
     @GetMapping("/{videoPk}")
     public BlackboxVideoMetadataDto getIdVideo(@PathVariable Long videoPk) {
         return blackboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
     }
 
 
-    // 비디오 등록 (블랙박스에서 위경도, 시리얼 넘버 보내면 자동 등록)
     @PostMapping
     public void saveData(@RequestParam("latitude") double latitude,
                            @RequestParam("longitude") double longitude,
@@ -58,7 +55,6 @@ public class BlackboxVideoMetadataController {
         }
     }
 
-    // 수정
     @PutMapping
     public Object updateData(@RequestBody BlackboxVideoMetadataDto data) {
         long videoPk = blackboxVideoMetadataService.updateData(data);
@@ -73,7 +69,6 @@ public class BlackboxVideoMetadataController {
         return new UpdateDataResponse(videoPk);
     }
 
-    // 삭제
     @DeleteMapping("/{videoPk}")
     public Object deleteData(@PathVariable Long videoPk) {
         boolean result = blackboxVideoMetadataService.deleteData(videoPk);
@@ -89,11 +84,10 @@ public class BlackboxVideoMetadataController {
         return new DeleteDataResponse(result);
     }
 
-    // 사용자의 비디오 조회 userPk 입력
     @GetMapping("/user/{userPk}")
     public Object getByUserPk(@PathVariable Long userPk){
         List<BlackboxVideoMetadataJoinUserDto> result = blackboxVideoMetadataService.getByUserPk(userPk);
-        boolean success = result !=null; // PK가 0보다 크다면 성공으로 간주
+        boolean success = result !=null; 
 
         @Getter
         class SaveResponse {

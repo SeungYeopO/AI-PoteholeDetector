@@ -18,7 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByPassword(String password);
     User findUserPkByLoginId(String loginId);
 
-    //수정
     @Transactional
     @Modifying
     @Query("UPDATE User e SET e.password = :newData WHERE e.userPk = :userPk")

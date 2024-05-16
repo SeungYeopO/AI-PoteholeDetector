@@ -20,19 +20,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 전체 유저 읽기
     @GetMapping
     public List<UserDto> getAllUser() {
         return userService.getAllUser();
     }
 
-    // 유저 1명 정보 보기
     @GetMapping("/{userPk}")
     public UserDto getIdUser(@PathVariable Long userPk) {
         return userService.getIdUser(userPk);
     }
 
-    // 아이디 중복 검사
     @PostMapping("/duplicate-id")
     public Object duplicateId(@RequestBody UserDto data) {
         @Getter
@@ -48,11 +45,10 @@ public class UserController {
         return new duplicateIdResponse(result);
     }
 
-    // 유저 회원가입
     @PostMapping
     public Object saveData(@RequestBody User data) {
         long userPk = userService.saveData(data);
-        boolean success = userPk > 0; // PK가 0보다 크다면 성공으로 간주
+        boolean success = userPk > 0;
 
         @Getter
         class SaveResponse {
@@ -67,7 +63,6 @@ public class UserController {
         return new SaveResponse(success, userPk);
     }
 
-    // 수정
     @PutMapping("/{userPk}")
     public Object updateData(@PathVariable long userPk, @RequestBody UserDto data) {
         data.setUserPk(userPk);
@@ -87,7 +82,6 @@ public class UserController {
         return new UpdateDataResponse(state);
     }
 
-    // 삭제
     @DeleteMapping("/{userPk}")
     public Object deleteData(@PathVariable Long userPk) {
         boolean result = userService.deleteData(userPk);
@@ -103,7 +97,6 @@ public class UserController {
         return new DeleteDataResponse(result);
     }
 
-    // 로그인
     @PostMapping("/login")
     public Object login(@RequestBody UserDto data) {
         long userPk = userService.login(data);

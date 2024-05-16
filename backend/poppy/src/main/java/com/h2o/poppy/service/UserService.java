@@ -33,7 +33,6 @@ public class UserService {
         this.accidentReportRepository = accidentReportRepository;
     }
 
-    // 전체 get
     public List<UserDto> getAllUser() {
         List<User> getUser = userRepository.findAll();
         return getUser.stream()
@@ -41,7 +40,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // 1인 get
     public UserDto getIdUser(Long userPk) {
         Optional<User> optionalUser = userRepository.findById(userPk);
         return optionalUser.map(this::convertToDto).orElse(null);
@@ -49,17 +47,13 @@ public class UserService {
 
     public boolean duplicateId(String loginId) {
         User userid = userRepository.findByLoginId(loginId);
-        // 사용자를 찾았는지 여부에 따라서 중복 여부를 판단합니다.
         if (userid != null) {
-            // 중복되는 경우
             return false;
         } else {
-            // 중복되지 않는 경우
             return true;
         }
     }
 
-    // 삽입
     public long saveData(User data) {
         try {
             long userPk = data.getUserPk();
@@ -76,7 +70,6 @@ public class UserService {
         }
     }
 
-    // 수정
     public int updateData(UserDto data) {
         Long userPk = data.getUserPk();
         String replacePassword = data.getPassword();
@@ -84,7 +77,6 @@ public class UserService {
         int state = 0;
         try {
             if (replacePassword != null && replacePhoneNumber != null) {
-                // originPassword와 originPhoneNumber가 모두 null이 아닌 경우에 대한 처리
                 userRepository.updatePassWord(userPk, replacePassword);
                 userRepository.updatePhoneNumber(userPk, replacePhoneNumber);
                 state = 1;
@@ -99,12 +91,11 @@ public class UserService {
             return state;
         } catch (Exception e) {
             System.out.println("update operation failed");
-            e.printStackTrace(); // 예외 스택 트레이스 출력
+            e.printStackTrace();
             return 0;
         }
     }
 
-    // 삭제
     public boolean deleteData(Long userPk) {
         try {
             accidentReportRepository.deleteByUserPk(userPk);
