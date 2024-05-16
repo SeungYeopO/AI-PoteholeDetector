@@ -200,6 +200,24 @@ public class PotholeService {
         }
     }
 
+    public List<PotholeDto> getPotholesByUserUpload(){
+        try{
+            List<PotholeDto> potholes = potholeRepository.getPotholesByUserUpload();
+            return potholes;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public PotholeDto getPotholeByUserUploadOne(Long potholePk){
+        try{
+            PotholeDto potholes = potholeRepository.getPotholeByUserUploadOne(potholePk);
+            return potholes;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
     public boolean checkGPSdata(double lat, double lon){
 
         List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat,lon);
@@ -324,7 +342,7 @@ public class PotholeService {
             List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
 
             if (potholes.isEmpty()) {
-                return new ArrayList<>(); // 빈 리스트 반환
+                return new ArrayList<>();
             } else {
                 return potholes;
             }

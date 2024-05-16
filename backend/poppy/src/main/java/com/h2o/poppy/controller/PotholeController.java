@@ -127,6 +127,40 @@ public class PotholeController {
         return new getResponse(success, result);
     }
 
+    @GetMapping("user-upload")
+    public Object getPotholesByUserUpload(){
+        List<PotholeDto> result = potholeService.getPotholesByUserUpload();
+        boolean success = result != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final List<PotholeDto> result;
+
+            getResponse(boolean success, List<PotholeDto> result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
+    }
+
+    @GetMapping("user-upload/{potholePk}")
+    public Object getPotholeByUserUploadOne(@PathVariable Long potholePk){
+        PotholeDto result = potholeService.getPotholeByUserUploadOne(potholePk);
+        boolean success = result != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final PotholeDto result;
+
+            getResponse(boolean success, PotholeDto result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
+    }
+
     @GetMapping
     public Object getAllPothole() {
         List<PotholeDto> getAllPotholes = potholeService.getAllPothole();
