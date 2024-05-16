@@ -1,7 +1,7 @@
 import { useAuth } from "../component/AuthContext";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Logo from '../../public/img/mainLogo.png';
+import Logo from '../../public/img/mainL.png';
 import { useEffect } from "react";
 
 const Background = styled.div`
@@ -15,12 +15,12 @@ const Background = styled.div`
 
 const Container = styled.div`
   width : 80%;
-  height : 80%;
+  height : 73%;
   /* background-color : pink; */
   display : flex;
   flex-direction : column;
   align-items : center;
-  justify-content : space-around;
+  justify-content : space-between;
 `
 const LogoBox = styled.div`
   display : flex;
@@ -28,7 +28,7 @@ const LogoBox = styled.div`
   justify-content : center;
   margin-top : 3rem;
   width : 80%;
-  height : 45%;
+  height : 40%;
   /* background-color : lightcoral; */
 `
 
@@ -50,13 +50,13 @@ const LinkBox = styled.div`
   font-size : 3rem;
   width : 100%;
   height : 35%;
-  background-color : #F5EAEA;
+  background-color : #ffffff;
   border-radius : 1.5rem;
 
 `
 const LogoImg = styled.img`
-  width : 19rem;
-  height : 19rem;
+  width : 20rem;
+  height : 20rem;
   
 `
 
@@ -87,7 +87,7 @@ const MainScreen = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#949EFF"
+        backgroundColor: "#FDF891"
         
       }}>
         <Container>
