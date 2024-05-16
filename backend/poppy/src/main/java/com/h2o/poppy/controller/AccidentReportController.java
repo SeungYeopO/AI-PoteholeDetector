@@ -2,10 +2,13 @@ package com.h2o.poppy.controller;
 
 import com.h2o.poppy.entity.*;
 import com.h2o.poppy.model.accidentreport.AccidentReportJoinMetaDataDto;
+import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.repository.AccidentReportRepository;
 import com.h2o.poppy.model.accidentreport.AccidentReportDto;
 import com.h2o.poppy.service.AccidentReportService;
+import com.h2o.poppy.service.BlackboxVideoMetadataService;
+
 import com.h2o.poppy.repository.BlackboxVideoMetadataRepository;
 import com.h2o.poppy.repository.UserRepository;
 import com.h2o.poppy.repository.PotholeRepository;
@@ -32,13 +35,15 @@ public class AccidentReportController {
 
     private final AccidentReportRepository accidentReportRepository;
     private final AccidentReportService accidentReportService;
+    private final BlackboxVideoMetadataService blackboxVideoMetadataService;
     private final S3Service s3Service;
 
 
     public AccidentReportController(AccidentReportRepository accidentReportRepository,
-            AccidentReportService accidentReportService, S3Service s3Service) {
+            AccidentReportService accidentReportService, S3Service s3Service, BlackboxVideoMetadataService blackboxVideoMetadataService) {
         this.accidentReportRepository = accidentReportRepository;
         this.accidentReportService = accidentReportService;
+        this.blackboxVideoMetadataService = blackboxVideoMetadataService;
         this.s3Service = s3Service;
     }
 
@@ -108,7 +113,12 @@ public class AccidentReportController {
 
         List<String> imageFileNameList = null;
 
+        String videoFileName = null;
+
         if(success){
+            Long videoPk = result.getVideoPk();
+            BlackboxVideoMetadataDto videoDate = blackboxVideoMetadataService.getIdBlackboxVideoMetadata(videoPk);
+            videoFileName = videoDate.getFileName();
             String folderPath = result.getSerialNumber()+"/"+Long.toString(result.getReportPk());
             imageFileNameList = s3Service.listObjectsInFolder(folderPath);
             if(!imageFileNameList.isEmpty()) imageFileNameList.remove(0);
@@ -120,14 +130,16 @@ public class AccidentReportController {
             private final boolean success;
             private final AccidentReportJoinMetaDataDto result;
             private final List<String> imageFileNameList;
-            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result, List<String> imageFileNameList) {
+            private final String videoFileName;
+            SaveResponse(boolean success, AccidentReportJoinMetaDataDto result, List<String> imageFileNameList, String videoFileName) {
                 this.success = success;
                 this.result = result;
                 this.imageFileNameList = imageFileNameList;
+                this.videoFileName = videoFileName;
             }
         }
         // 로컬 클래스 인스턴스 생성 및 반환
-        return new SaveResponse(success, result, imageFileNameList);
+        return new SaveResponse(success, result, imageFileNameList,videoFileName);
     }
 
     // 미확인 상태 get
