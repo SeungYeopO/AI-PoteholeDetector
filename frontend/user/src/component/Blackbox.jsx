@@ -41,12 +41,12 @@ const ContentBox = styled.div`
   /* background-color : yellow; */
 `;
 const DateBox = styled.div`
-  margin-left: 0.5rem;
   width: 100%;
   height: 10%;
   /* background-color : pink;   */
   display: flex;
   align-items: center;
+  justify-content : center;
 `;
 const ListBox = styled.div`
   width: 99%;
@@ -60,7 +60,7 @@ const BoxName = styled.div`
   align-items: center;
   width: ${(props) => props.width || "25%"};
   height: 100%;
-  background-color: #8d8c8c;
+  background-color: #FFC700;
   font-size: 1.4rem;
 `;
 const DateTable = styled.div`
@@ -87,6 +87,7 @@ const SortInfo = styled.div`
   text-indent: 0.3rem;
   align-items: center;
   font-size: 1.1rem;
+  /* justify-content : center; */
 `;
 const CalenderImg = styled.img`
   display: flex;
@@ -101,7 +102,7 @@ const Box = styled.div`
   width: 80%;
   display: flex;
   height: 60%;
-  border: 1px solid darkgray;
+  border: 2px solid #FFC700;
 `;
 const List = styled.div`
   display: flex;

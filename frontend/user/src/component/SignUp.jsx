@@ -111,8 +111,8 @@ const Input = styled.input`
 
   &::placeholder {
     color: #6f6c6c;
-    font-family: 'BlackHanSans';
-    font-size: 1.25rem;
+    font-family: 'Nanum';
+    font-size: 1.2rem;
     font-weight: 300;
   }
 `;

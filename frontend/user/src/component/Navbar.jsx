@@ -86,7 +86,7 @@ const LogoOutModal = styled.div`
   background-color: white;
   opacity : 98%;
   border-radius : 1rem;
-  border : 1px solid gray;
+  /* border : 1px solid gray; */
   width: 25rem; 
   height: 13rem; 
   position: fixed;
