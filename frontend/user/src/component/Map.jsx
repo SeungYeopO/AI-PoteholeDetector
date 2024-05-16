@@ -19,6 +19,141 @@ let timeoutId;
 let map;
 let potholeAlert = [];
 let endX, endY;
+let name;
+
+const styles = {
+  searchWrapper: {
+    position: "absolute",
+    top: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    zIndex: 1000,
+    padding: "0 10px",
+    "@media (max-width: 600px)": {
+      top: "5px",
+      padding: "0 5px",
+    },
+  },
+  backButton: {
+    backgroundColor: "#d7dbec",
+    color: "black",
+    border: "none",
+    width: "90px",
+    height: "40px",
+    textAlign: "center",
+    textDecoration: "none",
+    display: "inline-block",
+    fontSize: "16px",
+    margin: "4px 0px",
+    cursor: "pointer",
+    borderRadius: "5px",
+    "@media (max-width: 600px)": {
+      width: "80px",
+      height: "35px",
+      fontSize: "14px",
+    },
+  },
+  searchInput: {
+    height: "40px",
+    fontSize: "14px",
+    flexGrow: 1,
+    padding: "0 5px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    marginRight: "0px",
+    minWidth: "150px", // 최소 너비 설정
+    "@media (max-width: 600px)": {
+      height: "35px",
+      fontSize: "12px",
+    },
+  },
+  searchButton: {
+    backgroundColor: "#d7dbec",
+    color: "black",
+    border: "none",
+    height: "40px",
+    width: "60px",
+    fontSize: "18px",
+    padding: "0 12px",
+    margin: "4px 0px",
+    cursor: "pointer",
+    borderRadius: "5px",
+    "@media (max-width: 600px)": {
+      height: "35px",
+      width: "50px",
+      fontSize: "16px",
+    },
+  },
+  infoButtonWrapper: {
+    position: "fixed",
+    bottom: "10%",
+    left: "-20px",
+    marginRight: "5px",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: "10px 20px",
+    zIndex: 2000,
+    "@media (max-width: 600px)": {
+      bottom: "10%",
+      padding: "5px 10px",
+      flexDirection: "column",
+      gap: "10px",
+    },
+  },
+  infoContainer: {
+    flexGrow: 2,
+    backgroundColor: "white",
+    padding: "10px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "10px",
+    border: "1px solid #d7dbec",
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    height: "100%", // 높이 설정
+    "@media (max-width: 600px)": {
+      padding: "10px",
+    },
+  },
+  infoText: {
+    margin: "2px 0",
+    fontSize: "16px",
+    color: "#333",
+    "@media (max-width: 600px)": {
+      fontSize: "14px",
+    },
+  },
+  startButton: {
+    flexGrow: 1,
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "bold",
+    border: "none",
+    padding: "35px 30px",
+    cursor: "pointer",
+    borderRadius: "10px", // 모서리를 둥글게
+    backgroundColor: "blue",
+    transition: "background-color 0.3s",
+    height: "100%", // 높이 설정
+    display: "flex", // 중앙 정렬을 위해 flex 사용
+    alignItems: "center",
+    justifyContent: "center",
+    "@media (max-width: 600px)": {
+      fontSize: "16px",
+      padding: "10px 20px",
+    },
+    "&:hover": {
+      backgroundColor: "#a71d2a",
+    },
+  },
+};
+
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
   const [searchQuery, setSearchQuery] = useState("");
@@ -489,7 +624,22 @@ function Map() {
     return points;
   }
 
-  const handleLocationSelect = async (lat, lng, convertRequired) => {
+  const trafficColors = {
+    0: "#000000", // 교통 정보가 없을 때
+    1: "#009900", // 원활
+    2: "#7A8E0A", // 서행
+    3: "#8E8111", // 정체
+    4: "#FF0000", // 극심한 정체
+  };
+
+  const defaultColor = "#0000FF";
+
+  const handleLocationSelect = async (
+    lat,
+    lng,
+    locationName,
+    convertRequired
+  ) => {
     resettingMap();
 
     if (!convertRequired) {
@@ -497,11 +647,13 @@ function Map() {
       const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
       endX = wgs84._lng; // 도착점 경도
       endY = wgs84._lat; // 도착점 위도
+      name = locationName;
     } else {
       endX = parseFloat(lng); // 도착점 경도
       endY = parseFloat(lat); // 도착점 위도
+      name = locationName;
     }
-
+    console.log(name);
     setSearchPerformed(true);
     setOnRoute(true);
     onRouteRef.current = onRoute;
@@ -537,6 +689,7 @@ function Map() {
         detailPosFlag: "2",
         resCoordType: "WGS84GEO",
         sort: "index",
+        trafficInfo: "Y",
       }),
     };
 
@@ -594,15 +747,26 @@ function Map() {
         });
         console.log(routeData);
 
-        const pathPoints = resultData
-          .map((feature) => {
-            return feature.geometry.coordinates.map((coord) => {
-              return new Tmapv2.LatLng(coord[1], coord[0]); // 좌표를 Tmapv2.LatLng 객체로 직접 변환
+        resultData.forEach((feature) => {
+          const trafficInfo = feature.geometry.traffic || []; // 트래픽 정보가 없을 경우 빈 배열
+          if (trafficInfo.length > 0) {
+            trafficInfo.forEach((trafficSegment) => {
+              const [startIdx, endIdx, congestion, speed] = trafficSegment;
+              const segmentPoints = feature.geometry.coordinates
+                .slice(startIdx, endIdx + 1)
+                .map((coord) => {
+                  return new Tmapv2.LatLng(coord[1], coord[0]);
+                });
+              drawLine(segmentPoints, congestion); // 혼잡도를 drawLine에 전달
             });
-          })
-          .flat()
-          .filter((point) => point.lat() !== 0 && point.lng() !== 0);
-        drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
+          } else {
+            // 트래픽 정보가 없을 경우 기본 색상으로 경로 그리기
+            const pathPoints = feature.geometry.coordinates.map((coord) => {
+              return new Tmapv2.LatLng(coord[1], coord[0]);
+            });
+            drawLine(pathPoints, null); // 트래픽 정보가 없음을 표시
+          }
+        });
 
         setSelectedRoute({
           distance: response.features[0].properties.totalDistance / 1000,
@@ -646,14 +810,9 @@ function Map() {
 
   const onTmapApp = async () => {
     setTmapAppStarted(true); // 티맵 앱이 시작됨을 나타냄
-    console.log(endX, endY);
     const appKey = "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5";
-    const name = "그랜드유치원";
     const encodedName = encodeURIComponent(name);
     const url = `https://apis.openapi.sk.com/tmap/app/routes?appKey=${appKey}&name=${encodedName}&lon=${endX}&lat=${endY}`;
-
-    // URL 방문
-    // window.location.href = url;
     window.open(url, "_blank");
   };
 
@@ -705,7 +864,7 @@ function Map() {
   }
 
   function drawLine(arrPoint, traffic) {
-    const lineColor = "#FF0000"; // 빨간색으로 설정
+    const lineColor = trafficColors[traffic] || defaultColor; // 트래픽 정보가 없을 때 기본 색상 사용
     const filteredPoints = arrPoint.filter(
       (point) => point.lat() !== 0 && point.lng() !== 0
     ); // 0인 좌표 다시 한번 걸러내기
@@ -816,52 +975,44 @@ function Map() {
           }}
         />
       </div>
-      <div
-        style={{
-          position: "absolute",
-          top: "5px",
-          width: "100%",
-          zIndex: 1000,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            padding: "10px 0",
-          }}
-        >
-          {searchPerformed && (
-            <button onClick={handleBack} style={{ marginLeft: "0px" }}>
-              뒤로 가기
-            </button>
-          )}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            style={{
-              height: "40px",
-              fontSize: "18px",
-              flexGrow: 1,
-              marginRight: "0px",
-            }}
-            placeholder="장소 검색"
-          />
-          <button
-            onClick={handleSearch}
-            style={{ height: "45px", fontSize: "18px", padding: "0 12px" }}
-          >
-            검색
+      <div style={styles.searchWrapper}>
+        {searchPerformed && (
+          <button onClick={handleBack} style={styles.backButton}>
+            뒤로 가기
           </button>
-        </div>
+        )}
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={styles.searchInput}
+          placeholder="장소 검색"
+        />
+        <button onClick={handleSearch} style={styles.searchButton}>
+          검색
+        </button>
       </div>
       {showResults && (
         <div
           style={{
             position: "absolute",
             top: "50px",
+            width: "100%",
+            zIndex: 1000,
+          }}
+        >
+          <SearchResults
+            results={searchResults}
+            onSelectLocation={handleLocationSelect}
+          />
+        </div>
+      )}
+      {showResults && (
+        <div
+          style={{
+            position: "absolute",
+            top: "60px",
             width: "100%",
             zIndex: 1000,
           }}
@@ -887,58 +1038,32 @@ function Map() {
         />
       )}
       {selectedRoute && !tmapAppStarted && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "10%",
-            left: "0",
-            height: "11%",
-            width: "100%",
-            display: "flex",
-            zIndex: "2000",
-          }}
-        >
-          <div
-            style={{
-              flexGrow: 2,
-              backgroundColor: "#f8f9fa",
-              padding: "10px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              zIndex: 1001,
-            }}
-          >
-            <div>예상 시간: {Math.round(selectedRoute.time)} 분</div>
-            <div>
+        <div style={styles.infoButtonWrapper}>
+          <div style={styles.infoContainer}>
+            <div style={styles.infoText}>
+              예상 시간: {Math.round(selectedRoute.time)} 분
+            </div>
+            <div style={styles.infoText}>
               도착 시간: {selectedRoute.arrivalTime.toLocaleTimeString()}
             </div>
-            <div>거리: {selectedRoute.distance.toFixed(2)} km</div>
+            <div style={styles.infoText}>
+              거리: {selectedRoute.distance.toFixed(2)} km
+            </div>
           </div>
-          <div
-            style={{
-              flexGrow: 1,
-              backgroundColor: "#dc3545",
-              padding: "0px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+          <button
+            onClick={onTmapApp}
+            style={styles.startButton}
+            onMouseEnter={(e) =>
+              (e.target.style.backgroundColor =
+                styles.startButton["&:hover"].backgroundColor)
+            }
+            onMouseLeave={(e) =>
+              (e.target.style.backgroundColor =
+                styles.startButton.backgroundColor)
+            }
           >
-            <button
-              onClick={onTmapApp}
-              style={{
-                color: "black",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "none",
-                padding: "20px 30px",
-                cursor: "pointer",
-              }}
-            >
-              안내 시작
-            </button>
-          </div>
+            안내 시작
+          </button>
         </div>
       )}
       <Navbar />
