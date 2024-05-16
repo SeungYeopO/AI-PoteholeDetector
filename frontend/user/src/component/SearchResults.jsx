@@ -2,6 +2,7 @@ import React from "react";
 
 function SearchResults({ results, onSelectLocation }) {
   if (!results.length) return null;
+  console.log(results);
   return (
     <div
       style={{
@@ -26,7 +27,12 @@ function SearchResults({ results, onSelectLocation }) {
             <li
               key={index}
               onClick={() =>
-                onSelectLocation(result.frontLat, result.frontLon, false)
+                onSelectLocation(
+                  result.frontLat,
+                  result.frontLon,
+                  result.name,
+                  false
+                )
               }
               style={{
                 padding: "10px",
