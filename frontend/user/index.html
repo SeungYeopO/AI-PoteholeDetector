@@ -8,8 +8,20 @@
     <link rel="manifest" href="/manifest.json" />
     <title>Vite + React</title>
     <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5"></script>
+    <style>
+      /* 로딩 화면 스타일 */
+      #loading-screen {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: white url("/img/loading.png") no-repeat center center;
+        background-size: cover;
+        z-index: 9999;
+      }
+    </style>
   </head>
   <body>
+    <div id="loading-screen"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
@@ -21,12 +33,20 @@
           .then((registration) => {
             console.log("Service worker registration succeeded:", registration);
           })
-          .catch((err) => {
+          .catch((error) => {
             console.log("Service worker registration failed:", error);
           });
       } else {
         console.log("Service workers are not supported.");
       }
+
+      // 페이지 로드가 완료되면 로딩 화면 숨기기
+      window.addEventListener("load", () => {
+        const loadingScreen = document.getElementById("loading-screen");
+        if (loadingScreen) {
+          loadingScreen.style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>
