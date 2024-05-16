@@ -82,25 +82,20 @@ public class S3Service {
     }
 
     // 비디오 파일 업로드
-    public void videoUploadFile(String folderName, MultipartFile file) throws IOException {
+    public void videoUploadFile(String folderName, File originalFile, String originFileName, String videoType) throws IOException {
         String bucketName = "poppys3";
         String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
 
-        File originalFile = null;
         File reencodedFile = null;
 
         try {
-            //FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\Desktop\\backend\\poppy\\src\\test\\ffmpeg\\ffmpeg.exe");
-            //FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\Desktop\\backend\\poppy\\src\\test\\ffmpeg\\ffprobe.exe");
+            //FFmpeg ffmpeg = new FFmpeg("C:\\Users\\SSAFY\\ffmpeg-2024-05-08-git-e8e84dc325-full_build\\bin\\ffmpeg.exe");
+            //FFprobe ffprobe = new FFprobe("C:\\Users\\SSAFY\\ffmpeg-2024-05-08-git-e8e84dc325-full_build\\bin\\ffprobe.exe");
 
             FFmpeg ffmpeg = new FFmpeg("/usr/bin/ffmpeg");
             FFprobe ffprobe = new FFprobe("/usr/bin/ffprobe");
 
-            // 임시 파일 생성
-            originalFile = File.createTempFile("original_", "_" + file.getOriginalFilename());
-            file.transferTo(originalFile);
-
-            reencodedFile = File.createTempFile("reencoded_", "_" + file.getOriginalFilename());
+            reencodedFile = File.createTempFile("reencoded_", "_" + originFileName);
 
             FFmpegProbeResult probeResult = ffprobe.probe(originalFile.getAbsolutePath());
 
@@ -128,10 +123,10 @@ public class S3Service {
             // Or run a two-pass encode (which is better quality at the cost of being slower)
             executor.createTwoPassJob(builder).run();
 
-            String fileKey = folderKey + file.getOriginalFilename();
+            String fileKey = folderKey + originFileName;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(reencodedFile.length());
-            metadata.setContentType(file.getContentType());
+            metadata.setContentType(videoType);
 
             try (InputStream inputStream = new FileInputStream(reencodedFile)) {
                 PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, inputStream, metadata);

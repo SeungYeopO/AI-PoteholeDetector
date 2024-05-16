@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,18 +45,22 @@ public class BlackboxVideoMetadataController {
     @PostMapping
     @Async
     public void saveData(@RequestParam("latitude") double latitude,
-                           @RequestParam("longitude") double longitude,
-                           @RequestParam("serialNumber") String serialNumber,
-                           @RequestParam("file") MultipartFile video) throws IOException {
+                         @RequestParam("longitude") double longitude,
+                         @RequestParam("serialNumber") String serialNumber,
+                         @RequestParam("file") MultipartFile video) throws IOException {
 
-        String fileName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
-        boolean success = fileName != null;
+        File originalFile = File.createTempFile("original_", "_" + video.getOriginalFilename());
+        video.transferTo(originalFile);
+        String originFileName = video.getOriginalFilename();
+        String videoType = video.getContentType();
+        String folderName = blackboxVideoMetadataService.saveData(latitude,longitude,serialNumber, video);
+        boolean success = folderName != null;
         System.out.println(success);
 
         if(success){
-            System.out.println(fileName);
-            s3Service.createFolder(fileName);
-            s3Service.videoUploadFile(fileName,video);
+            System.out.println(folderName);
+            s3Service.createFolder(folderName);
+            s3Service.videoUploadFile(folderName,originalFile,originFileName,videoType);
         }
     }
 
