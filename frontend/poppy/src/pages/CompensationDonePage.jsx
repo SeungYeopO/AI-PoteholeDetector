@@ -159,6 +159,7 @@ const Btn = styled.button`
   
 `
 const SearchBtn = styled.div`
+  cursor: pointer;
   margin-left : 1rem;
   border-radius : 1rem;
   width : 5%;

@@ -244,7 +244,7 @@ const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
   border-radius : 1rem;
-  border : 1px solid gray;
+  border : 1px solid darkgray;
   width: 55rem; 
   height: 30rem; 
   position: fixed;
@@ -306,7 +306,7 @@ const ModalImg = styled.img`
 const ModalTable = styled.table`
   width : 54%;
   height : 100%;
-  background-color :#A1A1A1;
+  background-color :#EFEFEF;
   border-collapse : collapse;
 `
 const BtnArea = styled.div`
@@ -366,6 +366,7 @@ const ReFilterBtn = styled.div`
   align-items : center;
 `
 const RefilterImg = styled.img`
+  cursor: pointer;
   width : 2.1rem;
   height : 2.1rem;
   /* background-color : red; */
@@ -380,8 +381,8 @@ const Loading = styled.div`
 
 const ManageDonePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [areas, setAreas] = useState([]);
   const [subAreas, setSubAreas] = useState([]);
   const [data, setData] = useState([]);
@@ -537,9 +538,6 @@ const gotoSearch = async () => {
       });
       if (response.ok){
         const responseData = await response.json();
-        console.log('여기서 걸림', responseData);
-        console.log('조회된 데이터', responseData.filteredDate)
-        console.log(format2Date(selectedDate));
         setData(responseData.filteredDate);
         setIsLoading(false);
 
@@ -643,12 +641,12 @@ const gotoSearch = async () => {
     </Content>
     {ismodalOpen && (
         <CalenderModal>
-            <Calender onChange={handleDdateClick}  />
+            <Calender calendarType="gregory" showNeighboringMonth={false}  onChange={handleDdateClick}  />
         </CalenderModal>
       )}
          {selectedList&&isInfoModalOpen && (<ListDetailModal>
       <ModalHeader>
-            <ModalTitle>세부 신고 내역</ModalTitle>
+            <ModalTitle>세부 완료 내역</ModalTitle>
             <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
           </ModalHeader>
           <ModalContent>

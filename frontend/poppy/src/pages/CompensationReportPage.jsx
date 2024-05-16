@@ -175,7 +175,7 @@ const ListDetailModal = styled.div`
   border-radius : 1rem;
   border : 1px solid gray;
   width: 55rem; 
-  height: 35rem; 
+  height: 40rem; 
   position: fixed;
   top: 50%; 
   left: 50%; 
@@ -241,9 +241,9 @@ const PlusFileArea = styled.div`
   display : flex;
   flex-direction : column;
   justify-content : space-between;
-  align-items : center;
+  /* align-items : center; */
   width : 90%;
-  height : 25%;
+  height : 30%;
   /* background-color : lightgreen; */
   
 `
@@ -252,7 +252,7 @@ const BtnArea = styled.div`
   justify-content : space-around;
   align-items : center;
   width : 60%;
-  height : ${(props) => props.height || '15%'};
+  height : ${(props) => props.height || '10%'};
   /* background-color : lightcoral; */
   
 `
@@ -275,6 +275,7 @@ const Box = styled.div`
 const SubFile = styled.div`
   display : flex;
   align-items : center;
+  text-align : left;
   width : 100%;
   height : 30%;
   /* background-color : darkgreen; */
@@ -406,6 +407,7 @@ const CompensationReportPage = () => {
   const [returnContent, setReturnContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [imageList, setImageList] = useState([]);
+  const [blobImageList, setBlobImageList] = useState([]);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -473,32 +475,38 @@ const CompensationReportPage = () => {
     console.log(item);
 
     try {
-      const response = await fetch(`/api/accident-report/${item.reportPk}`);
+        const response = await fetch(`/api/accident-report/${item.reportPk}`);
   
-      if (response.ok) {
-        const jsonData = await response.json();
-        console.log('한개 리스트 데이터', jsonData.imageFileNameList);
-        setSelectedList(jsonData.result);
+        if (response.ok) {
+            const jsonData = await response.json();
+            console.log('조회 리스트 데이터,', jsonData)
+            console.log('한개 리스트 데이터', jsonData.imageFileNameList);
+            setSelectedList(jsonData.result);
+            setImageList(jsonData.imageFileNameList);
 
-        const totalURLs = jsonData.imageFileNameList.map(imageURL => {
-          const totalURL = 'http://d1vcrv9kpqlkt7.cloudfront.net/' + imageURL
-          return totalURL;
-        })
-        const blobURLs = totalURLs.map((url) => {
-          const blob = new Blob([url], {type : 'image/*'})
-          const imageURL = URL.createObjectURL(blob);
-          return imageURL
-        })
-        setImageList(blobURLs);
-      }
-       else {
-        console.log('리스트 실패')
-;      }
+            const blobURLs = await Promise.all(jsonData.imageFileNameList.map(async (imageURL) => {
+                try {
+                    const response = await fetch(`http://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`);
+                    if (!response.ok) {
+                        throw new Error('이미지 데이터 가져오기 실패');
+                    }
+                    const imageBlob = await response.blob();
+                    const blobURL = URL.createObjectURL(imageBlob);
+                    return blobURL;
+                } catch (error) {
+                    console.error('이미지 데이터 가져오기 오류:', error);
+                    return null; 
+                }
+            }));
+            setBlobImageList(blobURLs); 
+        } else {
+            console.log('리스트 실패');
+        }
     } catch (error) {
-      console.error('에러발생', error);
+        console.error('에러발생', error);
     }
-  }
-  
+}
+
   
   const closeModal = () => {
     console.log(imageList);
@@ -616,7 +624,7 @@ const CompensationReportPage = () => {
         if(response.ok) {
           setIsLoading(false);
           const responseData = await response.json();
-          console.log('수정 성공', responseData);
+          console.log('반려 수정 성공', responseData);
           window.location.reload();
         } else{
           console.log('수정 실패')
@@ -713,9 +721,9 @@ const CompensationReportPage = () => {
             </ArticleArea>
             <PlusFileArea>
               <SubFile>[첨부파일]</SubFile>
-              {imageList && imageList.map((item, index) => (
-                  <a key={index} href={item} download="image">
-                    <SubFile fontSize="1.3rem" color="#004FC7">{item}</SubFile>
+              {imageList&& blobImageList && blobImageList.map((blobURL, index) => (
+                  <a key={index} href={blobURL} download={imageList[index]}>
+                    <SubFile fontSize="1.3rem" color="#004FC7">{imageList[index]}</SubFile>
                   </a>
                 ))}
               <SubFile fontSize="1.3rem" color="#004FC7">{selectedList.video}</SubFile>

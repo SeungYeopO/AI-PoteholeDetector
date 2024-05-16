@@ -146,6 +146,7 @@ const LogoutBtnArea = styled.div`
   
 `
 const LogoutBtn = styled.div`
+cursor: pointer;
 width : 35%;
 height : 80%;
 border-radius : 1.5rem;

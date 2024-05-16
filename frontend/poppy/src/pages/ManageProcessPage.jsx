@@ -248,7 +248,7 @@ const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
   border-radius : 1rem;
-  border : 1px solid gray;
+  border : 1px solid darkgray;
   width: 55rem; 
   height: 30rem; 
   position: fixed;
@@ -314,7 +314,7 @@ const ModalImg = styled.img`
 const ModalTable = styled.table`
   width : 54%;
   height : 100%;
-  background-color :#A1A1A1;
+  background-color :#EFEFEF;
   border-collapse : collapse;
 `
 const BtnArea = styled.div`
@@ -370,6 +370,7 @@ const ReFilterBtn = styled.div`
   align-items : center;
 `
 const RefilterImg = styled.img`
+  cursor: pointer;
   width : 2.1rem;
   height : 2.1rem;
   /* background-color : red; */
@@ -692,7 +693,7 @@ const ManageProcessPage = () => {
       )}
       {randomCompany&&selectedList&&isInfoModalOpen && (<ListDetailModal>
       <ModalHeader>
-            <ModalTitle>세부 신고 내역</ModalTitle>
+            <ModalTitle>세부 처리 내역</ModalTitle>
             <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
           </ModalHeader>
           <ModalContent>

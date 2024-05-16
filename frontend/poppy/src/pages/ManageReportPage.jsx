@@ -4,7 +4,9 @@ import SideNav from "../components/SideNav";
 import { useState, useEffect } from "react";
 import closeBtnImg from '../assets/modal/closeBtn.png'
 import { useNavigate } from "react-router-dom";
-import spinner from '../assets/background/loading1.gif'
+import spinner from '../assets/background/loading1.gif';
+import poly1 from '../assets/background/Poly2.png';
+import poly2 from '../assets/background/Poly3.png'
 
 const Background = styled.div`
 
@@ -104,6 +106,7 @@ const InfoModal = styled.div`
   top: 50%; 
   left: 50%; 
   transform: translate(-50%, -50%);
+  border : 1px solid darkgray;
   z-index: 1000;
 `;
 
@@ -173,7 +176,7 @@ const ModalImg = styled.img`
 const ModalTable = styled.table`
   width : 54%;
   height : 100%;
-  background-color :#A1A1A1;
+  background-color :#EFEFEF;
   border-collapse : collapse;
 `
 const BtnArea = styled.div`
@@ -245,6 +248,11 @@ const Loading = styled.div`
   justify-content : center;
   align-items : center;
 `
+const PolyImg = styled.div`
+  
+`
+
+
   const ManageReportPage = () => {
   const navigate = useNavigate();
   const itemsPerPage = 8;
@@ -434,6 +442,7 @@ const Loading = styled.div`
     <Page>
       <PageBtnArea>
         <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+          <PolyImg></PolyImg>
         이전
         </PrevBtn>
         {Array.from({ length: totalPages }, (_, index) => (
@@ -453,7 +462,6 @@ const Loading = styled.div`
     </Page>
   </React.Fragment>
 )}
-
           </Content>
        </Container>
        {ismodalOpen && selectedGrid !== null && (
