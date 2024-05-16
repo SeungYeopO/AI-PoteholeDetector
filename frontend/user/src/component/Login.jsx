@@ -90,6 +90,14 @@ const InputBox = styled.input`
   font-size: 1.4rem;
   font-family: "BlackHanSans";
   text-indent: 0.3rem;
+  outline : none;
+
+  &:focus{ 
+		border: 1px solid blue;
+	}
+
+
+
   &::placeholder {
     color: #6f6c6c;
     font-family: "BlackHanSans";
