@@ -37,7 +37,7 @@ public class PotholeController {
         private double longitude;
         private MultipartFile file;
     }
-    // 포트홀 등록
+    
     @PostMapping
     public void saveData(@RequestParam("latitude") double latitude,
                          @RequestParam("longitude") double longitude,
@@ -123,7 +123,6 @@ public class PotholeController {
     }
 
 
-    // 전체 변경
     @Getter
     @Setter
     static class stateData{
