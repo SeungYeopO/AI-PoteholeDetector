@@ -74,10 +74,19 @@ public class PotholeController {
     }
 
 
+    @Getter
+    @Setter
+    static class userByData{
+        private double latitude;
+        private double longitude;
+        private String content;
+    }
     @PostMapping("/by-user")
-    public void saveDataByUser(@RequestParam("latitude") double latitude,
-                         @RequestParam("longitude") double longitude,
-                         @RequestParam("file") MultipartFile image) throws IOException {
+    public void saveDataByUser(@RequestParam userByData data){
+
+        double latitude = data.getLatitude();
+        double longitude = data.getLongitude();
+
         String lat = Double.toString(latitude);
         String lon = Double.toString(longitude);
 
@@ -104,15 +113,43 @@ public class PotholeController {
         long potholePk = 0;
         if(checkGPS){
             String[] words = road.split(" ");
-            String stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon);
-            s3Service.createFolder(road);
-            s3Service.uploadFile(road, image);
+            String stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon, data.getContent());
         }
     }
 
     @PatchMapping("/user-upload/{potholePk}")
     public Object changeStateByUserPothole(@PathVariable Long potholePk){
         String result = potholeService.changeStateByUserPothole(potholePk);
+        boolean success = result != null;
+        @Getter
+        class getResponse {
+            private final boolean success;
+            private final String result;
+
+            getResponse(boolean success, String result) {
+                this.success = success;
+                this.result = result;
+            }
+        }
+        return new getResponse(success, result);
+    }
+
+
+    // 전체 변경
+    @Getter
+    @Setter
+    static class stateData{
+        private Long potholePk;
+        private String nowState;
+        private String changeStatee;
+    }
+    @PostMapping("/user-upload/change-state")
+    public Object changeStateByUser(@RequestParam stateData data){
+        Long potholePk = data.getPotholePk();
+        String nowState = data.getNowState();
+        String changeStatee = data.getChangeStatee();
+
+        String result = potholeService.changeStateByUser(potholePk,nowState,changeStatee);
         boolean success = result != null;
         @Getter
         class getResponse {
