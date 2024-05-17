@@ -3,7 +3,8 @@ import React from "react";
 import SideNav from "../components/SideNav";
 import { useState, useEffect } from "react";
 import Calender from 'react-calendar';
-import '../../node_modules/react-calendar/dist/Calendar.css';
+import '../components/Calendar.css'
+// import '../../node_modules/react-calendar/dist/Calendar.css';
 import calendarImg from '../assets/modal/calenderImg.png';
 import closeBtnImg from '../assets/modal/closeBtn.png';
 import reloadImg from '../assets/modal/reload.png'
