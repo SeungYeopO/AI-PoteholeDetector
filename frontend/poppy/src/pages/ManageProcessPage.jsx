@@ -44,11 +44,7 @@ const ResultArea = styled.div`
   width : 95%;
   height: 73%;
 `
-const Page = styled.div`
-  /* background-color : green; */
-  width : 95%;
-  height : 7%;
-`
+
 const SortedBox = styled.div`
   background-color : #EFEFEF;
   width : 90%;
@@ -64,7 +60,7 @@ const DateBox = styled.div`
   width : 19%;
   height : 30%;
   /* background-color : #e83e3e; */
-  border : 1px solid darkgray;
+  /* border : 1px solid darkgray; */
 `
 const LocationBox = styled.div`
   display : flex;
@@ -108,7 +104,7 @@ const BoxName = styled.div`
   display : flex;
   justify-content : center;
   align-items : center;
- width : ${(props) => props.width || '25%'};
+  width : ${(props) => props.width || '25%'};
   height : 100%;
   background-color : #005999;
   color : white;
@@ -122,10 +118,9 @@ const BoxName1 = styled.div`
   align-items : center;
   width : 12.5%;
   height : 100%;
-  font-size : 1.4rem;
+  font-size : 1.1rem;
   background-color : #005999;
   /* border : 1px solid #A1A1A1; */
-  font-size : 1.1rem;
   color : white;
 `
 const DateTable = styled.div`
@@ -228,25 +223,8 @@ const Option = styled.option`
   cursor: pointer;
   font-family : 'BlackHanSans';
 `
-const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
-const Btn = styled.button`
-  cursor: pointer;
-  
-`
-const PageNumArea = styled.div`
-  
-`
-const PageText = styled.div`
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
+
+
 
 const ListDetailModal = styled.div`
   background-color: white;
@@ -387,6 +365,57 @@ const Loading = styled.div`
   justify-content : center;
   align-items : center;
 `
+
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
+const PageBtnArea = styled.div`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
 const ManageProcessPage = () => {
   const [ismodalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -666,26 +695,21 @@ const ManageProcessPage = () => {
             ) }
             </SortedList>
         </ResultArea>
-        <Page>
+          <Page>
         <PageBtnArea>
-                  <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </Btn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </Btn>
-                ))}
-                <Btn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </Btn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-        </Page>
+          <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+          이전
+          </PrevBtn>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+              {index + 1}
+            </PageBtn>
+          ))}
+          <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+            다음
+          </NextBtn>
+        </PageBtnArea>
+      </Page>
           </React.Fragment>
         )}
 
