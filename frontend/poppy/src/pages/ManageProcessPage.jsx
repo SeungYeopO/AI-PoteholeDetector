@@ -421,7 +421,7 @@ const ManageProcessPage = () => {
           console.log(Math.ceil(jsonData.length / itemsPerPage))
           setTotalPages(Math.max(Math.ceil(jsonData.state1Potholes.length / itemsPerPage), 1));
           setIsLoading(false);
-        }, 500)
+        }, 300)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -723,11 +723,16 @@ const ManageProcessPage = () => {
                         </TableRow>
                         <TableRow>
                           <TableCell1>시작예정일</TableCell1>
+                         {selectedList.startAt && (
                           <TableCell2>{selectedList.startAt.slice(0,10)}</TableCell2>
+                           )} 
+                          
                         </TableRow>
                         <TableRow>
                           <TableCell1>완료예정일</TableCell1>
+                          {selectedList.expectAt && (
                           <TableCell2>{selectedList.expectAt.slice(0,10)}</TableCell2>
+                          )}
                         </TableRow>
                     </ModalTable>
               </ModalContainer>
