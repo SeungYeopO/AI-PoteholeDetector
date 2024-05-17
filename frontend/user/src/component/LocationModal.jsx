@@ -76,6 +76,7 @@ const LocationModal = ({
         <Button
           onClick={() => {
             onStartRoute(latitude, longitude, locationName, true);
+
             onClose();
           }}
         >

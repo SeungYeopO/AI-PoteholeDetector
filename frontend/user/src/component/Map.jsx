@@ -85,7 +85,7 @@ const TitleImgBox = styled.div`
 `;
 const TitleImg = styled.img`
   width: 2.8em;
-  height: 3.5rem;
+  height: 3rem;
   margin-bottom: 0.5rem;
 `;
 
@@ -368,7 +368,9 @@ function Map() {
             case "미확인":
               iconPath = "../img/pothole_3.png";
               break;
-            case "사용자등록":
+            case "확인전":
+              iconPath = "../img/pothole_2.png";
+            case "확인중":
               iconPath = "../img/pothole_2.png";
               break;
             case "공사중":
@@ -855,6 +857,8 @@ function Map() {
           });
         });
 
+        console.log(routeData);
+
         resultData.forEach((feature) => {
           const trafficInfo = feature.geometry.traffic || []; // 트래픽 정보가 없을 경우 빈 배열
           if (trafficInfo.length > 0) {
@@ -926,7 +930,9 @@ function Map() {
             case "미확인":
               iconPath = "../img/pothole_3.png";
               break;
-            case "사용자등록":
+            case "확인전":
+              iconPath = "../img/pothole_2.png";
+            case "확인중":
               iconPath = "../img/pothole_2.png";
               break;
             case "공사중":
@@ -954,6 +960,10 @@ function Map() {
 
   const onTmapApp = async () => {
     setTmapAppStarted(true); // 티맵 앱이 시작됨을 나타냄
+    // resultMarkerArr.forEach((marker) => {
+    //   marker.setMap(null);
+    // });
+    // resultMarkerArr = [];
     const appKey = "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5";
     const encodedName = encodeURIComponent(name);
     const url = `https://apis.openapi.sk.com/tmap/app/routes?appKey=${appKey}&name=${encodedName}&lon=${endX}&lat=${endY}`;
