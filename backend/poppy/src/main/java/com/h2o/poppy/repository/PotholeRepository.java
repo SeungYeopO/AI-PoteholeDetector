@@ -37,7 +37,7 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Pothole e SET e.isPothole = false WHERE e.potholePk = :potholePk")
+    @Query("UPDATE Pothole e SET e.isPothole = false, e.state ='반려' WHERE e.potholePk = :potholePk")
     int updateIsPothole(@Param("potholePk") long Pk);
 
 
