@@ -62,12 +62,11 @@ const BoxName = styled.div`
   display : flex;
   justify-content : center;
   align-items : center;
- width : ${(props) => props.width || '25%'};
+  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
-  font-size : 1.4rem;
-
+  font-size : 1.1rem;
+  background-color : #005999;
+  color : white;
 `
 const DateTable = styled.div`
   background-color :  white;
@@ -204,8 +203,8 @@ const CalenderModal = styled.div`
   width: 20rem; 
   height: 15rem; 
   position: absolute; /* 부모 요소를 기준으로 위치를 절대값으로 지정 */
-  top: calc(25% - 12.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
-  left: calc(40% - 10.4rem); /* CalenderImg 버튼의 위치에 따라 조정 */
+  top: calc(25% - 10.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
+  left: calc(40% - 8rem); /* CalenderImg 버튼의 위치에 따라 조정 */
   z-index: 1000;
 `
 

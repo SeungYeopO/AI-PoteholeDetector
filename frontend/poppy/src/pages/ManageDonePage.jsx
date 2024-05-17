@@ -93,9 +93,9 @@ const BoxName = styled.div`
   align-items : center;
   width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
-  font-size : 1.4rem;
+  background-color : #005999;
+  font-size : 1.1rem;
+  color : white;
 
 `
 const BoxName1 = styled.div`
@@ -104,9 +104,9 @@ const BoxName1 = styled.div`
   align-items : center;
   width : 12.5%;
   height : 100%;
-  font-size : 1.4rem;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
+  font-size : 1.1rem;
+  background-color : #005999;
+  color : white;
 `
 const DateTable = styled.div`
   background-color :  white;
@@ -301,7 +301,7 @@ const ModalContainer = styled.div`
 const ModalImg = styled.img`
   width : 43%;
   height : 100%;
-  background-color : darkmagenta;
+  background-color :  #c2c1c1;
 `
 const ModalTable = styled.table`
   width : 54%;
@@ -652,7 +652,7 @@ const gotoSearch = async () => {
           <ModalContent>
             <ModalContentBox>
               <ModalContainer>
-                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedList.province}+${selectedList.city}+${selectedList.street}/${selectedList.longitude}_${selectedList.latitude}.jpg`}></ModalImg>
+                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedList.province}+${selectedList.city}+${selectedList.street}/${selectedList.longitude}_${selectedList.latitude}.jpg`} alt="No image"></ModalImg>
                     <ModalTable>
                         <TableRow>
                           <TableCell1>담당자명</TableCell1>
