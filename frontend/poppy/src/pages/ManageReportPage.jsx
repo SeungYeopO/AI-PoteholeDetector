@@ -93,7 +93,8 @@ const ListBox = styled.div`
   height : 35%; 
 `
 const List = styled.div`
-  font-size : 1.2rem;
+  font-size : 1.1rem;
+  margin-top : ${(props)=> props.marginTop || '0rem'};
   
 `
 const InfoModal = styled.div`
@@ -430,9 +431,9 @@ const PolyImg = styled.div`
           <ContentBox>
             <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`} alt="pothole"></PotholeImg>
             <ListBox>
-              <List>신고시각</List>
+              <List>신고시각 : </List>
               <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
-              <List>신고위치</List>
+              <List marginTop="0.5rem">신고위치</List>
               <List>{item.province} {item.city} {item.street}</List>
             </ListBox>
           </ContentBox>
