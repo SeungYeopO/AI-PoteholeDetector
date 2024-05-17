@@ -293,7 +293,7 @@ const PolyImg = styled.div`
           setData(jsonData.state1Potholes);
           setTotalPages(Math.max(Math.ceil(jsonData.state1Potholes.length / itemsPerPage), 1));
           setIsLoading(false); 
-        }, 500); 
+        }, 300); 
       } catch (error) {
         console.error('Error fetching data:', error);
       }

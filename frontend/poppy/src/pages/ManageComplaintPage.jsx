@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SideNav from "../components/SideNav_ver2";
+import SideNav from "../components/SideNav";
 import { useState, useEffect } from "react";
 import closeBtnImg from '../assets/modal/closeBtn.png'
 import { json, useNavigate } from "react-router-dom";
@@ -28,18 +28,17 @@ const Content = styled.div`
 `
 const TimeArea = styled.div`
   /* background-color : darkgray; */
-  margin-left : 3rem;
   width : 100%;
-  height : 10%;
+  height : 6%;
   font-size : 1.1rem;
   display : flex;
   align-items : center;  
-  justify-content : center;
+  margin-left : 3rem;
 `
 const ListArea = styled.div` 
   margin-left : 2rem;
   width : 90%;
-  height : 83%;
+  height : 87%;
   display : flex;
   justify-content : center;
   /* background-color : lightcoral; */
@@ -148,6 +147,20 @@ const Info = styled.div`
   color : ${(props) => props.color || 'black'};
 
 `
+const Info1 = styled.div`
+  width : 68%;
+  height : auto;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  font-size : 1.3rem;
+  /* white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+  color : ${(props) => props.color || 'black'};
+
+`
 
 const PageBtnArea = styled.div`
  cursor: pointer;
@@ -174,8 +187,8 @@ const ListDetailModal = styled.div`
   opacity : 98%;
   border-radius : 1rem;
   border : 1px solid gray;
-  width: 55rem; 
-  height: 43rem; 
+  width: 40rem; 
+  height: 30rem; 
   position: fixed;
   top: 50%; 
   left: 50%; 
@@ -201,8 +214,8 @@ const ModalContent = styled.div`
   height : ${(props) => props.height || '100%'};
   margin-top  : ${(props) => props.marginTop || '2.4rem'};
   /* background-color : pink; */
+
   align-items : center;
-  justify-content : center;
   
 `
 const ModalTitle = styled.div`
@@ -234,9 +247,11 @@ const ArticleList = styled.div`
   display : flex;
   align-items : center;
   width : 100%;
-  height : ${(props) => props.height || '25%'};
+  height : ${(props) => props.height || '15%'};
   /* background-color : lightgoldenrodyellow; */
   border-top : ${(props) => props.borderTop || 'none'};
+  word-break: break-word;
+
 `
 const PlusFileArea = styled.div`
   display : flex;
@@ -253,9 +268,9 @@ const BtnArea = styled.div`
   justify-content : space-around;
   align-items : center;
   width : 60%;
+  margin-top : 1rem;
   height : ${(props) => props.height || '15%'};
   /* background-color : lightcoral; */
-  
 `
 const BtnArea2 = styled.div`
   display : flex;
@@ -393,7 +408,9 @@ const SearchBtn = styled.div`
 
 const CompensationReportPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [ismodalOpen, setIsModalOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [data, setData] = useState([]);
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -442,15 +459,15 @@ const CompensationReportPage = () => {
         setIsLoading(true);
         setTimeout(async () => {
           const response = await fetch(
-            '/api/accident-report/no-check'  
+            '/api/potholes/user-upload'  
           );
           if (!response.ok) {
             throw new Error('일단 try 구문은 돌았음');
           }
           const jsonData = await response.json();
-          console.log('데이터', jsonData.noCheckState);
-          setTotalPages(Math.max(Math.ceil(jsonData.noCheckState.length / itemsPerPage), 1));
-          setData(jsonData.noCheckState); 
+          console.log('데이터', jsonData.result);
+          setTotalPages(Math.max(Math.ceil(jsonData.result.length / itemsPerPage), 1));
+          setData(jsonData.result); 
           setIsLoading(false);   
         }, 500)
     
@@ -475,51 +492,18 @@ const CompensationReportPage = () => {
   }
 
   const handleListClick = async (item) => {
+    console.log('리스트클릭')
     setIsInfoModalOpen(true);
     console.log(item);
 
     try {
-        const response = await fetch(`/api/accident-report/${item.reportPk}`);
-  
+        const response = await fetch(`/api/potholes/user-upload/${item.potholePk}`);
+
         if (response.ok) {
             const jsonData = await response.json();
-            console.log('조회 리스트 데이터,', jsonData)
-            console.log('한개 리스트 데이터', jsonData.imageFileNameList);
+            console.log('조회 리스트 데이터,', jsonData);
             setSelectedList(jsonData.result);
-            setImageList(jsonData.imageFileNameList);
-            console.log(jsonData.videoFileName);
-            setVideoFile(jsonData.videoFileName);
-
-            const blobURLs = await Promise.all(jsonData.imageFileNameList.map(async (imageURL) => {
-                try {
-                    const response = await fetch(`http://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`);
-                    if (!response.ok) {
-                        throw new Error('이미지 데이터 가져오기 실패');
-                    }
-                    const imageBlob = await response.blob();
-                    const blobURL = URL.createObjectURL(imageBlob);
-                    return blobURL;
-                } catch (error) {
-                    console.error('이미지 데이터 가져오기 오류:', error);
-                    return null; 
-                }
-            }));
-            setBlobImageList(blobURLs);
-            
-            if(jsonData.videoFileName){
-              try{
-                const videoResponse = await fetch(`http://d1vcrv9kpqlkt7.cloudfront.net/${jsonData.result.serialNumber}/${jsonData.videoFileName}`);
-                if(!videoResponse.ok){
-                  throw new Error('비디오 데이터 가져오기 실패')
-                }
-                const videoBlob = await videoResponse.blob();
-                const videoBlobURL = URL.createObjectURL(videoBlob);
-                setVideoBlobURL(videoBlobURL);
-              } catch (error){
-                console.log('비디오 데이터 가져오기 오류', error);
-              }
-            }  
-
+            // 여기서 jsonData를 처리하는 추가적인 코드가 필요할 수 있습니다.
         } else {
             console.log('리스트 실패');
         }
@@ -527,6 +511,7 @@ const CompensationReportPage = () => {
         console.error('에러발생', error);
     }
 }
+
 
   
   const closeModal = () => {
@@ -541,6 +526,10 @@ const CompensationReportPage = () => {
     setIsReturnModalOpen(true);
   }
   
+  const handleReturnTitle = (event) => {
+    console.log(event.target.value);
+    setReturnTitle(event.target.value);
+  }
 
   const handleReturnContent = (event) => {
     console.log(event.target.value);
@@ -592,15 +581,15 @@ const CompensationReportPage = () => {
   
   const gotoApprove = () => {
     const userData = {
-      reportPk : selectedList.reportPk,
-      state : '보상승인',
-      rejectionReason : null
+        potholePk: selectedList.potholePk,
+        nowState: selectedList.state,
+        changeState: '확인중' 
     };
     try{
       setIsLoading(true);
       setTimeout(async () => {
-        const response = await fetch('/api/accident-report',{
-          method : 'PATCH',
+        const response = await fetch('/api/potholes/user-upload/change-state',{
+          method : 'POST',
           headers : {
             "Content-Type" : "application/json",
           },
@@ -621,13 +610,92 @@ const CompensationReportPage = () => {
     }
   }
 
+  const gotoDelete = async () => {
+    console.log('딜리트버튼 클릭')
+    try {
+      const response = await fetch(`/api/potholes/${selectedList.potholePk}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        console.log('데이터 삭제 성공');
+        console.log(response);
+        window.location.reload();
+        // window.location.reload();
+      } else {
+        console.log('데이터 삭제 실패');
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('에러 발생:', error);
+    }
+  };
+
+  const gotoReturn = async () => {
+    try {
+      const response = await fetch(`/api/potholes/${selectedList.potholePk}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (response.ok) {
+        console.log('반려 성공');
+        console.log(response);
+        window.location.reload();
+      } else {
+        console.log('반려 실패');
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('에러 발생:', error);
+    }
+
+  }
+
+
+  const gotoWork = () => {
+    const userData = {
+      potholePk: selectedList.potholePk,
+      nowState: selectedList.state,
+      changeState: '공사중' 
+  };
+  try{
+    setIsLoading(true);
+    setTimeout(async () => {
+      const response = await fetch('/api/potholes/user-upload/change-state',{
+        method : 'POST',
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify(userData),
+      });
+      if(response.ok) {
+        setIsLoading(false);
+        const responseData = await response.json();
+        console.log('수정 성공', responseData);
+
+        window.location.reload();
+      } else{
+        console.log('수정 실패')
+      }
+    },500)
+  } catch(error){
+    console.log('오류발생', error);
+  }
+
+
+  }
+
   const gotoSend = () => {
     const userData = {
       reportPk : selectedList.reportPk,
       state : '반려',
-      rejectionReason : returnContent
+      rejectionReason : `Title : ${returnTitle} , Content : ${returnContent}`
     };
-
     try{
       setIsLoading(true);
       setTimeout(async () => {
@@ -652,22 +720,12 @@ const CompensationReportPage = () => {
     }
   }
 
+
   return (
     <Background>
         <SideNav />
         <Content>
-        <TimeArea>
-          <Box>
-            <DateBox>
-                <BoxName>날짜</BoxName>
-                  <DateTable>
-                    <SortInfo width="75%" height="100%">{selectedDate ? formatDate(selectedDate) : '날짜 선택'}</SortInfo>
-                    <CalenderImg src={calendarImg} onClick={modalOpen}></CalenderImg>
-                  </DateTable>
-                </DateBox>
-                <SearchBtn onClick={gotoSearch}>조회</SearchBtn>
-          </Box>
-        </TimeArea>
+        <TimeArea>{currentDateTime.toLocaleDateString()} {currentTime.toLocaleTimeString()} 현재</TimeArea>
         {isLoading ? (
             <Loading>
             <h1>잠시만 기다려 주세요...</h1>
@@ -678,18 +736,18 @@ const CompensationReportPage = () => {
               <ListArea>
           <SortedList>
                 <ListHeader>
-                  <Info>순번</Info>
-                  <Info width="48%">제목</Info>
-                  <Info width="20%">작성자</Info>
-                  <Info width="20%">작성일</Info>
+                  <Info>상태</Info>
+                  <Info width="40%">신고위치</Info>
+                  <Info width="28%">신고시간</Info>
+                  <Info>담당자명</Info>
                 </ListHeader>
-              {currentData && currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
+                {currentData && currentData.length === 0 ? (<Lists>"결과가 없습니다"</Lists>) : (
                 currentData.map((item, index) => (
                   <Lists key={index} onClick={()=> handleListClick(item)}>
-                    <Info>{(currentPage - 1) * itemsPerPage + index + 1}</Info> 
-                    <Info width="48%">{item.reportName}</Info>
-                    <Info width="20%">{item.userName}</Info>
-                    <Info width="20%">{item.reportDate.slice(0,10)}</Info>
+                    <Info >{item.state}</Info>
+                    <Info width="40%">{item.province} {item.city} {item.street}</Info>
+                    <Info width="28%">{item.detectedAt.slice(0,10)}</Info>
+                    <Info>김싸피</Info>
                   </Lists>
                 ))
               ) } 
@@ -720,56 +778,36 @@ const CompensationReportPage = () => {
         )}
        
         </Content>
-        {ismodalOpen && (
-        <CalenderModal>
-            <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
-        </CalenderModal>
-      )}
-       {selectedList&&isInfoModalOpen && (<ListDetailModal>
-      <ModalHeader>
-            <ModalTitle>보상 신고 처리</ModalTitle>
-            <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
+
+        {selectedList && isInfoModalOpen && (
+        <ListDetailModal>
+          <ModalHeader>
+            <ModalTitle>민원 상세 내역</ModalTitle>
+            <CloseImg src={closeBtnImg} onClick={closeModal} />
           </ModalHeader>
-          <ModalContent height="89%" marginTop="0rem">
-            <ArticleArea>
-              <ArticleList>{selectedList.reportName}</ArticleList>
-              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.userName}</ArticleList>
-              <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.reportContent}</ArticleList>
+          <ModalContent height="89%" marginTop="2rem">
+          <ArticleArea>
+              <ArticleList>신고 위치 : {selectedList.province} {selectedList.city} {selectedList.street}</ArticleList>
+              <ArticleList height="15%" fontSize="1.4rem">신고 시각 : {selectedList.detectedAt.slice(0,10) }  {selectedList.detectedAt.slice(11,19) }</ArticleList>
+              <ArticleList height="65%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.content}</ArticleList>
             </ArticleArea>
-            <PlusFileArea>
-              <SubFile>[첨부파일]</SubFile>
-              {imageList&& blobImageList && blobImageList.map((blobURL, index) => (
-                  <a key={index} href={blobURL} download={imageList[index]}>
-                    <SubFile fontSize="1.3rem" color="#004FC7">{imageList[index]}</SubFile>
-                  </a>
-                ))}
-             {videoBlobURL && (
-                  <a href={videoBlobURL} download={videoFile}>
-                      <SubFile fontSize="1.3rem" color="#004FC7">{videoFile}</SubFile>
-                  </a>
-              )}
-            </PlusFileArea>
             <BtnArea>
-              <Btn1 onClick={gotoApprove}>보상승인</Btn1>
-              <Btn1 onClick={openReturnModalOpen}>반려</Btn1>
+              {selectedList.state === '확인중' ? (
+                <>
+                  <Btn1 onClick={gotoWork}>공사 요청</Btn1>
+                  <Btn1 onClick={gotoReturn}>반려</Btn1>
+                </>
+              ) : (
+                <>
+                  <Btn1 onClick={gotoApprove}>확인 요청</Btn1>
+                  <Btn1 onClick={gotoDelete}>삭제</Btn1>
+                </>
+              )}
             </BtnArea>
-          </ModalContent>
-      </ListDetailModal>
-         )}
-        {isReturnModalOpen && (<ReturnModal>
-          <ModalHeader height="13%" backgroundColor="#91A3BC">
-          <ModalTitle fontSize="1.5rem">반려 사유 작성</ModalTitle>
-            <CloseImg width ="2rem" height ="2rem" src={closeBtnImg} onClick={closeReturnModal}></CloseImg>
-          </ModalHeader>
-          <ModalContent marginTop = "0rem" height="66%">
-            <ReturnModalContent>
-              <ContentInput onChange={handleReturnContent} placeholder="내용을 입력하세요"></ContentInput>
-            </ReturnModalContent>
-          </ModalContent>
-          <BtnArea2 height="15%">
-            <Btn2 onClick = {gotoSend}> 최종 제출</Btn2>
-          </BtnArea2>
-        </ReturnModal>)}
+         </ModalContent>
+       </ListDetailModal>
+)}
+
     </Background>
   );
 };
