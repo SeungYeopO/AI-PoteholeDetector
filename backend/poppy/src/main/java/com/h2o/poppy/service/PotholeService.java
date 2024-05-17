@@ -179,7 +179,7 @@ public class PotholeService {
             pothole.setCity(middleAddrName);
             pothole.setStreet(lowerAddrName);
             pothole.setDetectedAt(new Date());
-            pothole.setState("사용자등록");
+            pothole.setState("확인전");
             pothole.setContent(content);
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
@@ -195,7 +195,7 @@ public class PotholeService {
     public String changeStateByUser(Long potholePk, String nowState, String changeState){
         try{
             String returenString = null;
-            if(nowState.equals("사용자등록")){
+            if(nowState.equals("확인전")){
                 if(changeState.equals("삭제")){
                     potholeRepository.deleteById(potholePk);
                     returenString = "삭제";
@@ -208,7 +208,20 @@ public class PotholeService {
                     potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"반려");
                     returenString = "반려";
                 }else if(changeState.equals("공사중")){
-                    potholeRepository.updateByUserPotholeIng(potholePk);
+
+                    LocalDate now = LocalDate.now();
+                    Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+
+                    Date currentDate = Date.from(instantNow);
+                    Random random = new Random();
+                    int daysToAdd = random.nextInt(4) + 2;
+                    LocalDate exLocalDate = now.plusDays(daysToAdd);
+
+                    Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+                    Date exDate = Date.from(instant);
+
+
+                    potholeRepository.updateByUserPotholeIng(potholePk,currentDate,exDate);
                     returenString = "공사중";
                 }
             }
