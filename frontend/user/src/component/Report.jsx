@@ -143,7 +143,7 @@ const FileText = styled.div`
   display: flex;
   justify-content: left;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   color: #7a7979;
 `;
 const FileBtn = styled.div`
@@ -170,15 +170,16 @@ const SaveBtn = styled.div`
   margin-bottom: 0.5rem;
 `;
 const VideoListModal = styled.div`
-  background-color: #d3d3d3;
+  background-color: #ffe58a;
   opacity: 98%;
   border-radius: 1rem;
   width: 80%;
   height: 40rem;
   position: fixed;
+  border: 1px solid #ffe58a;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -43%);
+  transform: translate(-50%, -50%);
   z-index: 1000;
 `;
 
@@ -199,18 +200,17 @@ const VideoThumbnail = styled.video`
 const VideoInfo = styled.div`
   flex: 1;
   padding: 0 20px; // 내용과 비디오 사이에 공간 추가
-  color: white; // 텍스트 색상 변경
 `;
 
 const SelectButton = styled.button`
-  background-color: #949eff;
+  background-color: #5ab2ff;
   color: white;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background-color: #7a7eff;
+    background-color: #5aa4ff;
   }
 `;
 
@@ -223,7 +223,7 @@ const ModalVideoList = styled.div`
   margin-top: 0.3rem;
   width: 100%;
   height: 73%;
-  background-color: #28325e;
+  background-color: #ffffff;
   overflow-y: auto;
 `;
 const BtnArea = styled.div`
@@ -250,7 +250,7 @@ const BoxName = styled.div`
   align-items: center;
   width: ${(props) => props.width || "25%"};
   height: 100%;
-  background-color: #8d8c8c;
+  background-color: #ffc700;
   font-size: 1.4rem;
 `;
 const DateTable = styled.div`
@@ -278,7 +278,7 @@ const DateBox = styled.div`
   height: 40%;
   background-color: lightcyan;
   /* background-color : #e83e3e; */
-  border: 1px solid darkgray;
+  /* border: 1px solid darkgray; */
   margin-left: 1rem;
 `;
 const SortInfo = styled.div`
@@ -307,7 +307,7 @@ const Btn = styled.div`
   width: 20%;
   height: 80%;
   margin-bottom: 0.3rem;
-  background-color: #949eff;
+  background-color: #ffc700;
   border-radius: 1rem;
   display: flex;
   align-items: center;
