@@ -143,7 +143,7 @@ const FileText = styled.div`
   display: flex;
   justify-content: left;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   color: #7a7979;
 `;
 const FileBtn = styled.div`
@@ -338,7 +338,7 @@ const ModalContent = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const Report = () => {
+const PotholeReport = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -531,9 +531,7 @@ const Report = () => {
                   </SubImgBox>
                 ))
               ) : (
-                <FileText width="100%">
-                  사고사진을 첨부하세요 (최대 4장)
-                </FileText>
+                <FileText width="100%">사고사진을 첨부하세요(최대4장)</FileText>
               )}
             </ImgBox>
             <FileBtn onClick={chooseImage}>첨부</FileBtn>
@@ -620,4 +618,4 @@ const Report = () => {
   );
 };
 
-export default Report;
+export default PotholeReport;
