@@ -6,7 +6,8 @@ import closeBtnImg from '../assets/modal/closeBtn.png'
 import { useNavigate } from "react-router-dom";
 import spinner from '../assets/background/loading1.gif';
 import poly1 from '../assets/background/Poly2.png';
-import poly2 from '../assets/background/Poly3.png'
+import poly2 from '../assets/background/Poly3.png';
+import dummy from '../../public/dummydata/dummydata.json'
 
 const Background = styled.div`
 
@@ -66,11 +67,11 @@ const GridCard = styled.div`
   justify-content : center;
 `
 
-const Page = styled.div`
-  /* background-color : red; */
-  width : 100%;
-  height : 7%;
-`
+// const Page = styled.div`
+//   /* background-color : red; */
+//   width : 100%;
+//   height : 7%;
+// `
 const ContentBox = styled.div`
   /* background-color : lightpink; */
   display : flex;
@@ -214,34 +215,70 @@ const TableCell2 = styled.td`
   text-indent : 1rem;
   border: 1px solid #dddddd;
 `
-const PrevBtn = styled.button`
-  cursor: pointer;
-  
-`
-const PageBtn =styled.button`
- cursor: pointer;
-  
-`
-const NextBtn = styled.button`
- cursor: pointer;
-  
-`
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
 const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
 
 const PageNumArea = styled.div`
-`
+  height : 50%;
+
+  margin-top: 0.5rem;
+  text-align: center;
+`;
 
 const PageText = styled.div`
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #2F80ED; 
+  font-weight: bold;
+`;
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
 const Loading = styled.div`
    width : 90%;
   height : 87%;
@@ -273,6 +310,29 @@ const PolyImg = styled.div`
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+
+  
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+
+  //       if (response.ok) {
+  //         const jsonData = await response.json();
+  //         console.log('더미 데이터 가져오기 성공:', jsonData);
+  //         setData(jsonData);
+  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
+  //       } else {
+  //         console.log('더미 데이터 가져오기 실패');
+  //       }
+  //     } catch (error) {
+  //       console.error('더미 데이터 가져오기 실패:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); // 빈 배열을 의존성 배열로 사용해 처음 렌더링될 때만 실행
 
 
   useEffect(() => {
@@ -354,19 +414,6 @@ const PolyImg = styled.div`
     console.log(new Date(currentDate.getTime()));
  
     
-    // // 시작 예정일 설정
-    // const startDate = new Date(currentDate.getTime());
-    // const startDaysToAdd = Math.floor(Math.random() * 4) + 2; 
-    // startDate.setDate(startDate.getDate() + startDaysToAdd);
-    // setStartDate(formatDate(startDate));
-    // console.log('시작예정일:', startDate);
-
-    // // 완료 예정일 설정
-    // const endDate = new Date(startDate.getTime()); 
-    // const endDaysToAdd = Math.floor(Math.random() * 4) + 7; 
-    // endDate.setDate(endDate.getDate() + endDaysToAdd);
-    // console.log('완료예정일:', formatDate(endDate));
-    // setEndDate(formatDate(endDate));
 
     const userData = {
       potholePk : selectedGrid.potholePk,
@@ -443,7 +490,6 @@ const PolyImg = styled.div`
     <Page>
       <PageBtnArea>
         <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
-          <PolyImg></PolyImg>
         이전
         </PrevBtn>
         {Array.from({ length: totalPages }, (_, index) => (
@@ -455,11 +501,6 @@ const PolyImg = styled.div`
           다음
         </NextBtn>
       </PageBtnArea>
-      <PageNumArea>
-      </PageNumArea>
-      <PageText>
-        페이지: {currentPage} / {totalPages}
-      </PageText>
     </Page>
   </React.Fragment>
 )}

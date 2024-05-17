@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate} from 'react-router-dom';
 import backImg from '../assets/background/loginBackImg3.jpg';
-import Logo from '../assets/background/Loginlogo1.png'
 import logo from '../assets/background/logoImg.png';
 import { useEffect } from "react";
 import { useCookies } from 'react-cookie';

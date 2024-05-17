@@ -47,7 +47,7 @@ const DateBox = styled.div`
   width : 19%;
   height : 30%;
   /* background-color : #e83e3e; */
-  border : 1px solid darkgray;
+  /* border : 1px solid darkgray; */
 `
 const LocationBox = styled.div`
   display : flex;
@@ -113,6 +113,7 @@ const DateTable = styled.div`
   width : 75%;
   height : 100%;
   display : flex;
+  border : 1px solid darkgray;
   
 `
 const StateDrop = styled.select`
@@ -173,11 +174,7 @@ const ResultArea = styled.div`
   width : 95%;
   height: 73%;
 `
-const Page = styled.div`
-  /* background-color : green; */
-  width : 95%;
-  height : 7%;
-`
+
 const SortedList = styled.div`
   /* background-color : lightcyan; */
   width : 95%;
@@ -220,26 +217,7 @@ const Info = styled.div`
   color : ${(props) => props.color || 'black'};
 
 `
-const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
 
-const Btn = styled.button`
-  cursor: pointer;
-  
-`
-const PageNumArea = styled.div`
-
-`
-const PageText = styled.div`
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
 const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
@@ -378,6 +356,56 @@ const Loading = styled.div`
   justify-content : center;
   align-items : center;
 `
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
+const PageBtnArea = styled.div`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
 
 const ManageDonePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -481,12 +509,12 @@ const ManageDonePage = () => {
   };
 
   const handleRegionSelect = (event) => {
-    console.log(event.target.value);
+    console.log('눌린 지역', event.target.value);
     setSelectedRegion(event.target.value);
     const sub = areas.find((area) => area.name === event.target.value)?.subArea || [];
     console.log('하위지역',sub);
     setSubAreas(sub);
-    setSelectedDistrict("");
+    setSelectedDistrict(null);
 
   }
   const handleDistrictSelect = (event) => {
@@ -538,6 +566,7 @@ const gotoSearch = async () => {
       });
       if (response.ok){
         const responseData = await response.json();
+        console.log('조회된 데이터는? ', responseData)
         setData(responseData.filteredDate);
         setIsLoading(false);
 
@@ -616,24 +645,19 @@ const gotoSearch = async () => {
         </ResultArea>
         <Page>
         <PageBtnArea>
-                  <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </Btn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </Btn>
-                ))}
-                <Btn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </Btn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-        </Page>
+          <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+          이전
+          </PrevBtn>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+              {index + 1}
+            </PageBtn>
+          ))}
+          <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+            다음
+          </NextBtn>
+        </PageBtnArea>
+      </Page>
 
           </React.Fragment>
         )}

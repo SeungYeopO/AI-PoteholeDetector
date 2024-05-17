@@ -44,11 +44,7 @@ const ListArea = styled.div`
   /* background-color : lightcoral; */
   align-items : center;
 `
-const Page = styled.div`
-  /* background-color : red; */
-  width : 100%;
-  height : 7%;
-`
+
 const DateBox = styled.div`
   display : flex;
   align-items : center;
@@ -162,26 +158,8 @@ const Info1 = styled.div`
 
 `
 
-const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
 
-const Btn = styled.button`
-  cursor: pointer;
-  
-`
-const PageNumArea = styled.div`
 
-`
-const PageText = styled.div`
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
 const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
@@ -339,6 +317,57 @@ const ReturnModalContent = styled.div`
   align-items : center;
   /* background-color : blue; */
 `
+
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
+const PageBtnArea = styled.div`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
 const Btn2 = styled.div`
   cursor: pointer;
   background-color : black;
@@ -753,26 +782,21 @@ const CompensationReportPage = () => {
               ) } 
               </SortedList>
         </ListArea>
-            <Page>
-            <PageBtnArea>
-                  <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </Btn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </Btn>
-                ))}
-                <Btn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </Btn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-            </Page>
+          <Page>
+          <PageBtnArea>
+            <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+            이전
+            </PrevBtn>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+                {index + 1}
+              </PageBtn>
+            ))}
+            <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+              다음
+            </NextBtn>
+          </PageBtnArea>
+        </Page>
           </React.Fragment>
 
         )}
