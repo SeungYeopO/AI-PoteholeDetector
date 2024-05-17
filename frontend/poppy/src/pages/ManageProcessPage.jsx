@@ -42,7 +42,7 @@ const ResultArea = styled.div`
   align-items : center;
   /* background-color : pink; */
   width : 95%;
-  height: 73%;
+  height: 72%;
 `
 
 const SortedBox = styled.div`
@@ -370,6 +370,7 @@ const Page = styled.div`
   width: 100%;
   height: 7%;
   padding: 1rem 0;
+  /* background-color : red; */
 `;
 
 const PageBtnArea = styled.div`
@@ -436,6 +437,27 @@ const ManageProcessPage = () => {
   const company = ['아무건설', '싸피건설', '삼성건설', '난몰라건설', '뭐라해건설'];
   const [isLoading, setIsLoading] = useState(false);
 
+
+  //  useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+
+  //       if (response.ok) {
+  //         const jsonData = await response.json();
+  //         console.log('더미 데이터 가져오기 성공:', jsonData);
+  //         setData(jsonData);
+  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
+  //       } else {
+  //         console.log('더미 데이터 가져오기 실패');
+  //       }
+  //     } catch (error) {
+  //       console.error('더미 데이터 가져오기 실패:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); 
 
   useEffect(() => {
     const fetchData = async () => {

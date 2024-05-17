@@ -44,7 +44,7 @@ const GridArea = styled.div`
   background-color : white;
   margin-left : 4.2rem;
   width : 90%;
-  height : 87%;
+  height : 85%;
   display : grid;
   flex-wrap : wrap;
   grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
@@ -219,6 +219,7 @@ const Page = styled.div`
   width: 100%;
   height: 7%;
   padding: 1rem 0;
+  /* background-color : red; */
 `;
 
 const PageBtnArea = styled.div`
@@ -332,7 +333,7 @@ const PolyImg = styled.div`
   //   };
 
   //   fetchData();
-  // }, []); // 빈 배열을 의존성 배열로 사용해 처음 렌더링될 때만 실행
+  // }, []); 
 
 
   useEffect(() => {
@@ -466,44 +467,44 @@ const PolyImg = styled.div`
           <Content>
             <TimeArea>{currentDateTime.toLocaleDateString()} {currentTime.toLocaleTimeString()} 현재</TimeArea>
             {isLoading ? (
-  <Loading>
-    <h1>잠시만 기다려 주세요...</h1>
-    <img src={spinner} alt="loading"></img>
-  </Loading>
-) : (
-  <React.Fragment>
-    <GridArea>
-      {currentData && currentData.map((item, index) => (
-        <GridCard key={index} onClick={() => handleGridClick(item)}>
-          <ContentBox>
-            <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`} alt="pothole"></PotholeImg>
-            <ListBox>
-              <List>신고시각 : </List>
-              <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
-              <List marginTop="0.5rem">신고위치</List>
-              <List>{item.province} {item.city} {item.street}</List>
-            </ListBox>
-          </ContentBox>
-        </GridCard>
-      ))}  
-    </GridArea>
-    <Page>
-      <PageBtnArea>
-        <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
-        이전
-        </PrevBtn>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
-            {index + 1}
-          </PageBtn>
-        ))}
-        <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
-          다음
-        </NextBtn>
-      </PageBtnArea>
-    </Page>
-  </React.Fragment>
-)}
+            <Loading>
+              <h1>잠시만 기다려 주세요...</h1>
+              <img src={spinner} alt="loading"></img>
+            </Loading>
+          ) : (
+        <React.Fragment>
+          <GridArea>
+            {currentData && currentData.map((item, index) => (
+              <GridCard key={index} onClick={() => handleGridClick(item)}>
+                <ContentBox>
+                  <PotholeImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${item.province}+${item.city}+${item.street}/${item.longitude}_${item.latitude}.jpg`} alt="pothole"></PotholeImg>
+                  <ListBox>
+                    <List>신고시각 : </List>
+                    <List> {item.detectedAt.slice(0,10)} {item.detectedAt.slice(11,19)}</List>
+                    <List marginTop="0.5rem">신고위치</List>
+                    <List>{item.province} {item.city} {item.street}</List>
+                  </ListBox>
+                </ContentBox>
+              </GridCard>
+            ))}  
+          </GridArea>
+          <Page>
+            <PageBtnArea>
+              <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+              이전
+              </PrevBtn>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+                  {index + 1}
+                </PageBtn>
+              ))}
+              <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+                다음
+              </NextBtn>
+            </PageBtnArea>
+          </Page>
+        </React.Fragment>
+      )}
           </Content>
        </Container>
        {ismodalOpen && selectedGrid !== null && (
