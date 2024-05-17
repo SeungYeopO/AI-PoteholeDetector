@@ -38,19 +38,23 @@ public class DataLoader implements CommandLineRunner {
 
     private void loadDummyData() {
         userRepository.saveAll(List.of(
-                new User("ssafy", "1", "싸피", "01095253456")));
-
+                new User("ssafy", "1", "싸피", "01095253456"),
+                new User("dlek567", "1", "유명렬", "01016334582")));
         managerRepository.saveAll(List.of(
                 new Manager("ssafy", "1", "싸피", "01095253456")));
 
         serialListRepository.saveAll(List.of(
-                new SerialList("BB47125156")));
+                new SerialList("BB47125156"),
+                new SerialList("BB15925501")));
 
         User user1 = userRepository.findById(1L).orElse(null);
+        User user2 = userRepository.findById(2L).orElse(null);
         SerialList serial1 = serialListRepository.findById(1L).orElse(null);
+        SerialList serial2 = serialListRepository.findById(2L).orElse(null);
 
         usersSerialsRepository.saveAll(List.of(
-                new UsersSerials(user1, serial1)));
+                new UsersSerials(user1, serial1),
+                new UsersSerials(user2, serial2)));
 
 
         LocalDateTime now = LocalDateTime.now();
@@ -83,19 +87,20 @@ public class DataLoader implements CommandLineRunner {
                 new Pothole(36.642488, 127.489675, false, "충북", "청주시", "상당구", currentDate, "확인전",null,null,null,"포트홀있어요")));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
+        SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
 
 
-        if (serialList1 != null ) {
+        if (serialList1 != null && serialList2 != null ) {
             blackboxVideoMetadataRepository.saveAll(List.of(
-                    new BlackboxVideoMetadata(serialList1, currentDate, 35.202370, 126.810139, null),
-                    new BlackboxVideoMetadata(serialList1, currentDate, 37.501475, 127.039515, null),
-                    new BlackboxVideoMetadata(serialList1, currentDate, 33.555664, 126.796320, null),
-                    new BlackboxVideoMetadata(serialList1, currentDate, 35.199083,  129.206633, null),
-                    new BlackboxVideoMetadata(serialList1, detectedDate, 35.897045,  128.851677, null),
-                    new BlackboxVideoMetadata(serialList1, detectedDate, 37.467655,  126.946325, null),
-                    new BlackboxVideoMetadata(serialList1, detectedDate, 36.102575,  127.499691, null),
-                    new BlackboxVideoMetadata(serialList1, detectedDate, 37.880579,  127.729987, null),
-                    new BlackboxVideoMetadata(serialList1, detectedDate, 37.456733, 126.705120, null)));
+                    new BlackboxVideoMetadata(serialList2, currentDate, 35.202370, 126.810139, null),
+                    new BlackboxVideoMetadata(serialList2, currentDate, 37.501475, 127.039515, null),
+                    new BlackboxVideoMetadata(serialList2, currentDate, 33.555664, 126.796320, null),
+                    new BlackboxVideoMetadata(serialList2, currentDate, 35.199083,  129.206633, null),
+                    new BlackboxVideoMetadata(serialList2, detectedDate, 35.897045,  128.851677, null),
+                    new BlackboxVideoMetadata(serialList2, detectedDate, 37.467655,  126.946325, null),
+                    new BlackboxVideoMetadata(serialList2, detectedDate, 36.102575,  127.499691, null),
+                    new BlackboxVideoMetadata(serialList2, detectedDate, 37.880579,  127.729987, null),
+                    new BlackboxVideoMetadata(serialList2, detectedDate, 37.456733, 126.705120, null)));
         }
 
         Pothole pothole1 = potholeRepository.findById(1L).orElse(null);
@@ -119,14 +124,14 @@ public class DataLoader implements CommandLineRunner {
         BlackboxVideoMetadata BlackboxVideoMetadata9 = blackboxVideoMetadataRepository.findById(9L).orElse(null);
 
         accidentReportRepository.saveAll(List.of(
-                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "포트홀 때문에 타이어 터졌어요","타이어 보상 문의", new Date(2024, 5, 17, 12, 22, 0), "미확인",null),
-                new AccidentReport(user1, pothole2, BlackboxVideoMetadata2, "포트홀 피하려다가 다른차랑 충돌했어요, 보상해주세요.","사고 신고 합니다.", new Date(2024, 4, 15, 8, 31, 0), "미확인",null),
-                new AccidentReport(user1, pothole3, BlackboxVideoMetadata3, "이런것도 보상받을수 있나요?","포트홀 사고 문의", new Date(2024, 4, 27, 6, 45, 43), "미확인",null),
-                new AccidentReport(user1, pothole4, BlackboxVideoMetadata4, "안녕하세요. 포트홀에 의한 사고보상 요청드립니다. 포트홀로 인해 범퍼가 깨졌습니다. 보상 가능할까요?","범퍼 보상", new Date(2024, 4, 6, 18, 14, 3), "미확인",null),
-                new AccidentReport(user1, pothole5, BlackboxVideoMetadata5, "포트홀 밟아서 차에 기스났어요. 차량 사진 첨부합니다.","포트홀", new Date(2024, 3, 7, 23, 31, 40), "보상완료",null),
-                new AccidentReport(user1, pothole6, BlackboxVideoMetadata6, "포트홀 때문에 타이어 펑크났어요","포트홀 사고", new Date(2024, 2, 28, 16, 15, 10), "보상완료",null),
-                new AccidentReport(user1, pothole7, BlackboxVideoMetadata7, "포트홀에 지나간 이후부터 차에 에어컨이 안 나와요.","에어컨 고쳐주세요", new Date(2024, 2, 2, 9, 4, 5), "반려","포트홀과 관련이 없습니다."),
-                new AccidentReport(user1, pothole8, BlackboxVideoMetadata8, "앞차가 갑자기 뒤로옴","접촉사고", new Date(2024, 2, 2, 17, 39, 34), "반려","포트홀 확인이 어렵습니다."),
-                new AccidentReport(user1, pothole9, BlackboxVideoMetadata9, "사고 났으니까 물어줘","보상보상보상", new Date(2024, 1, 13, 11, 37, 23), "반려","영상이 인정되지 않았습니다.")));
+                new AccidentReport(user2, pothole1, BlackboxVideoMetadata1, "포트홀 때문에 타이어 터졌어요","타이어 보상 문의", new Date(2024, 5, 17, 12, 22, 0), "미확인",null),
+                new AccidentReport(user2, pothole2, BlackboxVideoMetadata2, "포트홀 피하려다가 다른차랑 충돌했어요, 보상해주세요.","사고 신고 합니다.", new Date(2024, 4, 15, 8, 31, 0), "미확인",null),
+                new AccidentReport(user2, pothole3, BlackboxVideoMetadata3, "이런것도 보상받을수 있나요?","포트홀 사고 문의", new Date(2024, 4, 27, 6, 45, 43), "미확인",null),
+                new AccidentReport(user2, pothole4, BlackboxVideoMetadata4, "안녕하세요. 포트홀에 의한 사고보상 요청드립니다. 포트홀로 인해 범퍼가 깨졌습니다. 보상 가능할까요?","범퍼 보상", new Date(2024, 4, 6, 18, 14, 3), "미확인",null),
+                new AccidentReport(user2, pothole5, BlackboxVideoMetadata5, "포트홀 밟아서 차에 기스났어요. 차량 사진 첨부합니다.","포트홀", new Date(2024, 3, 7, 23, 31, 40), "보상완료",null),
+                new AccidentReport(user2, pothole6, BlackboxVideoMetadata6, "포트홀 때문에 타이어 펑크났어요","포트홀 사고", new Date(2024, 2, 28, 16, 15, 10), "보상완료",null),
+                new AccidentReport(user2, pothole7, BlackboxVideoMetadata7, "포트홀에 지나간 이후부터 차에 에어컨이 안 나와요.","에어컨 고쳐주세요", new Date(2024, 2, 2, 9, 4, 5), "반려","포트홀과 관련이 없습니다."),
+                new AccidentReport(user2, pothole8, BlackboxVideoMetadata8, "앞차가 갑자기 뒤로옴","접촉사고", new Date(2024, 2, 2, 17, 39, 34), "반려","포트홀 확인이 어렵습니다."),
+                new AccidentReport(user2, pothole9, BlackboxVideoMetadata9, "사고 났으니까 물어줘","보상보상보상", new Date(2024, 1, 13, 11, 37, 23), "반려","영상이 인정되지 않았습니다.")));
     }
 }
