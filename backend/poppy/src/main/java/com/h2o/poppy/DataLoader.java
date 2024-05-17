@@ -78,13 +78,13 @@ public class DataLoader implements CommandLineRunner {
                 new Pothole(36.334859, 126.620023 , true, "충청남도", "보령시", "옥마로", date2, "공사완료",date3,null,now,null),
                 new Pothole(36.102575,  127.499691, true, "충청남도", "금산군", "인삼광장로", date2, "공사완료",date3,null,now,null),
                 new Pothole(37.880579, 127.729987, true, "강원도", "춘천시", "금강로", date2, "미확인",null,null,null,null),
-                new Pothole(37.456733, 126.705120, false, "인천", "남동구", "정각로", date2, "사용자등록",now,date4,null,null),
-                new Pothole(36.327580, 126.427247, false, "대전", "중구", "대종로", date2, "사용자등록",now,date4,null,null),
+                new Pothole(37.456733, 126.705120, false, "인천", "남동구", "정각로", date2, "확인전",now,date4,null,null),
+                new Pothole(36.327580, 126.427247, false, "대전", "중구", "대종로", date2, "확인전",now,date4,null,null),
                 new Pothole(35.216768, 128.142013, true, "경상남도", "진주시", "금산로", date2, "공사중",now,date4,null,null),
                 new Pothole(37.130705,128.537282 , true, "강원도", "영월군", "영월동로", date2, "공사중",now,date4,null,null),
                 new Pothole(36.098999 ,127.490736 , true, "충청남도", "금산군", "비단로", date2, "공사중",now,date4,null,null),
-                new Pothole(36.099268 ,127.483175 , false, "충청남도", "금산군", "비단로", date2, "사용자등록",now,date4,null,"얀녕하세요얀녕하세요얀녕하세요얀녕하세요얀녕하세요얀녕하세요"),
-                new Pothole(36.642488, 127.489675, false, "충청북도", "청주시", "상당로", date2, "사용자등록",now,date4,null,"ssfaegsserhaseaeuhgasehgoerhgorhgerhthjrshdthtjtjtjr")));
+                new Pothole(36.099268 ,127.483175 , false, "충청남도", "금산군", "비단로", date2, "확인전",now,date4,null,"얀녕하세요얀녕하세요얀녕하세요얀녕하세요얀녕하세요얀녕하세요"),
+                new Pothole(36.642488, 127.489675, false, "충청북도", "청주시", "상당로", date2, "확인전",now,date4,null,"ssfaegsserhaseaeuhgasehgoerhgorhgerhthjrshdthtjtjtjr")));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
