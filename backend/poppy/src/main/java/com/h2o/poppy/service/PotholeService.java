@@ -192,16 +192,6 @@ public class PotholeService {
         }
     }
 
-    public String changeStateByUserPothole(Long potholePk){
-        try{
-            potholeRepository.updateByUserPotholeIng(potholePk);
-            return "공사중";
-        }catch (Exception e){
-            return null;
-        }
-    }
-
-    // 전체 병경
     public String changeStateByUser(Long potholePk, String nowState, String changeState){
         try{
             String returenString = null;

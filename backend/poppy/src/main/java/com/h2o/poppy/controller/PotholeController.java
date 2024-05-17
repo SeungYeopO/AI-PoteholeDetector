@@ -118,23 +118,6 @@ public class PotholeController {
         return new getResponse(success, potholePk);
     }
 
-    @PatchMapping("/user-upload/{potholePk}")
-    public Object changeStateByUserPothole(@PathVariable Long potholePk){
-        String result = potholeService.changeStateByUserPothole(potholePk);
-        boolean success = result != null;
-        @Getter
-        class getResponse {
-            private final boolean success;
-            private final String result;
-
-            getResponse(boolean success, String result) {
-                this.success = success;
-                this.result = result;
-            }
-        }
-        return new getResponse(success, result);
-    }
-
 
     // 전체 변경
     @Getter
