@@ -208,7 +208,20 @@ public class PotholeService {
                     potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"반려");
                     returenString = "반려";
                 }else if(changeState.equals("공사중")){
-                    potholeRepository.updateByUserPotholeIng(potholePk);
+
+                    LocalDate now = LocalDate.now();
+                    Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+
+                    Date currentDate = Date.from(instantNow);
+                    Random random = new Random();
+                    int daysToAdd = random.nextInt(4) + 2;
+                    LocalDate exLocalDate = now.plusDays(daysToAdd);
+
+                    Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+                    Date exDate = Date.from(instant);
+
+
+                    potholeRepository.updateByUserPotholeIng(potholePk,currentDate,exDate);
                     returenString = "공사중";
                 }
             }
