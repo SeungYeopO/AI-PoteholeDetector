@@ -7,6 +7,7 @@ import calendarImg from "../../public/img/calenderImg.png";
 import Navbar from "./Navbar";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
+import deleteImg from "../../public/icons/delete1.png";
 
 const FileImgBox = styled.div`
   width: 99%;
@@ -25,12 +26,26 @@ const FileImgBox = styled.div`
 `;
 const SubImgBox = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 20%;
   border-radius: 0.3rem;
   height: 95%;
   background-color: #d4daeb;
+`;
+const DeleteImg = styled.img`
+  width: 1.5rem;
+  height: 1.5rem;
+  z-index: 100;
+`;
+const DeleteImgBox = styled.div`
+  width: 100%;
+  height: 5%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-left: 0.7rem;
 `;
 const ImgBox = styled.div`
   display: flex;
@@ -68,7 +83,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 2rem;
-  border: #d8d8d8 1p1x solid;
+  border: #d8d8d8 1px solid;
 `;
 const ContentBox = styled.div`
   width: 100%;
@@ -112,30 +127,32 @@ const TitleBox = styled.input`
   border-right: none;
 
   border-bottom: #d8d8d8 0.5px solid;
-  font-family: "BlackHanSans";
+  font-family: "Nanum";
   font-size: 1.5rem;
   text-indent: 1rem;
   &::placeholder {
     color: #7a7979;
-    font-family: "BlackHanSans";
+    font-family: "Nanum";
     font-size: 1.5rem;
   }
 `;
 
 const InputBox = styled.textarea`
   width: 100%;
-  height: 95%;
+  height: 96%;
   border: none;
-  font-family: "BlackHanSans";
+  resize: none;
+  font-family: "Nanum";
   font-size: 1.3rem;
   text-indent: 1rem;
   margin-top: 1.6rem;
   &::placeholder {
     color: #7a7979;
-    font-family: "BlackHanSans";
+    font-family: "Nanum";
     font-size: 1.3rem;
   }
 `;
+
 const FileText = styled.div`
   width: 70%;
   height: 90%;
@@ -424,11 +441,16 @@ const Report = () => {
     });
   };
 
+  const handleDeleteImage = (index) => {
+    setSelectedImage((prevSelected) =>
+      prevSelected.filter((_, i) => i !== index)
+    );
+  };
+
   const gotoUpload = async () => {
     if (selectedVideos.length === 0) {
       return; // 비디오가 선택되지 않았다면 함수 종료
     }
-
     const formData = new FormData();
     formData.append("userPk", user);
     formData.append("reportName", title);
@@ -437,7 +459,7 @@ const Report = () => {
 
     // 이미지 파일 추가
     selectedImage.forEach((image) => {
-      formData.append("file", image); // 'images'는 서버가 기대하는 필드명입니다.
+      formData.append("file", image);
     });
 
     try {
@@ -455,6 +477,7 @@ const Report = () => {
 
   const chooseVideo = () => {
     setIsModalOpen(true);
+    console.log(selectedImage);
   };
 
   const closeModal = () => {
@@ -527,13 +550,14 @@ const Report = () => {
               {selectedImage && selectedImage.length > 0 ? (
                 selectedImage.map((item, index) => (
                   <SubImgBox key={index}>
+                    <DeleteImgBox onClick={() => handleDeleteImage(index)}>
+                      <DeleteImg src={deleteImg} />
+                    </DeleteImgBox>
                     <FIleImg src={URL.createObjectURL(item)} alt={item.name} />
                   </SubImgBox>
                 ))
               ) : (
-                <FileText width="100%">
-                  사고사진을 첨부하세요 (최대 4장)
-                </FileText>
+                <FileText width="100%">사고사진을 첨부하세요(최대4장)</FileText>
               )}
             </ImgBox>
             <FileBtn onClick={chooseImage}>첨부</FileBtn>

@@ -396,7 +396,7 @@ function Map() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setInfoModalOpen(false);
-    }, 3000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
