@@ -167,7 +167,7 @@ public class PotholeService {
         }
     }
 
-    public String saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon, String content ) {
+    public Pothole saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon, String content ) {
         try{
             GeometryFactory geometryFactory = new GeometryFactory();
             Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
@@ -184,7 +184,7 @@ public class PotholeService {
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
 
-            if(nowPk!=0)return String.valueOf(nowPk);
+            if(nowPk!=0)return pothole;
             else return null;
         }
         catch (Exception e){

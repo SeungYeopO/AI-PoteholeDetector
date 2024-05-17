@@ -60,7 +60,7 @@ public class Pothole implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date endAt;
 
-    @Column(name = "content", nullable = true, length = 50)
+    @Column(name = "content", nullable = true, length = 255)
     private String content;
 
     @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
