@@ -38,7 +38,7 @@ const TimeArea = styled.div`
 const ListArea = styled.div` 
   margin-left : 2rem;
   width : 90%;
-  height : 87%;
+  height : 86%;
   display : flex;
   justify-content : center;
   /* background-color : lightcoral; */
@@ -322,6 +322,7 @@ const Page = styled.div`
   width: 100%;
   height: 7%;
   padding: 1rem 0;
+  background-color : red;
 `;
 
 const PageBtnArea = styled.div`
