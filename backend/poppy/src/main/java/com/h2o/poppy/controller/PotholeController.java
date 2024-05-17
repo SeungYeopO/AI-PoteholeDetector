@@ -1,5 +1,6 @@
 package com.h2o.poppy.controller;
 
+import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.service.AddressService;
 import com.h2o.poppy.service.PotholeService;
@@ -82,7 +83,7 @@ public class PotholeController {
         private String content;
     }
     @PostMapping("/by-user")
-    public void saveDataByUser(@RequestParam userByData data){
+    public Object saveDataByUser(@RequestBody userByData data){
 
         double latitude = data.getLatitude();
         double longitude = data.getLongitude();
@@ -90,6 +91,20 @@ public class PotholeController {
         String lat = Double.toString(latitude);
         String lon = Double.toString(longitude);
 
+
+
+        String road = potholeService.callTmapApi(lat, lon);
+
+        boolean checkGPS = potholeService.checkGPSdata(latitude,longitude);
+
+        Pothole stringPotholePk = null;
+        if (checkGPS) {
+            String[] words = road.split(" ");
+            stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon, data.getContent());
+        }
+
+        Long potholePk = stringPotholePk.getPotholePk();
+        boolean success = checkGPS;
         @Getter
         class getResponse {
             private final boolean success;
@@ -100,21 +115,7 @@ public class PotholeController {
                 this.potholePk = potholePk;
             }
         }
-
-        String road = potholeService.callTmapApi(lat, lon);
-
-        int directoryResult = addressService.saveAddress(road);
-        boolean checkGPS = true;
-
-        if (directoryResult == 2) {
-            checkGPS = potholeService.checkGPSdata(latitude, longitude);
-        }
-
-        long potholePk = 0;
-        if(checkGPS){
-            String[] words = road.split(" ");
-            String stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon, data.getContent());
-        }
+        return new getResponse(success, potholePk);
     }
 
     @PatchMapping("/user-upload/{potholePk}")
@@ -144,7 +145,7 @@ public class PotholeController {
         private String changeStatee;
     }
     @PostMapping("/user-upload/change-state")
-    public Object changeStateByUser(@RequestParam stateData data){
+    public Object changeStateByUser(@RequestBody stateData data){
         Long potholePk = data.getPotholePk();
         String nowState = data.getNowState();
         String changeStatee = data.getChangeStatee();
