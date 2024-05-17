@@ -461,6 +461,27 @@ const CompensationReportPage = () => {
     
   };
 
+  //   useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+
+  //       if (response.ok) {
+  //         const jsonData = await response.json();
+  //         console.log('더미 데이터 가져오기 성공:', jsonData);
+  //         setData(jsonData);
+  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
+  //       } else {
+  //         console.log('더미 데이터 가져오기 실패');
+  //       }
+  //     } catch (error) {
+  //       console.error('더미 데이터 가져오기 실패:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
