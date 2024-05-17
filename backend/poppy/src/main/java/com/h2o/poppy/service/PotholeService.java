@@ -179,7 +179,7 @@ public class PotholeService {
             pothole.setCity(middleAddrName);
             pothole.setStreet(lowerAddrName);
             pothole.setDetectedAt(new Date());
-            pothole.setState("사용자신고");
+            pothole.setState("사용자등록");
             pothole.setContent(content);
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
@@ -224,6 +224,7 @@ public class PotholeService {
             }
             return returenString;
         }catch (Exception e){
+            e.printStackTrace();
             return null;
         }
     }

@@ -142,15 +142,15 @@ public class PotholeController {
     static class stateData{
         private Long potholePk;
         private String nowState;
-        private String changeStatee;
+        private String changeState;
     }
     @PostMapping("/user-upload/change-state")
     public Object changeStateByUser(@RequestBody stateData data){
         Long potholePk = data.getPotholePk();
         String nowState = data.getNowState();
-        String changeStatee = data.getChangeStatee();
+        String changeState = data.getChangeState();
 
-        String result = potholeService.changeStateByUser(potholePk,nowState,changeStatee);
+        String result = potholeService.changeStateByUser(potholePk,nowState,changeState);
         boolean success = result != null;
         @Getter
         class getResponse {
