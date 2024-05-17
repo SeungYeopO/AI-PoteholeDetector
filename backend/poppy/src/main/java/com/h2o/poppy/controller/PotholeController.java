@@ -354,6 +354,7 @@ public class PotholeController {
         private int index;
         private double latitude;
         private double longitude;
+        private String state;
     }
     @PostMapping("trace-search")
     public Object getBoundary(@RequestBody List<traceRequest> data){
@@ -376,7 +377,9 @@ public class PotholeController {
                     nowData.setName(name);
                     nowData.setLatitude(nowDir.getLatitude());
                     nowData.setLongitude(nowDir.getLongitude());
+                    nowData.setState(nowDir.getState());
                     nowData.setIndex(i);
+
                     potholeList.add(nowData);
                     visitedPk.add(nowDir.getPotholePk());
                 }
