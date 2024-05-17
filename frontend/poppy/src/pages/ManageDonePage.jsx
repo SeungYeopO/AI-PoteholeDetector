@@ -172,7 +172,7 @@ const ResultArea = styled.div`
   align-items : center;
   /* background-color : pink; */
   width : 95%;
-  height: 73%;
+  height: 72%;
 `
 
 const SortedList = styled.div`
@@ -360,6 +360,7 @@ const Page = styled.div`
   width: 100%;
   height: 7%;
   padding: 1rem 0;
+  /* background-color : red; */
 `;
 
 const PageBtnArea = styled.div`
