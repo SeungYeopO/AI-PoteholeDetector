@@ -83,8 +83,8 @@ public class DataLoader implements CommandLineRunner {
                 new Pothole(35.216768, 128.142013, true, "경상남도", "진주시", "금산로", date2, "공사중",now,date4,null,null),
                 new Pothole(37.130705,128.537282 , true, "강원도", "영월군", "영월동로", date2, "공사중",now,date4,null,null),
                 new Pothole(36.098999 ,127.490736 , true, "충청남도", "금산군", "비단로", date2, "공사중",now,date4,null,null),
-                new Pothole(36.099268 ,127.483175 , true, "충청남도", "금산군", "비단로", date2, "공사완료",now,date4,null,null),
-                new Pothole(36.642488, 127.489675, true, "충청북도", "청주시", "상당로", date2, "공사중",now,date4,null,null)));
+                new Pothole(36.099268 ,127.483175 , false, "충청남도", "금산군", "비단로", date2, "사용자등록",now,date4,null,null),
+                new Pothole(36.642488, 127.489675, false, "충청북도", "청주시", "상당로", date2, "사용자등록",now,date4,null,null)));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
