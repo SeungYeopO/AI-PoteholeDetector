@@ -179,7 +179,7 @@ public class PotholeService {
             pothole.setCity(middleAddrName);
             pothole.setStreet(lowerAddrName);
             pothole.setDetectedAt(new Date());
-            pothole.setState("사용자등록");
+            pothole.setState("확인전");
             pothole.setContent(content);
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
@@ -195,7 +195,7 @@ public class PotholeService {
     public String changeStateByUser(Long potholePk, String nowState, String changeState){
         try{
             String returenString = null;
-            if(nowState.equals("사용자등록")){
+            if(nowState.equals("확인전")){
                 if(changeState.equals("삭제")){
                     potholeRepository.deleteById(potholePk);
                     returenString = "삭제";
