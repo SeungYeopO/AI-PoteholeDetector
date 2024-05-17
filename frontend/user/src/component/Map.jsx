@@ -7,6 +7,12 @@ import { Navigate, useLocation } from "react-router-dom";
 import LocationModal from "./LocationModal.jsx";
 import axios from "axios";
 import Navbar from "./Navbar.jsx";
+import PotholeReportModal from "./PotholeReportModal.jsx"; // 포트홀 신고 모달 import
+import styled from "styled-components";
+import icon1 from "../../public/img/pothole_1.png";
+import icon3 from "../../public/img/pothole_2.png";
+import icon2 from "../../public/img/pothole_3.png";
+import pic from "../../public/img/mainL.png";
 
 let resultMarkerArr = [];
 let resultdrawArr = [];
@@ -21,6 +27,104 @@ let potholeAlert = [];
 let endX, endY;
 let name;
 
+const LogoOutModal = styled.div`
+  background-color: white;
+  opacity: 98%;
+  border-radius: 1rem;
+  /* border : 1px solid gray; */
+  width: 21rem;
+  height: 17rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+const ModalContent = styled.div`
+  width: 90%;
+  height: 90%;
+  /* background-color : yellow; */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+`;
+const IconImg = styled.img`
+  width: 2.7rem;
+  height: 2.7rem;
+`;
+const InfoTitleBox = styled.div`
+  width: 100%;
+  height: 25%;
+  /* background-color : red; */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1rem;
+  border-bottom: 1px solid darkgray;
+`;
+const InfoTitle = styled.div`
+  width: 75%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color : orange; */
+`;
+const TitleImgBox = styled.div`
+  width: 20%;
+  height: 100%;
+  /* background-color : pink; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const TitleImg = styled.img`
+  width: 2.8em;
+  height: 3.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+const InfoLists = styled.div`
+  width: 80%;
+  height: 65%;
+  /* background-color : blue; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+const InfoList = styled.div`
+  width: 100%;
+  height: 30%;
+  /* background-color : purple; */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const Imgbox = styled.div`
+  width: 20%;
+  height: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const InfoText = styled.div`
+  width: 75%;
+  height: 100%;
+  /* background-color : pink; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+`;
+
 const styles = {
   searchWrapper: {
     position: "absolute",
@@ -32,10 +136,6 @@ const styles = {
     gap: "5px",
     zIndex: 1000,
     padding: "0 10px",
-    "@media (max-width: 600px)": {
-      top: "5px",
-      padding: "0 5px",
-    },
   },
   backButton: {
     backgroundColor: "#d7dbec",
@@ -50,11 +150,6 @@ const styles = {
     margin: "4px 0px",
     cursor: "pointer",
     borderRadius: "5px",
-    "@media (max-width: 600px)": {
-      width: "80px",
-      height: "35px",
-      fontSize: "14px",
-    },
   },
   searchInput: {
     height: "40px",
@@ -65,14 +160,10 @@ const styles = {
     border: "1px solid #ccc",
     marginRight: "0px",
     minWidth: "150px", // 최소 너비 설정
-    "@media (max-width: 600px)": {
-      height: "35px",
-      fontSize: "12px",
-    },
   },
   searchButton: {
-    backgroundColor: "#d7dbec",
-    color: "black",
+    backgroundColor: "#FFC700",
+    color: "white",
     border: "none",
     height: "40px",
     width: "60px",
@@ -81,29 +172,19 @@ const styles = {
     margin: "4px 0px",
     cursor: "pointer",
     borderRadius: "5px",
-    "@media (max-width: 600px)": {
-      height: "35px",
-      width: "50px",
-      fontSize: "16px",
-    },
   },
   infoButtonWrapper: {
     position: "fixed",
-    bottom: "10%",
+    bottom: "11%",
     left: "-20px",
     marginRight: "5px",
     width: "100%",
+    height: "8%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-around",
-    padding: "10px 20px",
+    padding: "5px 20px",
     zIndex: 2000,
-    "@media (max-width: 600px)": {
-      bottom: "10%",
-      padding: "5px 10px",
-      flexDirection: "column",
-      gap: "10px",
-    },
   },
   infoContainer: {
     flexGrow: 2,
@@ -117,17 +198,11 @@ const styles = {
     border: "1px solid #d7dbec",
     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
     height: "100%", // 높이 설정
-    "@media (max-width: 600px)": {
-      padding: "10px",
-    },
   },
   infoText: {
     margin: "2px 0",
     fontSize: "16px",
     color: "#333",
-    "@media (max-width: 600px)": {
-      fontSize: "14px",
-    },
   },
   startButton: {
     flexGrow: 1,
@@ -135,7 +210,7 @@ const styles = {
     fontSize: "18px",
     fontWeight: "bold",
     border: "none",
-    padding: "35px 30px",
+    padding: "40px 30px",
     cursor: "pointer",
     borderRadius: "10px", // 모서리를 둥글게
     backgroundColor: "blue",
@@ -144,10 +219,7 @@ const styles = {
     display: "flex", // 중앙 정렬을 위해 flex 사용
     alignItems: "center",
     justifyContent: "center",
-    "@media (max-width: 600px)": {
-      fontSize: "16px",
-      padding: "10px 20px",
-    },
+
     "&:hover": {
       backgroundColor: "#a71d2a",
     },
@@ -168,9 +240,12 @@ function Map() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLat, setSeletedLat] = useState(false);
   const [selectedLng, setSeletedLng] = useState(false);
+  const [reportLat, setReportLat] = useState(false);
+  const [reportLng, setReportLng] = useState(false);
   const [userPosition, setUserPosition] = useState({ lat: 0, lon: 0 });
   const [potholeAlerts, setPotholeAlerts] = useState([]);
   const [showAlertOverlay, setShowAlertOverlay] = useState(false);
+  const [showPotholeReportModal, setShowPotholeReportModal] = useState(false); // 포트홀 신고 모달 상태
   const [onRoute, setOnRoute] = useState(false);
   const blinkIntervalIdRef = useRef(null);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
@@ -181,7 +256,7 @@ function Map() {
   const { user } = useAuth();
   const onRouteRef = useRef(onRoute);
   const [tmapAppStarted, setTmapAppStarted] = useState(false); // 티맵 앱 시작 상태
-
+  const [infomodalOpen, setInfoModalOpen] = useState(true);
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -246,6 +321,17 @@ function Map() {
     else return 400;
   };
 
+  const handleReportPothole = (latitude, longitude) => {
+    setSeletedLat(latitude);
+    setSeletedLng(longitude);
+    setShowPotholeReportModal(true); // 포트홀 신고 모달 열기
+  };
+
+  // 포트홀 신고 모달 닫기 핸들러
+  const handleClosePotholeReportModal = () => {
+    setShowPotholeReportModal(false);
+  };
+
   // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
   const loadAndMarkPotholes = async (latitude, longitude) => {
     if (!onRouteRef.current) {
@@ -269,15 +355,34 @@ function Map() {
         );
 
         const potholes = response.data.result;
-        // 필터링된 포트홀에 대해 마커 생성
 
+        // 필터링된 포트홀에 대해 마커 생성
         potholes.forEach((pothole) => {
+          let iconPath;
+          if (pothole.state == "공사완료") {
+            return; // 공사 완료 상태인 경우 다음 루프로 건너뜀
+          }
+
+          // pothole.state 값에 따라 아이콘 경로 설정
+          switch (pothole.state) {
+            case "미확인":
+              iconPath = "../img/pothole_3.png";
+              break;
+            case "사용자등록":
+              iconPath = "../img/pothole_2.png";
+              break;
+            case "공사중":
+              iconPath = "../img/pothole_1.png";
+              break;
+          }
+
           const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(pothole.longitude, pothole.latitude),
-            icon: "../img/free-icon-pothole-10392295.png", // 포트홀 아이콘 이미지 경로
+            icon: iconPath, // 상태에 따른 아이콘 이미지 경로
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
+
           potholeMarkers.push(marker); // 새 마커를 배열에 추가
         });
       } catch (error) {
@@ -287,7 +392,13 @@ function Map() {
   };
 
   useEffect(() => {
-    console.log(potholeAlerts);
+    const timer = setTimeout(() => {
+      setInfoModalOpen(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -310,7 +421,6 @@ function Map() {
         routeData[firstAlert].latitude,
         routeData[firstAlert].longitude
       );
-      console.log(distance);
       if (distance < 0.05) {
         // 50m 이내로 설정
         alertUser();
@@ -322,7 +432,6 @@ function Map() {
           routeData[firstAlert + 30].latitude,
           routeData[firstAlert + 30].longitude
         );
-        console.log("nextDistance = ", nextDistance);
         if (nextDistance < 0.05) {
           stopBlinking();
           removeFirstAlert();
@@ -395,6 +504,8 @@ function Map() {
           const lat = latLng.lat();
           const lng = latLng.lng();
 
+          setReportLat(lat);
+          setReportLng(lng);
           await reverseGeocode(lat, lng);
         }
       });
@@ -653,7 +764,6 @@ function Map() {
       endY = parseFloat(lat); // 도착점 위도
       name = locationName;
     }
-    console.log(name);
     setSearchPerformed(true);
     setOnRoute(true);
     onRouteRef.current = onRoute;
@@ -702,8 +812,6 @@ function Map() {
       .then((response) => {
         // 전체 응답 데이터를 콘솔에 출력
         const resultData = response.features;
-        console.log(resultData);
-
         let lastCoord = null; // 이전 좌표를 저장할 변수
         const maxDistance = 0.015; // 최대 거리(km), 이 거리를 초과하면 보간
 
@@ -745,7 +853,6 @@ function Map() {
             }
           });
         });
-        console.log(routeData);
 
         resultData.forEach((feature) => {
           const trafficInfo = feature.geometry.traffic || []; // 트래픽 정보가 없을 경우 빈 배열
@@ -794,7 +901,7 @@ function Map() {
           setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 30]);
           const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(longitude, latitude),
-            icon: "../img/free-icon-pothole-10392295.png",
+            icon: "../img/pothole.png",
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
@@ -940,16 +1047,15 @@ function Map() {
       )}
       <div id="TMapApp" style={{ width: "100%", height: "90%" }} />
       <div>
-        {locationName && (
-          <LocationModal
-            locationName={locationName}
-            latitude={selectedLat} // 예: 선택된 위치의 위도
-            longitude={selectedLng}
-            show={showModal}
-            onClose={handleCloseModal}
-            onStartRoute={handleLocationSelect}
-          />
-        )}
+        <LocationModal
+          locationName={locationName}
+          latitude={selectedLat}
+          longitude={selectedLng}
+          show={showModal}
+          onClose={handleCloseModal}
+          onStartRoute={handleLocationSelect}
+          onReportPothole={handleReportPothole} // 새로운 핸들러 추가
+        />
       </div>
       <div
         onClick={centerMapOnUser}
@@ -1066,6 +1172,47 @@ function Map() {
           </button>
         </div>
       )}
+      {showPotholeReportModal && (
+        <PotholeReportModal
+          latitude={reportLat}
+          longitude={reportLng}
+          onClose={handleClosePotholeReportModal}
+        />
+      )}
+
+      {infomodalOpen && (
+        <LogoOutModal>
+          <ModalContent>
+            <InfoTitleBox>
+              <TitleImgBox>
+                <TitleImg src={pic}></TitleImg>
+              </TitleImgBox>
+              <InfoTitle>각 아이콘의 의미를 알려드려요!</InfoTitle>
+            </InfoTitleBox>
+            <InfoLists>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon1}></IconImg>
+                </Imgbox>
+                <InfoText>현재 공사중인 포트홀</InfoText>
+              </InfoList>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon3}></IconImg>
+                </Imgbox>
+                <InfoText>어플 사용자신고 포트홀</InfoText>
+              </InfoList>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon2}></IconImg>
+                </Imgbox>
+                <InfoText>블랙박스의 AI가 판단한 포트홀</InfoText>
+              </InfoList>
+            </InfoLists>
+          </ModalContent>
+        </LogoOutModal>
+      )}
+
       <Navbar />
     </div>
   );

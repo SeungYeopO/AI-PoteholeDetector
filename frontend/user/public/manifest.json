@@ -4,7 +4,7 @@
   "start_url": "https://k10c106.p.ssafy.io/",
   "display": "standalone",
   "background_color": "#F8F7DA",
-  "theme_color": "#8C383A",
+  "theme_color": "black",
   "description": "PWA with Vite.js, React.js and TypeScript",
   "icons": [
     {
@@ -27,6 +27,13 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    }
+  ],
+  "splash_screens": [
+    {
+      "src": "img/loading.png",
+      "type": "image/png",
+      "sizes": "640x1136"
     }
   ]
 }
