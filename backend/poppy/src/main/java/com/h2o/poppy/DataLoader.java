@@ -68,23 +68,23 @@ public class DataLoader implements CommandLineRunner {
         Date date4 = new Date(2024 - 1900, 4, 16, 22, 30, 0); 
 
         potholeRepository.saveAll(List.of(
-                new Pothole(35.202370, 126.810139, true, "광주", "광산구", "하남산단6번로", date1, "미확인",null,null,null),
-                new Pothole(37.501475, 127.039515, true, "서울", "강남구", "테헤란로", date2, "미확인",null,null,null),
-                new Pothole(33.555664, 126.796320, true, "제주", "제주시", "해맞이해안로", date2, "미확인",null,null,null),
-                new Pothole(38.181005, 128.549175, true, "강원도", "속초시", "동해 고속도로", date2, "미확인",null,null,null),
-                new Pothole(35.1990838,  129.2066338, true, "부산", "기장군", "읍내로", date2, "공사완료",date3,null,now),
-                new Pothole(35.897045,  128.851677, true, "경상북도", "경산시", "대구대로", date2, "공사완료",date3,null,now),
-                new Pothole(37.467655,  126.946325, true, "서울", "관악구", "관악로", date2, "공사완료",date3,null,now),
-                new Pothole(36.334859, 126.620023 , true, "충청남도", "보령시", "옥마로", date2, "공사완료",date3,null,now),
-                new Pothole(36.102575,  127.499691, true, "충청남도", "금산군", "인삼광장로", date2, "공사완료",date3,null,now),
-                new Pothole(37.880579, 127.729987, true, "강원도", "춘천시", "금강로", date2, "미확인",null,null,null),
-                new Pothole(37.456733, 126.705120, true, "인천", "남동구", "정각로", date2, "공사중",now,date4,null),
-                new Pothole(36.327580, 126.427247, true, "대전", "중구", "대종로", date2, "공사중",now,date4,null),
-                new Pothole(35.216768, 128.142013, true, "경상남도", "진주시", "금산로", date2, "공사중",now,date4,null),
-                new Pothole(37.130705,128.537282 , true, "강원도", "영월군", "영월동로", date2, "공사중",now,date4,null),
-                new Pothole(36.098999 ,127.490736 , true, "충청남도", "금산군", "비단로", date2, "공사중",now,date4,null),
-                new Pothole(36.099268 ,127.483175 , true, "충청남도", "금산군", "비단로", date2, "공사완료",now,date4,null),
-                new Pothole(36.642488, 127.489675, true, "충청북도", "청주시", "상당로", date2, "공사중",now,date4,null)));
+                new Pothole(35.202370, 126.810139, true, "광주", "광산구", "하남산단6번로", date1, "미확인",null,null,null,null),
+                new Pothole(37.501475, 127.039515, true, "서울", "강남구", "테헤란로", date2, "미확인",null,null,null,null),
+                new Pothole(33.555664, 126.796320, true, "제주", "제주시", "해맞이해안로", date2, "미확인",null,null,null,null),
+                new Pothole(38.181005, 128.549175, true, "강원도", "속초시", "동해 고속도로", date2, "미확인",null,null,null,null),
+                new Pothole(35.1990838,  129.2066338, true, "부산", "기장군", "읍내로", date2, "공사완료",date3,null,now,null),
+                new Pothole(35.897045,  128.851677, true, "경상북도", "경산시", "대구대로", date2, "공사완료",date3,null,now,null),
+                new Pothole(37.467655,  126.946325, true, "서울", "관악구", "관악로", date2, "공사완료",date3,null,now,null),
+                new Pothole(36.334859, 126.620023 , true, "충청남도", "보령시", "옥마로", date2, "공사완료",date3,null,now,null),
+                new Pothole(36.102575,  127.499691, true, "충청남도", "금산군", "인삼광장로", date2, "공사완료",date3,null,now,null),
+                new Pothole(37.880579, 127.729987, true, "강원도", "춘천시", "금강로", date2, "미확인",null,null,null,null),
+                new Pothole(37.456733, 126.705120, false, "인천", "남동구", "정각로", date2, "사용자등록",now,date4,null,null),
+                new Pothole(36.327580, 126.427247, false, "대전", "중구", "대종로", date2, "사용자등록",now,date4,null,null),
+                new Pothole(35.216768, 128.142013, true, "경상남도", "진주시", "금산로", date2, "공사중",now,date4,null,null),
+                new Pothole(37.130705,128.537282 , true, "강원도", "영월군", "영월동로", date2, "공사중",now,date4,null,null),
+                new Pothole(36.098999 ,127.490736 , true, "충청남도", "금산군", "비단로", date2, "공사중",now,date4,null,null),
+                new Pothole(36.099268 ,127.483175 , true, "충청남도", "금산군", "비단로", date2, "공사완료",now,date4,null,null),
+                new Pothole(36.642488, 127.489675, true, "충청북도", "청주시", "상당로", date2, "공사중",now,date4,null,null)));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
         SerialList serialList2 = serialListRepository.findById(2L).orElse(null);
