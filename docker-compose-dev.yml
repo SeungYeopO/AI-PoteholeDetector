@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mariadb:
     build: 
@@ -10,10 +8,7 @@ services:
       MYSQL_DATABASE: "poppy"
     ports:
       - "3306:3306"
-    volumes:
-      - mariadb-data:/var/lib/mysql
     restart: always
-
   mongo:
     build: 
       context: ./mongodb
@@ -24,10 +19,8 @@ services:
       MONGO_INITDB_DATABASE: h2o
     ports:
       - "27017:27017"
-    volumes:
-      - mongodb-data:/data/db
     restart: always
-
+    
   server:
     image: h2o_server
     container_name: server
@@ -51,8 +44,6 @@ services:
       context: ./frontend/user
     ports:
       - "3000:80"
-    restart: always
-
   client_manager:
     image: h2o_client_manager
     container_name: client-manager
@@ -60,8 +51,7 @@ services:
       context: ./frontend/poppy
     ports:
       - "3001:80"
-    restart: always
 
 volumes:
   mariadb-data:
-  mongodb-data:
+
