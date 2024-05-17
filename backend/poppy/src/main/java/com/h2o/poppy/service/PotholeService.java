@@ -48,7 +48,7 @@ public class PotholeService {
     }
 
     public String callTmapApi(String lat, String lon) {
-        try {
+        try{
             String url = "https://apis.openapi.sk.com/tmap/road/nearToRoad";
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
@@ -70,17 +70,17 @@ public class PotholeService {
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity,
-                    String.class);
+            ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
             String responseBody = response.getBody();
 
-            String roadName = extractRoadName(responseBody, lat, lon);
+            String roadName = extractRoadName(responseBody,lat,lon);
             return roadName;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
 
     }
+
 
     private String extractRoadName(String jsonString, String lat, String lon) {
         try {
@@ -97,11 +97,10 @@ public class PotholeService {
         }
     }
 
+
     public String findFullRoadName(String args, String lat, String lon) {
-        try {
-            String url = "https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword=" + args
-                    + "&searchType=all&searchtypCd=R&centerLon=" + lon + "&centerLat=" + lat
-                    + "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&radius=1&page=1&count=20&multiPoint=N&poiGroupYn=N";
+        try{
+            String url = "https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword=" + args + "&searchType=all&searchtypCd=R&centerLon=" + lon + "&centerLat=" + lat + "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&radius=1&page=1&count=20&multiPoint=N&poiGroupYn=N";
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "application/json");
@@ -118,9 +117,10 @@ public class PotholeService {
             String fullName = extractJson(responseBody, args, lat, lon);
 
             return fullName;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
+
 
     }
 
@@ -142,12 +142,11 @@ public class PotholeService {
         }
     }
 
-    public String saveData(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon) {
-        try {
+
+    public String saveData(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon ) {
+        try{
             GeometryFactory geometryFactory = new GeometryFactory();
-            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와
-                                                                                                                         // y는
-                                                                                                                         // 좌표값
+            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
 
             Pothole pothole = new Pothole();
             pothole.setLocation(point);
@@ -160,22 +159,18 @@ public class PotholeService {
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
 
-            if (nowPk != 0)
-                return String.valueOf(nowPk);
-            else
-                return null;
-        } catch (Exception e) {
+            if(nowPk!=0)return String.valueOf(nowPk);
+            else return null;
+        }
+        catch (Exception e){
             return null;
         }
     }
 
-    public String saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat,
-            String lon) {
-        try {
+    public String saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon, String content ) {
+        try{
             GeometryFactory geometryFactory = new GeometryFactory();
-            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와
-                                                                                                                         // y는
-                                                                                                                         // 좌표값
+            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
 
             Pothole pothole = new Pothole();
             pothole.setLocation(point);
@@ -185,53 +180,79 @@ public class PotholeService {
             pothole.setStreet(lowerAddrName);
             pothole.setDetectedAt(new Date());
             pothole.setState("사용자신고");
+            pothole.setContent(content);
             potholeRepository.save(pothole);
             long nowPk = pothole.getPotholePk();
 
-            if (nowPk != 0)
-                return String.valueOf(nowPk);
-            else
-                return null;
-        } catch (Exception e) {
+            if(nowPk!=0)return String.valueOf(nowPk);
+            else return null;
+        }
+        catch (Exception e){
             return null;
         }
     }
 
-    public String changeStateByUserPothole(Long potholePk) {
-        try {
-            potholeRepository.updateByUserPothole(potholePk);
+    public String changeStateByUserPothole(Long potholePk){
+        try{
+            potholeRepository.updateByUserPotholeIng(potholePk);
             return "공사중";
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public List<PotholeDto> getPotholesByUserUpload() {
-        try {
+    // 전체 병경
+    public String changeStateByUser(Long potholePk, String nowState, String changeState){
+        try{
+            String returenString = null;
+            if(nowState.equals("사용자등록")){
+                if(changeState.equals("삭제")){
+                    potholeRepository.deleteById(potholePk);
+                    returenString = "삭제";
+                }else if(changeState.equals("확인중")){
+                    potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"확인중");
+                    returenString = "확인중";
+                }
+            }else if(nowState.equals("확인중")){
+                if(changeState.equals("반려")){
+                    potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"반려");
+                    returenString = "반려";
+                }else if(changeState.equals("공사중")){
+                    potholeRepository.updateByUserPotholeIng(potholePk);
+                    returenString = "공사중";
+                }
+            }
+            return returenString;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public List<PotholeDto> getPotholesByUserUpload(){
+        try{
             List<PotholeDto> potholes = potholeRepository.getPotholesByUserUpload();
             return potholes;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public PotholeDto getPotholeByUserUploadOne(Long potholePk) {
-        try {
+    public PotholeDto getPotholeByUserUploadOne(Long potholePk){
+        try{
             PotholeDto potholes = potholeRepository.getPotholeByUserUploadOne(potholePk);
             return potholes;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public boolean checkGPSdata(double lat, double lon) {
+    public boolean checkGPSdata(double lat, double lon){
 
-        List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat, lon);
-        if (potholes.isEmpty())
-            return true;
-        else
-            return false;
+        List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat,lon);
+        if(potholes.isEmpty())return true;
+        else return false;
     }
+
 
     public List<PotholeDto> getAllPothole() {
         try {
@@ -239,12 +260,12 @@ public class PotholeService {
             return getPothole.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public List<PotholeDto> chooseGet(PotholeDto data) {
+    public List<PotholeDto> chooseGet(PotholeDto data){
         try {
             String nowState = data.getState();
             String nowProvince = data.getProvince();
@@ -255,7 +276,7 @@ public class PotholeService {
             Integer month = null;
             Integer day = null;
 
-            if (nowDate != null) {
+            if(nowDate!=null){
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(nowDate);
                 year = calendar.get(Calendar.YEAR);
@@ -263,37 +284,36 @@ public class PotholeService {
                 day = calendar.get(Calendar.DAY_OF_MONTH);
             }
 
-            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity, year, month,
-                    day);
+            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity, year,month,day);
             return pothole;
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
             return null;
         }
     }
 
     public PotholeDto getIdPothole(Long potholePk) {
-        try {
+        try{
             PotholeDto potholeDto = potholeRepository.getPotholeByPotholeId(potholePk);
             return potholeDto;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
 
     }
 
-    public List<PotholeDto> getState1Pothole(String nowState) {
-        try {
+    public List<PotholeDto> getState1Pothole(String nowState){
+        try{
             List<PotholeDto> statePotholes = potholeRepository.getPotholeByNowState(nowState);
             System.out.println(statePotholes);
             return statePotholes;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public String changeState(PotholeDto data) {
-        try {
+    public String changeState(PotholeDto data){
+        try{
             long potholePk = data.getPotholePk();
             String nowState = data.getState();
 
@@ -308,23 +328,22 @@ public class PotholeService {
             Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
             Date exDate = Date.from(instant);
 
-            if (nowState == null)
-                return null;
-            if (!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))
-                return null;
-            String changeState = null;
-            if (nowState.equals("공사중")) {
-                potholeRepository.updateIngState(potholePk, "공사중", currentDate, exDate);
+            if(nowState==null)return null;
+            if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
+            String changeState =null;
+            if(nowState.equals("공사중")){
+                potholeRepository.updateIngState(potholePk,"공사중",currentDate,exDate);
                 changeState = "공사중";
-            } else if (nowState.equals("공사완료")) {
-                potholeRepository.updateFnishState(potholePk, "공사완료", currentDate);
+            }else if(nowState.equals("공사완료")){
+                potholeRepository.updateFnishState(potholePk,"공사완료",currentDate);
                 changeState = "공사완료";
             }
             return changeState;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
+
 
     public boolean rejectData(Long potholePk) {
         try {
@@ -335,34 +354,36 @@ public class PotholeService {
         }
     }
 
-    public List<PotholeDto> getBoundary(double targetLatitude, double targetLongitude, double size) {
-        try {
-            List<PotholeDto> pothole = potholeRepository.findPothlesbySize(targetLatitude, targetLongitude, size);
+
+    public List<PotholeDto> getBoundary(double targetLatitude,double targetLongitude, double size){
+        try{
+            List<PotholeDto> pothole = potholeRepository.findPothlesbySize(targetLatitude,targetLongitude,size);
             return pothole;
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude) {
-        try {
-            List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude, targetLongitude);
+
+    public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude){
+        try{
+            List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
 
             if (potholes.isEmpty()) {
                 return new ArrayList<>();
             } else {
                 return potholes;
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             return null;
         }
     }
 
-    public Long deletePothole(Long potholePk) {
-        try {
+    public Long deletePothole(Long potholePk){
+        try{
             potholeRepository.deleteById(potholePk);
             return potholePk;
-        } catch (Exception e) {
+        }catch (Exception e){
             return 0L;
         }
     }

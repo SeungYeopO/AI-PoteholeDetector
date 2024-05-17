@@ -60,13 +60,16 @@ public class Pothole implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date endAt;
 
+    @Column(name = "content", nullable = true, length = 50)
+    private String content;
+
     @OneToMany(mappedBy = "potholePk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReports;
 
     public Pothole() {
     }
 
-    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt) {
+    public Pothole(Double latitude, Double longitude, Boolean isPothole, String province, String city, String street, Date detectedAt, String state, Date startAt, Date expectAt, Date endAt, String content) {
         GeometryFactory geometryFactory = new GeometryFactory();
         this.location = geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 경도, 위도 순서 주의
         this.isPothole = isPothole;
@@ -78,5 +81,6 @@ public class Pothole implements Serializable {
         this.startAt = startAt;
         this.expectAt = expectAt;
         this.endAt = endAt;
+        this.content = content;
     }
 }
