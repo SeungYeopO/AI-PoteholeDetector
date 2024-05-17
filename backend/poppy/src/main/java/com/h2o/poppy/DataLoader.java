@@ -119,14 +119,14 @@ public class DataLoader implements CommandLineRunner {
         BlackboxVideoMetadata BlackboxVideoMetadata9 = blackboxVideoMetadataRepository.findById(9L).orElse(null);
 
         accidentReportRepository.saveAll(List.of(
-                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "포트홀사고","포트홀 때문에 타이어 터졌어요", currentDate, "미확인",null),
-                new AccidentReport(user1, pothole2, BlackboxVideoMetadata2, "사고신고","포트홀 피하려다가 다른차랑 충돌했어요, 보상해주세요.", currentDate, "미확인",null),
-                new AccidentReport(user1, pothole3, BlackboxVideoMetadata3, "사고","이런것도 보상받을수 있나요?", currentDate, "미확인",null),
-                new AccidentReport(user1, pothole4, BlackboxVideoMetadata4, "신고","안녕하세요. 포트홀에 의한 사고보상 요청드립니다.", currentDate, "미확인",null),
-                new AccidentReport(user1, pothole5, BlackboxVideoMetadata5, "포트홀","포트홀좀 공사해라", detectedDate, "보상완료",null),
-                new AccidentReport(user1, pothole6, BlackboxVideoMetadata6, "충돌사고","포트홀 때문에 타이어 펑크났어요", detectedDate, "보상완료",null),
-                new AccidentReport(user1, pothole7, BlackboxVideoMetadata7, "포트홀","포트홀에 지나간 이후부터 차에 에어컨이 안나와요.", detectedDate, "반려","포트홀이 없습니다."),
-                new AccidentReport(user1, pothole8, BlackboxVideoMetadata8, "사고남","앞차가 갑자기 뒤로옴", detectedDate, "반려","포트홀이 없습니다."),
-                new AccidentReport(user1, pothole9, BlackboxVideoMetadata9, "보상해줘","보상해줘", detectedDate, "반려","영상이 인정되지 않았습니다.")));
+                new AccidentReport(user1, pothole1, BlackboxVideoMetadata1, "포트홀 때문에 타이어 터졌어요","타이어 보상 문의", new Date(2024, 5, 17, 12, 22, 0), "미확인",null),
+                new AccidentReport(user1, pothole2, BlackboxVideoMetadata2, "포트홀 피하려다가 다른차랑 충돌했어요, 보상해주세요.","사고 신고 합니다.", new Date(2024, 4, 15, 8, 31, 0), "미확인",null),
+                new AccidentReport(user1, pothole3, BlackboxVideoMetadata3, "이런것도 보상받을수 있나요?","포트홀 사고 문의", new Date(2024, 4, 27, 6, 45, 43), "미확인",null),
+                new AccidentReport(user1, pothole4, BlackboxVideoMetadata4, "안녕하세요. 포트홀에 의한 사고보상 요청드립니다. 포트홀로 인해 범퍼가 깨졌습니다. 보상 가능할까요?","범퍼 보상", new Date(2024, 4, 6, 18, 14, 3), "미확인",null),
+                new AccidentReport(user1, pothole5, BlackboxVideoMetadata5, "포트홀 밟아서 차에 기스났어요. 차량 사진 첨부합니다.","포트홀", new Date(2024, 3, 7, 23, 31, 40), "보상완료",null),
+                new AccidentReport(user1, pothole6, BlackboxVideoMetadata6, "포트홀 때문에 타이어 펑크났어요","포트홀 사고", new Date(2024, 2, 28, 16, 15, 10), "보상완료",null),
+                new AccidentReport(user1, pothole7, BlackboxVideoMetadata7, "포트홀에 지나간 이후부터 차에 에어컨이 안 나와요.","에어컨 고쳐주세요", new Date(2024, 2, 2, 9, 4, 5), "반려","포트홀과 관련이 없습니다."),
+                new AccidentReport(user1, pothole8, BlackboxVideoMetadata8, "앞차가 갑자기 뒤로옴","접촉사고", new Date(2024, 2, 2, 17, 39, 34), "반려","포트홀 확인이 어렵습니다."),
+                new AccidentReport(user1, pothole9, BlackboxVideoMetadata9, "사고 났으니까 물어줘","보상보상보상", new Date(2024, 1, 13, 11, 37, 23), "반려","영상이 인정되지 않았습니다.")));
     }
 }
