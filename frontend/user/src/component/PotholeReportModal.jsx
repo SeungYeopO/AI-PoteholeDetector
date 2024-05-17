@@ -60,8 +60,13 @@ const SaveBtn = styled.button`
   margin-bottom: 10px;
 `;
 
+const SuccessModalContent = styled(ModalContent)`
+  text-align: center;
+`;
+
 const PotholeReportModal = ({ latitude, longitude, onClose }) => {
   const [reportContent, setReportContent] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleContentChange = (event) => {
     setReportContent(event.target.value);
@@ -70,9 +75,6 @@ const PotholeReportModal = ({ latitude, longitude, onClose }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log(latitude);
-    console.log(longitude);
-    console.log(reportContent);
     const data = {
       latitude: latitude,
       longitude: longitude,
@@ -87,29 +89,44 @@ const PotholeReportModal = ({ latitude, longitude, onClose }) => {
       });
       console.log(response.data.success);
       if (response.data.success === true) {
-        alert("포트홀 신고가 완료되었습니다.");
-        onClose();
+        setShowSuccessModal(true);
       }
     } catch (error) {
       console.error("Upload failed", error);
     }
   };
 
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    onClose();
+  };
+
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
-        <h2>포트홀 신고</h2>
-        <form onSubmit={handleSubmit}>
-          <InputBox
-            value={reportContent}
-            onChange={handleContentChange}
-            placeholder="포트홀에 대한 상세 위치 및 정보를 입력해주세요. 허위신고 시 처벌 받을 수 있습니다."
-          />
-          <SaveBtn type="submit">제출</SaveBtn>
-        </form>
-      </ModalContent>
-    </ModalOverlay>
+    <>
+      <ModalOverlay onClick={onClose}>
+        <ModalContent onClick={(e) => e.stopPropagation()}>
+          <CloseButton onClick={onClose}>&times;</CloseButton>
+          <h2>포트홀 신고</h2>
+          <form onSubmit={handleSubmit}>
+            <InputBox
+              value={reportContent}
+              onChange={handleContentChange}
+              placeholder="포트홀에 대한 상세 위치 및 정보를 입력해주세요. 허위신고 시 처벌 받을 수 있습니다."
+            />
+            <SaveBtn type="submit">제출</SaveBtn>
+          </form>
+        </ModalContent>
+      </ModalOverlay>
+      {showSuccessModal && (
+        <ModalOverlay onClick={handleSuccessModalClose}>
+          <SuccessModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={handleSuccessModalClose}>&times;</CloseButton>
+            <h2>신고 성공</h2>
+            <p>포트홀 신고가 성공적으로 접수되었습니다.</p>
+          </SuccessModalContent>
+        </ModalOverlay>
+      )}
+    </>
   );
 };
 

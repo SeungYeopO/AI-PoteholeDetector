@@ -18,14 +18,14 @@
       "sizes": "196x196"
     },
     {
-      "src": "icons/main.png",
+      "src": "icons/loading.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "668x1125"
     },
     {
-      "src": "icons/main.png",
+      "src": "icons/loading.png",
       "type": "image/png",
-      "sizes": "512x512",
+      "sizes": "668x1125",
       "purpose": "any maskable"
     }
   ],
@@ -33,7 +33,7 @@
     {
       "src": "img/loading.png",
       "type": "image/png",
-      "sizes": "640x1136"
+      "sizes": "668x1125"
     }
   ]
 }
