@@ -55,8 +55,8 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Pothole e SET e.isPothole = true, e.state = '공사중' WHERE e.potholePk = :potholePk")
-    int updateByUserPotholeIng(@Param("potholePk") long Pk);
+    @Query("UPDATE Pothole e SET e.isPothole = true, e.state = '공사중', e.startAt = :currentDate, e.expectAt = :exDate WHERE e.potholePk = :potholePk")
+    int updateByUserPotholeIng(@Param("potholePk") long Pk, @Param("currentDate") Date currentDate, @Param("exDate") Date exDate);
 
     void deleteById(Long potholePk);
 
