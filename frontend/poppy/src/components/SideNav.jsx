@@ -146,6 +146,7 @@ const LogoutBtnArea = styled.div`
   
 `
 const LogoutBtn = styled.div`
+color : white;
 cursor: pointer;
 width : 35%;
 height : 80%;
@@ -196,6 +197,10 @@ const SideNav = () => {
     setModalOpen(false);
    }
 
+   const gotoManageComplaint = () => {
+    navigate('/manager/complaint')
+   }
+
   return (
     <SideBox>
       <LogoBox>
@@ -204,8 +209,11 @@ const SideNav = () => {
       </LogoBox>
       <ListBox>
         <List onClick={gotoManageReport} active={location.pathname === "/manager/report"}>신고내역</List>
+        <List onClick={gotoManageComplaint} active={location.pathname === "/manager/complaint"}>민원내역</List>
+
         <List onClick={gotoManageProcess} active={location.pathname === "/manager/process"}>처리내역</List>
-        <List onClick={gotoManageDone} active={location.pathname === "/manager/done"}>완료내역</List> 
+        <List onClick={gotoManageDone} active={location.pathname === "/manager/done"}>완료내역</List>
+         
       </ListBox>
       <UserInfoBox  onClick={logoutModalOpen}>
         <ProfileImg src={profileImg}></ProfileImg>
