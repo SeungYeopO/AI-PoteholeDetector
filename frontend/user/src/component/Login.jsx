@@ -3,43 +3,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
-import logo from '../../public/img/loginlogo.png';
-
-function Modal({ isOpen, onClose, children }) {
-  if (!isOpen) return null;
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div style={{ background: "white", padding: 20 }}>
-        {children}
-        <button onClick={onClose}>닫기</button>
-      </div>
-    </div>
-  );
-}
+import logo from "../../public/img/loginlogo.png";
 
 const Background = styled.div`
-  position : fixed;
-  left : 0;
-  top : 0;
+  position: fixed;
+  left: 0;
+  top: 0;
   width: 100vw;
   height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
-  background-color: #FFC700;
-  flex-direction : column;
+  background-color: #ffc700;
+  flex-direction: column;
 `;
 
 const Container = styled.div`
@@ -50,7 +26,7 @@ const Container = styled.div`
   justify-content: space-around;
   align-items: center;
   /* background-color : red; */
-  margin-bottom : 1rem;
+  margin-bottom: 1rem;
 `;
 
 const LoginTitle = styled.div`
@@ -92,13 +68,11 @@ const InputBox = styled.input`
   font-size: 1.4rem;
   font-family: "BlackHanSans";
   text-indent: 0.3rem;
-  outline : none;
+  outline: none;
 
-  &:focus{ 
-		border: 1px solid blue;
-	}
-
-
+  &:focus {
+    border: 1px solid blue;
+  }
 
   &::placeholder {
     color: #6f6c6c;
@@ -113,7 +87,7 @@ const Text = styled.div`
   justify-content: left;
   align-items: center;
   font-size: 1.5rem;
-  font-weight : 500;
+  font-weight: 500;
   width: 30%;
   height: 40%;
 `;
@@ -123,31 +97,29 @@ const SubmitBtn = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
-  margin-top : 5rem;
+  margin-top: 5rem;
   width: 35%;
   height: 13%;
-  border : none;
+  border: none;
   background-color: #ffffff;
   font-family: "Nanum";
   font-size: 2rem;
 `;
 
-const Foot = styled.div`
-`
+const Foot = styled.div``;
 const LoginLogo = styled.div`
-  margin-top : 2rem;
-  width : 90%;
-  height : 20%;
+  margin-top: 2rem;
+  width: 90%;
+  height: 20%;
   /* background-color : red; */
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const LogoImg = styled.img`
-  width : 11rem;
-  height : 11rem;
-`
+  width: 11rem;
+  height: 11rem;
+`;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -174,7 +146,7 @@ const Login = () => {
           login(userPK);
           navigate("/map");
         } else if (response.result == false) {
-          setModalOpen(true);
+          alert("아이디나 비밀번호가 일치하지 않습니다");
         }
       })
       .catch((error) => console.error(error));
@@ -219,9 +191,6 @@ const Login = () => {
         </ContentBox>
       </Container>
       <Foot></Foot>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-        모달 내용
-      </Modal>
     </Background>
   );
 };
