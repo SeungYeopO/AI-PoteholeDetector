@@ -84,27 +84,6 @@ public class PotholeController {
     }
     @PostMapping("/by-user")
     public Object saveDataByUser(@RequestBody userByData data){
-
-        double latitude = data.getLatitude();
-        double longitude = data.getLongitude();
-
-        String lat = Double.toString(latitude);
-        String lon = Double.toString(longitude);
-
-
-
-        String road = potholeService.callTmapApi(lat, lon);
-
-        boolean checkGPS = potholeService.checkGPSdata(latitude,longitude);
-
-        Pothole stringPotholePk = null;
-        if (checkGPS) {
-            String[] words = road.split(" ");
-            stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon, data.getContent());
-        }
-
-        Long potholePk = stringPotholePk.getPotholePk();
-        boolean success = checkGPS;
         @Getter
         class getResponse {
             private final boolean success;
@@ -115,7 +94,32 @@ public class PotholeController {
                 this.potholePk = potholePk;
             }
         }
-        return new getResponse(success, potholePk);
+        try{
+            double latitude = data.getLatitude();
+            double longitude = data.getLongitude();
+
+            String lat = Double.toString(latitude);
+            String lon = Double.toString(longitude);
+
+
+
+            String road = potholeService.callTmapApi(lat, lon);
+
+            boolean checkGPS = potholeService.checkGPSdata(latitude,longitude);
+
+            Pothole stringPotholePk = null;
+            if (checkGPS) {
+                String[] words = road.split(" ");
+                stringPotholePk = potholeService.saveDataByUser(words[0], words[1], words[2], lat, lon, data.getContent());
+            }
+
+            Long potholePk = stringPotholePk.getPotholePk();
+            boolean success = checkGPS;
+
+            return new getResponse(success, potholePk);
+        }catch (Exception e){
+            return new getResponse(false, 0L);
+        }
     }
 
 
