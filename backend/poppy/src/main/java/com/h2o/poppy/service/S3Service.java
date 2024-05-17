@@ -49,6 +49,7 @@ public class S3Service {
         }
     }
 
+    @Async
     public void uploadFile(String folderName, MultipartFile file) throws IOException {
         String bucketName = "poppys3";
         String folderKey = folderName.endsWith("/") ? folderName : folderName + "/";
