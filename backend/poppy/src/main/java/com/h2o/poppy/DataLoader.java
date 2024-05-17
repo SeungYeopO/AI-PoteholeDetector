@@ -76,11 +76,11 @@ public class DataLoader implements CommandLineRunner {
                 new Pothole(37.467655,  126.946325, true, "서울", "관악구", "강남순환도시", completeDate, "공사완료",completeStartDate,detectedDate,currentDate,null),
                 new Pothole(36.102575,  127.499691, true, "충남", "금산군", "인삼로", completeDate, "공사완료",completeStartDate,detectedDate,currentDate,null),
                 new Pothole(37.880579, 127.729987, true, "강원", "춘천시", "시청길", currentDate, "미확인",null,null,null,null),
-                new Pothole(37.456733, 126.705120, false, "인천", "남동구", "구월로", currentDate, "사용자등록",null,null,null,null),
+                new Pothole(37.456733, 126.705120, false, "인천", "남동구", "구월로", currentDate, "확인전",null,null,null,null),
                 new Pothole(35.216768, 128.142013, true, "경남", "진주시", "중천로", detectedDate, "공사중",currentDate,expectDate,null,null),
                 new Pothole(36.098999 ,127.490736 , true, "충남", "금산군", "비단로", detectedDate, "공사중",currentDate,expectDate,null,null),
-                new Pothole(36.099268 ,127.483175 , false, "충남", "금산군", "비단로", detectedDate, "사용자등록",null,null,null,null),
-                new Pothole(36.642488, 127.489675, false, "충북", "청주시", "상당구", currentDate, "사용자등록",null,null,null,null)));
+                new Pothole(36.099268 ,127.483175 , false, "충남", "금산군", "비단로", detectedDate, "확인전",null,null,null,null),
+                new Pothole(36.642488, 127.489675, false, "충북", "청주시", "상당구", currentDate, "확인전",null,null,null,null)));
 
         SerialList serialList1 = serialListRepository.findById(1L).orElse(null);
 
