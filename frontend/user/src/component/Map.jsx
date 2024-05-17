@@ -421,8 +421,8 @@ function Map() {
         routeData[firstAlert].latitude,
         routeData[firstAlert].longitude
       );
-      if (distance < 0.05) {
-        // 50m 이내로 설정
+      if (distance < 0.01) {
+        // 10m 이내로 설정
         alertUser();
       } else if (firstAlert + 30 < routeData.length) {
         // 다음 지점을 지났는지 확인
@@ -444,7 +444,7 @@ function Map() {
     clearInterval(blinkIntervalIdRef.current); // 기존 인터벌이 있다면 먼저 제거
     blinkIntervalIdRef.current = setInterval(() => {
       setShowAlertOverlay((prev) => !prev); // 깜빡임 효과
-    }, 300); // 0.3초마다 실행
+    }, 500); // 0.5초마다 실행
   };
 
   const stopBlinking = () => {
@@ -719,6 +719,7 @@ function Map() {
     centerMapOnUser(); // 사용자 위치로 맵 중심 이동
     setSearchPerformed(false);
     setTmapAppStarted(false);
+    setShowAlertOverlay(false);
     mapRef.current.setZoom(16);
   };
 
@@ -894,19 +895,55 @@ function Map() {
           routeData
         );
 
+        console.log(response.data.potholeList);
         response.data.potholeList.map((element) => {
           const latitude = element.latitude;
           const longitude = element.longitude;
           const index = element.index;
-          setPotholeAlerts((prevAlerts) => [...prevAlerts, index - 30]);
+          const state = element.state;
+
+          console.log(index);
+          let alertIndex = Math.max(index - 30, 0);
+
+          console.log(alertIndex);
+          const lastAlert = potholeAlerts[potholeAlerts.length - 1];
+          const lastAlertEndIndex = lastAlert ? lastAlert.endIndex : -1;
+
+          // 새로운 알림 인덱스가 기존 마지막 알림 인덱스 + 30보다 작은 경우 인덱스 조정
+          if (alertIndex <= lastAlertEndIndex + 30) {
+            alertIndex = lastAlertEndIndex + 31; // 30 인덱스 후로 이동
+          }
+
+          setPotholeAlerts((prevAlerts) => [...prevAlerts, alertIndex]);
+
+          let iconPath;
+          if (state == "공사완료") {
+            return; // 공사 완료 상태인 경우 다음 루프로 건너뜀
+          }
+
+          // pothole.state 값에 따라 아이콘 경로 설정
+          switch (state) {
+            case "미확인":
+              iconPath = "../img/pothole_3.png";
+              break;
+            case "사용자등록":
+              iconPath = "../img/pothole_2.png";
+              break;
+            case "공사중":
+              iconPath = "../img/pothole_1.png";
+              break;
+          }
+
           const marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(longitude, latitude),
-            icon: "../img/pothole.png",
+            icon: iconPath,
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
           routeMarkers.push(marker);
         });
+
+        console.log(potholeAlerts);
       } catch (error) {}
     }
 
