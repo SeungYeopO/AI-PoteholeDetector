@@ -53,10 +53,10 @@ public interface PotholeRepository extends JpaRepository<Pothole, Long> {
    @Query("SELECT new com.h2o.poppy.model.pothole.PotholeDto(pt.potholePk, CAST(ST_X(pt.location) AS double), CAST(ST_Y(pt.location) AS double), pt.isPothole, pt.province, pt.city, pt.street, pt.detectedAt, pt.state, pt.startAt, pt.expectAt, pt.endAt) FROM Pothole pt WHERE ST_DISTANCE(POINT((SELECT bvm.longitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk), (SELECT bvm.latitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk)), pt.location) * 111195 <= 5 ORDER BY ST_DISTANCE(POINT((SELECT bvm.longitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk), (SELECT bvm.latitude FROM BlackboxVideoMetadata bvm WHERE bvm.videoPk = :videoPk)), pt.location) ASC")
    List<PotholeDto> findPothlesbyVideoPk(@Param("videoPk") Long videoPk);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Pothole e SET e.isPothole = true, e.state = '미확인' WHERE e.potholePk = :potholePk")
-    int updateByUserPothole(@Param("potholePk") long Pk);
+   @Transactional
+   @Modifying
+   @Query("UPDATE Pothole e SET e.isPothole = true, e.state = '공사중' WHERE e.potholePk = :potholePk")
+   int updateByUserPothole(@Param("potholePk") long Pk);
 
     void deleteById(Long potholePk);
 
