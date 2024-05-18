@@ -1,0 +1,45 @@
+services:
+  mariadb:
+    build: 
+      context: .
+    container_name: mariadb-container
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: "poppy"
+    ports:
+      - "3306:3306"
+    restart: always
+
+  server:
+    image: h2o_server
+    container_name: server
+    build:
+      context: ./backend/poppy
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mariadb
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-container:3306/poppy
+      - SPRING_DATASOURCE_USERNAME=h2o
+      - SPRING_DATASOURCE_PASSWORD=s10p31c106
+    restart: always
+
+  client_user:
+    image: h2o_client_user
+    container_name: client-user
+    build:
+      context: ./frontend/user
+    ports:
+      - "3000:3000"
+  client_manager:
+    image: h2o_client_manager
+    container_name: client-manager
+    build:
+      context: ./frontend/poppy
+    ports:
+      - "3001:3001"
+
+volumes:
+  mariadb-data:
+
