@@ -45,11 +45,7 @@ const GridArea = styled.div`
   justify-content : center;
   background-color : lightcoral;
 `
-const Page = styled.div`
-  /* background-color : red; */
-  width : 100%;
-  height : 7%;
-`
+
 const DateBox = styled.div`
   display : flex;
   align-items : center;
@@ -62,12 +58,11 @@ const BoxName = styled.div`
   display : flex;
   justify-content : center;
   align-items : center;
- width : ${(props) => props.width || '25%'};
+  width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
-  font-size : 1.4rem;
-
+  font-size : 1.1rem;
+  background-color : #005999;
+  color : white;
 `
 const DateTable = styled.div`
   background-color :  white;
@@ -147,17 +142,7 @@ const Info = styled.div`
 
 `
 
-const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
 
-const Btn = styled.button`
-  cursor: pointer;
-  
-`
 const SearchBtn = styled.div`
   cursor: pointer;
   margin-left : 1rem;
@@ -204,10 +189,159 @@ const CalenderModal = styled.div`
   width: 20rem; 
   height: 15rem; 
   position: absolute; /* 부모 요소를 기준으로 위치를 절대값으로 지정 */
-  top: calc(25% - 12.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
-  left: calc(40% - 10.4rem); /* CalenderImg 버튼의 위치에 따라 조정 */
+  top: calc(25% - 10.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
+  left: calc(40% - 8rem); /* CalenderImg 버튼의 위치에 따라 조정 */
   z-index: 1000;
 `
+
+const ListDetailModal = styled.div`
+  background-color: white;
+  opacity : 98%;
+  border-radius : 1rem;
+  border : 1px solid gray;
+  width: 55rem; 
+  height: 35rem; 
+  position: fixed;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  
+`
+const ModalHeader = styled.div`
+  display : flex;
+  width : 100%;
+  height : ${(props) => props.height || '11%'};
+  background-color :${(props) => props.backgroundColor ||'#3F8CF5'};
+  border-top-right-radius : 1rem;
+  border-top-left-radius : 1rem;
+  flex-direction : row;
+  justify-content : space-between;
+  align-items : center;
+`
+const ModalTitle = styled.div`
+  display : flex;
+  align-items : center;
+  font-size :${(props) => props.fontSize || '1.8rem'};
+  color : white;
+  text-indent : 1.4rem;
+  
+`
+const CloseImg = styled.img`
+  cursor: pointer;
+  width : ${(props) => props.width || '2.9rem'};
+  height : ${(props) => props.height || '2.9rem'};
+  margin-right: 1rem;
+`
+const ArticleArea = styled.div`
+  display : flex;
+  flex-direction : column;
+  justify-content : space-between;
+  align-items : center;
+  width : 90%;
+  height : 80%;
+  /* background-color : lightblue; */
+  
+`
+const ArticleList = styled.div`
+  font-size : ${(props) => props.fontSize || '1.6rem'};
+  display : flex;
+  align-items : center;
+  width : 100%;
+  height : ${(props) => props.height || '25%'};
+  /* background-color : lightgoldenrodyellow; */
+  border-top : ${(props) => props.borderTop || 'none'};
+`
+const PlusFileArea = styled.div`
+  display : flex;
+  flex-direction : column;
+  justify-content : space-between;
+  /* align-items : center; */
+  width : 90%;
+  height : 30%;
+  /* background-color : lightgreen; */
+  
+`
+const BtnArea = styled.div`
+  display : flex;
+  justify-content : space-around;
+  align-items : center;
+  width : 60%;
+  height : ${(props) => props.height || '15%'};
+  /* background-color : lightcoral; */
+  
+`
+const ModalContent = styled.div`
+  display : flex;
+  flex-direction  : column;
+  width : ${(props) => props.width || '100%'};
+  height : ${(props) => props.height || '100%'};
+  margin-top  : ${(props) => props.marginTop || '2.4rem'};
+  /* background-color : pink; */
+  align-items : center;
+  
+`
+const Btn1 = styled.div`
+  cursor: pointer;
+  width : 30%;
+  height : 80%;
+  display : flex;
+  align-items : center;
+  justify-content : center;
+  background-color : #79A3DC;
+  border-radius : 1rem;
+  font-size : 1.6rem;
+  color : white;
+`
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
+const PageBtnArea = styled.div`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
 
 const CompensationDonePage = () => {
   const [data, setData] = useState([]);
@@ -268,6 +402,10 @@ const CompensationDonePage = () => {
     }
   }
 
+  const gotoApprove = () => {
+
+  }
+
   const modalOpen = () => {
     console.log('click')
     if(ismodalOpen === false) {
@@ -303,6 +441,10 @@ const CompensationDonePage = () => {
     setIsModalOpen(false);
   }
   
+  const openReturnModalOpen = () => {
+
+  }
+
   const gotoSearch = () => {
     const userData = {
       reportDate : format2Date(selectedDate),
@@ -377,35 +519,51 @@ const CompensationDonePage = () => {
               </SortedList>
         </ListArea>
         <Page>
-            <PageBtnArea>
-                  <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </Btn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </Btn>
-                ))}
-                <Btn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </Btn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-            </Page>
-
+          <PageBtnArea>
+            <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+            이전
+            </PrevBtn>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+                {index + 1}
+              </PageBtn>
+            ))}
+            <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+              다음
+            </NextBtn>
+          </PageBtnArea>
+        </Page>
           </React.Fragment>
         ) }
-       
         </Content>
         {ismodalOpen && (
         <CalenderModal>
             <Calender  calendarType="gregory" showNeighboringMonth={false} onChange={handleDdateClick}  />
         </CalenderModal>
       )}
+
+        {selectedList&&isInfoModalOpen && (<ListDetailModal>
+      <ModalHeader>
+            <ModalTitle>보상 처리 내역</ModalTitle>
+            <CloseImg src={closeBtnImg} onClick={closeModal}></CloseImg>
+          </ModalHeader>
+          <ModalContent height="89%" marginTop="0rem">
+            <ArticleArea>
+              <ArticleList>{selectedList.reportName}</ArticleList>
+              <ArticleList height="15%" fontSize="1.4rem">작성자 : {selectedList.userName}</ArticleList>
+              <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.reportContent}</ArticleList>
+              {selectedList.state === '반려' ? (
+                <ArticleList height="25%" fontSize="1.4rem" borderTop="3px solid darkgray">반려사유 : {selectedList.rejectionReason}</ArticleList>
+              ):(<ArticleList height="25%" fontSize="1.4rem" borderTop="3px solid darkgray">{selectedList.state} </ArticleList>)}
+              {/* <ArticleList height="55%" fontSize="1.4rem" borderTop="3px solid darkgray">반려사유 : </ArticleList> */}
+            </ArticleArea>
+    
+          </ModalContent>
+      </ListDetailModal>
+         )}
+
+
+
     </Background>
   );
 };

@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate} from 'react-router-dom';
 import backImg from '../assets/background/loginBackImg3.jpg';
-import Logo from '../assets/background/Loginlogo1.png'
 import logo from '../assets/background/logoImg.png';
 import { useEffect } from "react";
 import { useCookies } from 'react-cookie';
@@ -97,7 +96,7 @@ const SaveBtn = styled.div`
   border-radius : 10rem;
   width : 30%;
   height : 9%;
-  background-color : #f3648c;
+  background-color : #db6464;
   margin-top : 3rem;
   color : white;
   display : flex;
@@ -105,12 +104,67 @@ const SaveBtn = styled.div`
   align-items : center;
   font-size : 1.8rem;
 `
+const LogoOutModal = styled.div`
+  background-color: white;
+  opacity : 98%;
+  border-radius : 1rem;
+  border : 1px solid gray;
+  width: 20rem; 
+  height: 13rem; 
+  position: fixed;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display : flex;
+  flex-direction : column;
+  justify-content : space-around;
+  align-items : center;
 
+  
+`
+const LogoutText = styled.div`
+  width : 80%;
+  height : 60%;
+  margin-top : 1rem;
+  /* background-color : yellow; */
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  font-size : 1.5rem;
+
+  
+`
+const LogoutBtnArea = styled.div`
+  width : 70%;
+  height : 30%;
+  /* background-color : red; */
+  margin-bottom : 1rem;
+  display : flex;
+  justify-content : space-around;
+  align-items : center;
+  
+`
+const LogoutBtn = styled.div`
+color : white;
+cursor: pointer;
+width : 35%;
+height : 80%;
+border-radius : 1.5rem;
+background-color : #db6464;
+font-size : 1.5rem;
+justify-content : center;
+align-items : center;
+display : flex;
+
+  
+`
 
 const LoginPage = () => {
   const [userId, setuserId] = useState('');
   const [password, setPassword] = useState('');
   const [cookies, setCookies] = useCookies([]);
+  const [modalOpen, setModalOpen] = useState(false);
   let navigate = useNavigate();
 
   useEffect( () => {
@@ -167,33 +221,45 @@ const LoginPage = () => {
     }
   }
 
-  
+  const closeModal = () => {
+    setModalOpen(false);
+  }
+
   const gotoLogin = async () => {
     const userData = {
-      loginId : userId,
-      password : password,
+      loginId: userId,
+      password: password,
     };
-    try{
-      const response = await fetch('/api/managers/login',{
-        method : "POST",
-        headers : {
-          "Content-Type" : "application/json",
+  
+    try {
+      const response = await fetch('/api/managers/login', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body : JSON.stringify(userData),
+        body: JSON.stringify(userData),
       });
-      if(response.ok){
+  
+      if (response.ok) { // 응답이 성공적인 경우
         const responseData = await response.json();
-        console.log('로그인 성공', responseData);
-        setCookie('managerPk', responseData.managerPk);
-        navigate('/manager/mode')
-      }else{
-        console.log('로그인 실패')
+        
+        if (responseData.result) {
+          console.log('로그인 성공', responseData);
+          setCookie('managerPk', responseData.managerPk);
+          navigate('/manager/mode');
+        } else {
+          console.log('로그인 실패');
+          setModalOpen(true);
+        }
+      } else { // 응답이 실패한 경우
+        console.log('로그인 실패');
+        setModalOpen(true);
       }
-    }catch(error){
+    } catch (error) {
       console.error('에러발생', error);
     }
- 
-  }
+  };
+  
 
 
   return (
@@ -209,6 +275,15 @@ const LoginPage = () => {
           <SaveBtn onClick={gotoLogin}>로그인</SaveBtn>
         </LoginDiv>
       </Container>
+      {modalOpen && (
+        <LogoOutModal>
+          <LogoutText>아이디 또는 비밀번호가 <br/> 일치하지 않습니다</LogoutText>
+          <LogoutBtnArea>
+              <LogoutBtn onClick={closeModal}>닫기</LogoutBtn>
+             
+          </LogoutBtnArea>
+        </LogoOutModal>
+        )}
     </Background>
   );
 };

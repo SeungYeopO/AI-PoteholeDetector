@@ -9,7 +9,7 @@ import CompensationReportPage from './pages/CompensationReportPage';
 import CompensationDonePage from './pages/CompensationDonePage';
 import { Navigate } from 'react-router-dom';
 import Video from './pages/Video';
-
+import ManageComplaintPage from './pages/ManageComplaintPage';
 
 
 
@@ -25,6 +25,7 @@ const App = () => {
         <Route path="/manager/done" element={<ManageDonePage/>} />
         <Route path="/manager/compensation-report" element={<CompensationReportPage/>} />
         <Route path="/manager/compensation-done" element={<CompensationDonePage/>} />
+        <Route path="/manager/complaint" element={<ManageComplaintPage/>} />
         <Route path="/manager/video" element={<Video/>}/>
       </Routes>
   </BrowserRouter>

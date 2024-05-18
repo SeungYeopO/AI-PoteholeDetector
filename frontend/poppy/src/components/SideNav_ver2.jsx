@@ -149,6 +149,7 @@ const LogoutBtnArea = styled.div`
   height : 80%;
   border-radius : 1.5rem;
   background-color : #db6464;
+  color : white;
   font-size : 1.5rem;
   justify-content : center;
   align-items : center;

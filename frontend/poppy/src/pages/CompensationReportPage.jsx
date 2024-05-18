@@ -43,11 +43,7 @@ const ListArea = styled.div`
   /* background-color : lightcoral; */
   align-items: center;
 `;
-const Page = styled.div`
-  /* background-color : red; */
-  width: 100%;
-  height: 7%;
-`;
+
 const DateBox = styled.div`
   display: flex;
   align-items: center;
@@ -62,9 +58,9 @@ const BoxName = styled.div`
   align-items: center;
   width: ${(props) => props.width || "25%"};
   height: 100%;
-  background-color: #ffffff;
-  border: 1px solid #a1a1a1;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+  background-color: #005999;
+  color: white;
 `;
 const DateTable = styled.div`
   background-color: white;
@@ -96,8 +92,8 @@ const CalenderModal = styled.div`
   width: 20rem;
   height: 15rem;
   position: absolute; /* 부모 요소를 기준으로 위치를 절대값으로 지정 */
-  top: calc(25% - 12.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
-  left: calc(40% - 10.4rem); /* CalenderImg 버튼의 위치에 따라 조정 */
+  top: calc(25% - 10.8rem); /* 부모 요소의 중앙에서 모달의 절반 높이를 빼줌 */
+  left: calc(40% - 8rem); /* CalenderImg 버튼의 위치에 따라 조정 */
   z-index: 1000;
 `;
 const SortedList = styled.div`
@@ -140,29 +136,13 @@ const Info = styled.div`
   color: ${(props) => props.color || "black"};
 `;
 
-const PageBtnArea = styled.div`
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Btn = styled.button`
-  cursor: pointer;
-`;
-const PageNumArea = styled.div``;
-const PageText = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 const ListDetailModal = styled.div`
   background-color: white;
   opacity: 98%;
   border-radius: 1rem;
   border: 1px solid gray;
   width: 55rem;
-  height: 40rem;
+  height: 43rem;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -188,6 +168,7 @@ const ModalContent = styled.div`
   margin-top: ${(props) => props.marginTop || "2.4rem"};
   /* background-color : pink; */
   align-items: center;
+  justify-content: center;
 `;
 const ModalTitle = styled.div`
   display: flex;
@@ -234,7 +215,7 @@ const BtnArea = styled.div`
   justify-content: space-around;
   align-items: center;
   width: 60%;
-  height: ${(props) => props.height || "10%"};
+  height: ${(props) => props.height || "15%"};
   /* background-color : lightcoral; */
 `;
 const BtnArea2 = styled.div`
@@ -365,6 +346,54 @@ const SearchBtn = styled.div`
   justify-content: center;
   align-items: center;
 `;
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+`;
+
+const PageBtnArea = styled.div`
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2f80ed;
+  background-color: white;
+  color: #2f80ed;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067f2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
 
 const CompensationReportPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -384,6 +413,8 @@ const CompensationReportPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [imageList, setImageList] = useState([]);
   const [blobImageList, setBlobImageList] = useState([]);
+  const [videoFile, setVideoFile] = useState("");
+  const [videoBlobURL, setVideoBlobURL] = useState(null);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -405,6 +436,27 @@ const CompensationReportPage = () => {
       setIsModalOpen(false);
     }
   };
+
+  //   useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+
+  //       if (response.ok) {
+  //         const jsonData = await response.json();
+  //         console.log('더미 데이터 가져오기 성공:', jsonData);
+  //         setData(jsonData);
+  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
+  //       } else {
+  //         console.log('더미 데이터 가져오기 실패');
+  //       }
+  //     } catch (error) {
+  //       console.error('더미 데이터 가져오기 실패:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -456,12 +508,14 @@ const CompensationReportPage = () => {
         console.log("한개 리스트 데이터", jsonData.imageFileNameList);
         setSelectedList(jsonData.result);
         setImageList(jsonData.imageFileNameList);
+        console.log(jsonData.videoFileName);
+        setVideoFile(jsonData.videoFileName);
 
         const blobURLs = await Promise.all(
           jsonData.imageFileNameList.map(async (imageURL) => {
             try {
               const response = await fetch(
-                `https://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`
+                `http://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`
               );
               if (!response.ok) {
                 throw new Error("이미지 데이터 가져오기 실패");
@@ -476,6 +530,22 @@ const CompensationReportPage = () => {
           })
         );
         setBlobImageList(blobURLs);
+
+        if (jsonData.videoFileName) {
+          try {
+            const videoResponse = await fetch(
+              `http://d1vcrv9kpqlkt7.cloudfront.net/${jsonData.result.serialNumber}/${jsonData.videoFileName}`
+            );
+            if (!videoResponse.ok) {
+              throw new Error("비디오 데이터 가져오기 실패");
+            }
+            const videoBlob = await videoResponse.blob();
+            const videoBlobURL = URL.createObjectURL(videoBlob);
+            setVideoBlobURL(videoBlobURL);
+          } catch (error) {
+            console.log("비디오 데이터 가져오기 오류", error);
+          }
+        }
       } else {
         console.log("리스트 실패");
       }
@@ -494,11 +564,6 @@ const CompensationReportPage = () => {
 
   const openReturnModalOpen = () => {
     setIsReturnModalOpen(true);
-  };
-
-  const handleReturnTitle = (event) => {
-    console.log(event.target.value);
-    setReturnTitle(event.target.value);
   };
 
   const handleReturnContent = (event) => {
@@ -540,7 +605,7 @@ const CompensationReportPage = () => {
         } else {
           console.log("데이터 조회 실패");
         }
-      }, 500);
+      }, 300);
     } catch (error) {
       console.log("에러발생", error);
     }
@@ -581,7 +646,7 @@ const CompensationReportPage = () => {
     const userData = {
       reportPk: selectedList.reportPk,
       state: "반려",
-      rejectionReason: `Title : ${returnTitle} , Content : ${returnContent}`,
+      rejectionReason: returnContent,
     };
 
     try {
@@ -662,25 +727,21 @@ const CompensationReportPage = () => {
             </ListArea>
             <Page>
               <PageBtnArea>
-                <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
+                <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
                   이전
-                </Btn>
+                </PrevBtn>
                 {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
+                  <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
                     {index + 1}
-                  </Btn>
+                  </PageBtn>
                 ))}
-                <Btn
+                <NextBtn
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
                   다음
-                </Btn>
+                </NextBtn>
               </PageBtnArea>
-              <PageNumArea></PageNumArea>
-              <PageText>
-                페이지: {currentPage} / {totalPages}
-              </PageText>
             </Page>
           </React.Fragment>
         )}
@@ -725,9 +786,13 @@ const CompensationReportPage = () => {
                     </SubFile>
                   </a>
                 ))}
-              <SubFile fontSize="1.3rem" color="#004FC7">
-                {selectedList.video}
-              </SubFile>
+              {videoBlobURL && (
+                <a href={videoBlobURL} download={videoFile}>
+                  <SubFile fontSize="1.3rem" color="#004FC7">
+                    {videoFile}
+                  </SubFile>
+                </a>
+              )}
             </PlusFileArea>
             <BtnArea>
               <Btn1 onClick={gotoApprove}>보상승인</Btn1>
@@ -747,13 +812,7 @@ const CompensationReportPage = () => {
               onClick={closeReturnModal}
             ></CloseImg>
           </ModalHeader>
-          <ModalContent marginTop="0rem" height="70%">
-            <ReturnModalTitle>
-              <TitleInput
-                onChange={handleReturnTitle}
-                placeholder="제목을 입력하세요"
-              ></TitleInput>
-            </ReturnModalTitle>
+          <ModalContent marginTop="0rem" height="66%">
             <ReturnModalContent>
               <ContentInput
                 onChange={handleReturnContent}
@@ -761,7 +820,7 @@ const CompensationReportPage = () => {
               ></ContentInput>
             </ReturnModalContent>
           </ModalContent>
-          <BtnArea2 height="17%">
+          <BtnArea2 height="15%">
             <Btn2 onClick={gotoSend}> 최종 제출</Btn2>
           </BtnArea2>
         </ReturnModal>

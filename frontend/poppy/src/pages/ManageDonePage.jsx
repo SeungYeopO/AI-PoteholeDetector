@@ -47,7 +47,7 @@ const DateBox = styled.div`
   width : 19%;
   height : 30%;
   /* background-color : #e83e3e; */
-  border : 1px solid darkgray;
+  /* border : 1px solid darkgray; */
 `
 const LocationBox = styled.div`
   display : flex;
@@ -93,9 +93,9 @@ const BoxName = styled.div`
   align-items : center;
   width : ${(props) => props.width || '25%'};
   height : 100%;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
-  font-size : 1.4rem;
+  background-color : #005999;
+  font-size : 1.1rem;
+  color : white;
 
 `
 const BoxName1 = styled.div`
@@ -104,15 +104,16 @@ const BoxName1 = styled.div`
   align-items : center;
   width : 12.5%;
   height : 100%;
-  font-size : 1.4rem;
-  background-color : #ffffff;
-  border : 1px solid #A1A1A1;
+  font-size : 1.1rem;
+  background-color : #005999;
+  color : white;
 `
 const DateTable = styled.div`
   background-color :  white;
   width : 75%;
   height : 100%;
   display : flex;
+  border : 1px solid darkgray;
   
 `
 const StateDrop = styled.select`
@@ -171,13 +172,9 @@ const ResultArea = styled.div`
   align-items : center;
   /* background-color : pink; */
   width : 95%;
-  height: 73%;
+  height: 72%;
 `
-const Page = styled.div`
-  /* background-color : green; */
-  width : 95%;
-  height : 7%;
-`
+
 const SortedList = styled.div`
   /* background-color : lightcyan; */
   width : 95%;
@@ -220,26 +217,7 @@ const Info = styled.div`
   color : ${(props) => props.color || 'black'};
 
 `
-const PageBtnArea = styled.div`
- cursor: pointer;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-`
 
-const Btn = styled.button`
-  cursor: pointer;
-  
-`
-const PageNumArea = styled.div`
-
-`
-const PageText = styled.div`
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  
-`
 const ListDetailModal = styled.div`
   background-color: white;
   opacity : 98%;
@@ -301,7 +279,7 @@ const ModalContainer = styled.div`
 const ModalImg = styled.img`
   width : 43%;
   height : 100%;
-  background-color : darkmagenta;
+  background-color :  #c2c1c1;
 `
 const ModalTable = styled.table`
   width : 54%;
@@ -378,6 +356,57 @@ const Loading = styled.div`
   justify-content : center;
   align-items : center;
 `
+const Page = styled.div`
+  width: 100%;
+  height: 7%;
+  padding: 1rem 0;
+  /* background-color : red; */
+`;
+
+const PageBtnArea = styled.div`
+  height : 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* 버튼 간의 간격 */
+`;
+
+
+const Button = styled.button`
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2F80ED; 
+  background-color: white;
+  color: #2F80ED;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #0067F2;
+    color: white;
+  }
+
+  &:disabled {
+    border-color: #c0c0c0;
+    color: #c0c0c0;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+`;
+
+const PrevBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const PageBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
+const NextBtn = styled(Button)`
+  /* 추가 스타일링이 필요하면 여기에 추가 */
+`;
+
 
 const ManageDonePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -398,6 +427,27 @@ const ManageDonePage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
  
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+
+  //       if (response.ok) {
+  //         const jsonData = await response.json();
+  //         console.log('더미 데이터 가져오기 성공:', jsonData);
+  //         setData(jsonData);
+  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
+  //       } else {
+  //         console.log('더미 데이터 가져오기 실패');
+  //       }
+  //     } catch (error) {
+  //       console.error('더미 데이터 가져오기 실패:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -481,12 +531,12 @@ const ManageDonePage = () => {
   };
 
   const handleRegionSelect = (event) => {
-    console.log(event.target.value);
+    console.log('눌린 지역', event.target.value);
     setSelectedRegion(event.target.value);
     const sub = areas.find((area) => area.name === event.target.value)?.subArea || [];
     console.log('하위지역',sub);
     setSubAreas(sub);
-    setSelectedDistrict("");
+    setSelectedDistrict(null);
 
   }
   const handleDistrictSelect = (event) => {
@@ -538,6 +588,7 @@ const gotoSearch = async () => {
       });
       if (response.ok){
         const responseData = await response.json();
+        console.log('조회된 데이터는? ', responseData)
         setData(responseData.filteredDate);
         setIsLoading(false);
 
@@ -616,24 +667,19 @@ const gotoSearch = async () => {
         </ResultArea>
         <Page>
         <PageBtnArea>
-                  <Btn onClick={handlePrevPage} disabled={currentPage === 1}>
-                  이전
-                </Btn>
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <Btn key={index + 1} onClick={() => goToPage(index + 1)}>
-                    {index + 1}
-                  </Btn>
-                ))}
-                <Btn onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  다음
-                </Btn>
-              </PageBtnArea>
-              <PageNumArea>
-              </PageNumArea>
-          <PageText>
-            페이지: {currentPage} / {totalPages}
-          </PageText>
-        </Page>
+          <PrevBtn onClick={handlePrevPage} disabled={currentPage === 1}>
+          이전
+          </PrevBtn>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <PageBtn key={index + 1} onClick={() => goToPage(index + 1)}>
+              {index + 1}
+            </PageBtn>
+          ))}
+          <NextBtn onClick={handleNextPage} disabled={currentPage === totalPages}>
+            다음
+          </NextBtn>
+        </PageBtnArea>
+      </Page>
 
           </React.Fragment>
         )}
@@ -652,7 +698,7 @@ const gotoSearch = async () => {
           <ModalContent>
             <ModalContentBox>
               <ModalContainer>
-                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedList.province}+${selectedList.city}+${selectedList.street}/${selectedList.longitude}_${selectedList.latitude}.jpg`}></ModalImg>
+                  <ModalImg src={`http://d1vcrv9kpqlkt7.cloudfront.net/${selectedList.province}+${selectedList.city}+${selectedList.street}/${selectedList.longitude}_${selectedList.latitude}.jpg`} alt="No image"></ModalImg>
                     <ModalTable>
                         <TableRow>
                           <TableCell1>담당자명</TableCell1>
