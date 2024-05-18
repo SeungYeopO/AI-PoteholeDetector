@@ -218,7 +218,7 @@ const ArticleList = styled.div`
 const PlusFileArea = styled.div`
   display : flex;
   flex-direction : column;
-  justify-content : space-between;
+  justify-content : flex-start;
   /* align-items : center; */
   width : 90%;
   height : 30%;
