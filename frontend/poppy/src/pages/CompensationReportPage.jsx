@@ -515,7 +515,7 @@ const CompensationReportPage = () => {
           jsonData.imageFileNameList.map(async (imageURL) => {
             try {
               const response = await fetch(
-                `http://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`
+                `https://d1vcrv9kpqlkt7.cloudfront.net/${imageURL}`
               );
               if (!response.ok) {
                 throw new Error("이미지 데이터 가져오기 실패");
@@ -534,7 +534,7 @@ const CompensationReportPage = () => {
         if (jsonData.videoFileName) {
           try {
             const videoResponse = await fetch(
-              `http://d1vcrv9kpqlkt7.cloudfront.net/${jsonData.result.serialNumber}/${jsonData.videoFileName}`
+              `https://d1vcrv9kpqlkt7.cloudfront.net/${jsonData.result.serialNumber}/${jsonData.videoFileName}`
             );
             if (!videoResponse.ok) {
               throw new Error("비디오 데이터 가져오기 실패");
