@@ -202,9 +202,9 @@ const ArticleList = styled.div`
   border-top: ${(props) => props.borderTop || "none"};
 `;
 const PlusFileArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display : flex;
+  flex-direction : column;
+  justify-content : flex-start;
   /* align-items : center; */
   width: 90%;
   height: 30%;
