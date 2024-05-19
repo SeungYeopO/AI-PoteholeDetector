@@ -41,7 +41,7 @@ const ContentBox = styled.div`
 `;
 
 const DateBox = styled.div`
-  justify-content : center;
+  justify-content: center;
   width: 100%;
   height: 10%;
   display: flex;
@@ -60,7 +60,7 @@ const BoxName = styled.div`
   align-items: center;
   width: ${(props) => props.width || "25%"};
   height: 100%;
-  background-color: #FFC700;
+  background-color: #ffc700;
   font-size: 1.4rem;
 `;
 
@@ -104,7 +104,7 @@ const Box = styled.div`
   width: 80%;
   display: flex;
   height: 60%;
-  border: 2px solid #FFC700;
+  border: 2px solid #ffc700;
 `;
 
 const List = styled.div`
@@ -424,7 +424,7 @@ const ReportList = () => {
             </Section>
             <Section>
               <SectionTitle>상세 내용</SectionTitle>
-              <SectionContent>{selectedReport.reportDetail}</SectionContent>
+              <SectionContent>{selectedReport.reportContent}</SectionContent>
             </Section>
 
             <Section>
