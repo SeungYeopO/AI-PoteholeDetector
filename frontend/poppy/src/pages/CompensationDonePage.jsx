@@ -425,7 +425,6 @@ const CompensationDonePage = () => {
       reportDate: format2Date(selectedDate),
       state: "보상완료",
     };
-    console.log(userData);
     try {
       setIsLoading(true);
       setTimeout(async () => {
