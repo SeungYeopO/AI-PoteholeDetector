@@ -284,7 +284,7 @@ const ManageReportPage = () => {
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState("");
-  const [totalPages, setTotalPages] = useState(0); // totalPages 상태 추가
+  const [totalPages, setTotalPages] = useState(0); // totalPages 상태 추가.
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, data.length);
   const currentData = data.slice(startIndex, endIndex);
@@ -396,9 +396,7 @@ const ManageReportPage = () => {
 
   const gotoProcess = async () => {
     const value = company[Math.floor(Math.random() * company.length)];
-    console.log(value);
     setRandomCompany(value);
-    console.log(new Date(currentDate.getTime()));
 
     const userData = {
       potholePk: selectedGrid.potholePk,
@@ -414,7 +412,6 @@ const ManageReportPage = () => {
       });
       if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
         window.location.reload();
       } else {
         console.log("데이터수정실패");
@@ -434,7 +431,6 @@ const ManageReportPage = () => {
       });
 
       if (response.ok) {
-        console.log("데이터 삭제 성공");
         window.location.reload();
       } else {
         console.log("데이터 삭제 실패");

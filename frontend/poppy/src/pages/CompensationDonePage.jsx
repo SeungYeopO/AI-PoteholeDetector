@@ -345,7 +345,7 @@ const CompensationDonePage = () => {
         setIsLoading(true);
         setTimeout(async () => {
           const response = await fetch(
-            "/api/accident-report/yes-check" // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함
+            "/api/accident-report/yes-check" // 페이지네이션 위해 데이터 원하는 개수만큼 나눠야함.
           );
           if (!response.ok) {
             throw new Error("일단 try 구문은 돌았음");
@@ -425,7 +425,6 @@ const CompensationDonePage = () => {
       reportDate: format2Date(selectedDate),
       state: "보상완료",
     };
-    console.log(userData);
     try {
       setIsLoading(true);
       setTimeout(async () => {
