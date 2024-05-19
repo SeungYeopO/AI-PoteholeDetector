@@ -523,7 +523,7 @@ const CompensationReportPage = () => {
       if (response.ok) {
         const jsonData = await response.json();
         setSelectedList(jsonData.result);
-        // 여기서 jsonData를 처리하는 추가적인 코드가 필요할 수 있습니다...
+        // 여기서 jsonData를 처리하는 추가적인 코드가 필요할 수 있습니다....
       } else {
         console.log("리스트 실패");
       }
