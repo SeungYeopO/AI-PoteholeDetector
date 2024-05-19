@@ -429,7 +429,6 @@ const CompensationReportPage = () => {
   };
 
   const modalOpen = () => {
-    console.log("click");
     if (ismodalOpen === false) {
       setIsModalOpen(true);
     } else {
@@ -440,7 +439,7 @@ const CompensationReportPage = () => {
   //   useEffect(() => {
   //   const fetchData = async () => {
   //     try {
-  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
+  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로.
 
   //       if (response.ok) {
   //         const jsonData = await response.json();
@@ -468,7 +467,6 @@ const CompensationReportPage = () => {
             throw new Error("일단 try 구문은 돌았음");
           }
           const jsonData = await response.json();
-          console.log("데이터", jsonData.noCheckState);
           setTotalPages(
             Math.max(Math.ceil(jsonData.noCheckState.length / itemsPerPage), 1)
           );
@@ -497,18 +495,14 @@ const CompensationReportPage = () => {
 
   const handleListClick = async (item) => {
     setIsInfoModalOpen(true);
-    console.log(item);
 
     try {
       const response = await fetch(`/api/accident-report/${item.reportPk}`);
 
       if (response.ok) {
         const jsonData = await response.json();
-        console.log("조회 리스트 데이터,", jsonData);
-        console.log("한개 리스트 데이터", jsonData.imageFileNameList);
         setSelectedList(jsonData.result);
         setImageList(jsonData.imageFileNameList);
-        console.log(jsonData.videoFileName);
         setVideoFile(jsonData.videoFileName);
 
         const blobURLs = await Promise.all(
@@ -555,7 +549,6 @@ const CompensationReportPage = () => {
   };
 
   const closeModal = () => {
-    console.log(imageList);
     setIsInfoModalOpen(false);
   };
   const closeReturnModal = () => {
@@ -567,7 +560,6 @@ const CompensationReportPage = () => {
   };
 
   const handleReturnContent = (event) => {
-    console.log(event.target.value);
     setReturnContent(event.target.value);
   };
 
@@ -599,7 +591,6 @@ const CompensationReportPage = () => {
         });
         if (response.ok) {
           const responseData = await response.json();
-          console.log("조회된 데이터", responseData.dateList);
           setData(responseData.dateList);
           setIsLoading(false);
         } else {
@@ -630,7 +621,6 @@ const CompensationReportPage = () => {
         if (response.ok) {
           setIsLoading(false);
           const responseData = await response.json();
-          console.log("수정 성공", responseData);
 
           window.location.reload();
         } else {
@@ -662,7 +652,6 @@ const CompensationReportPage = () => {
         if (response.ok) {
           setIsLoading(false);
           const responseData = await response.json();
-          console.log("반려 수정 성공", responseData);
           window.location.reload();
         } else {
           console.log("수정 실패");
