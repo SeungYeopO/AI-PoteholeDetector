@@ -435,6 +435,14 @@ const CompensationReportPage = () => {
   const [videoFile, setVideoFile] = useState("");
   const [videoBlobURL, setVideoBlobURL] = useState(null);
 
+
+  const convertToKoreanTime = (isoString) => {
+    const date = new Date(isoString);
+    date.setHours(date.getHours() + 9);
+    return date.toISOString().replace('T', ' ').substring(0, 19);
+  };
+
+  
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -455,27 +463,6 @@ const CompensationReportPage = () => {
     }
   };
 
-  //   useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로
-
-  //       if (response.ok) {
-  //         const jsonData = await response.json();
-  //         console.log('더미 데이터 가져오기 성공:', jsonData);
-  //         setData(jsonData);
-  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
-  //       } else {
-  //         console.log('더미 데이터 가져오기 실패');
-  //       }
-  //     } catch (error) {
-  //       console.error('더미 데이터 가져오기 실패:', error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -486,10 +473,14 @@ const CompensationReportPage = () => {
             throw new Error("일단 try 구문은 돌았음");
           }
           const jsonData = await response.json();
+          const convertedData = jsonData.result.map(item => ({
+            ...item,
+            detectedAt: convertToKoreanTime(item.detectedAt)
+          }));  
           setTotalPages(
             Math.max(Math.ceil(jsonData.result.length / itemsPerPage), 1)
           );
-          setData(jsonData.result);
+          setData(convertedData);
           setIsLoading(false);
         }, 500);
       } catch (error) {
@@ -531,8 +522,13 @@ const CompensationReportPage = () => {
 
       if (response.ok) {
         const jsonData = await response.json();
-        setSelectedList(jsonData.result);
-        // 여기서 jsonData를 처리하는 추가적인 코드가 필요할 수 있습니다....
+        const converted = {
+          ...jsonData.result,
+          detectedAt: convertToKoreanTime(jsonData.result.detectedAt)
+        };
+  
+        setSelectedList(converted); 
+    
       } else {
         console.log("리스트 실패");
       }
