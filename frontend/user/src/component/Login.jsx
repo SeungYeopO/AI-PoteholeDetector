@@ -3,57 +3,40 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
-
-function Modal({ isOpen, onClose, children }) {
-  if (!isOpen) return null;
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div style={{ background: "white", padding: 20 }}>
-        {children}
-        <button onClick={onClose}>닫기</button>
-      </div>
-    </div>
-  );
-}
+import logo from "../../public/img/loginlogo.png";
 
 const Background = styled.div`
-  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
   height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #949eff;
+  background-color: #ffc700;
+  flex-direction: column;
 `;
 
 const Container = styled.div`
   width: 85%;
-  height: 65%;
+  height: 70%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  /* background-color : red; */
+  margin-bottom: 1rem;
 `;
 
 const LoginTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 4rem;
-  width: 60%;
+  font-size: 5rem;
+  width: 65%;
   height: 20%;
+  /* background-color : red; */
 `;
 
 const ContentBox = styled.div`
@@ -63,11 +46,12 @@ const ContentBox = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  /* background-color : red; */
 `;
 
 const Box = styled.div`
   width: 95%;
-  height: 35%;
+  height: 30%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -75,19 +59,24 @@ const Box = styled.div`
 `;
 
 const InputBox = styled.input`
-  width: 95%;
-  height: 40%;
+  width: 90%;
+  height: 45%;
   border-radius: 1.1rem;
   border: none;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   border: solid 1px #f5eaea;
-  opacity: 70%;
   font-size: 1.4rem;
   font-family: "BlackHanSans";
   text-indent: 0.3rem;
+  outline: none;
+
+  &:focus {
+    border: 1px solid blue;
+  }
+
   &::placeholder {
     color: #6f6c6c;
-    font-family: "BlackHanSans";
+    font-family: "Nanum";
     font-size: 1.3rem;
     font-weight: 300;
   }
@@ -98,6 +87,7 @@ const Text = styled.div`
   justify-content: left;
   align-items: center;
   font-size: 1.5rem;
+  font-weight: 500;
   width: 30%;
   height: 40%;
 `;
@@ -107,17 +97,29 @@ const SubmitBtn = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
-  margin-top : 5rem;
+  margin-top: 5rem;
   width: 35%;
   height: 13%;
-  background-color: #dcc80d;
-  font-family: "BlackHanSans";
-  font-size: 2rem;
   border: none;
+  background-color: #ffffff;
+  font-family: "Nanum";
+  font-size: 2rem;
 `;
 
-const Foot = styled.div`
-`
+const Foot = styled.div``;
+const LoginLogo = styled.div`
+  margin-top: 2rem;
+  width: 90%;
+  height: 20%;
+  /* background-color : red; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const LogoImg = styled.img`
+  width: 11rem;
+  height: 11rem;
+`;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -144,7 +146,7 @@ const Login = () => {
           login(userPK);
           navigate("/map");
         } else if (response.result == false) {
-          setModalOpen(true);
+          alert("아이디나 비밀번호가 일치하지 않습니다");
         }
       })
       .catch((error) => console.error(error));
@@ -158,6 +160,9 @@ const Login = () => {
 
   return (
     <Background>
+      <LoginLogo>
+        <LogoImg src={logo}></LogoImg>
+      </LoginLogo>
       <Container>
         <LoginTitle>로그인</LoginTitle>
         <ContentBox>
@@ -186,9 +191,6 @@ const Login = () => {
         </ContentBox>
       </Container>
       <Foot></Foot>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-        모달 내용
-      </Modal>
     </Background>
   );
 };

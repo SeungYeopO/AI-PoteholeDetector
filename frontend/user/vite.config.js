@@ -10,36 +10,37 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
-      // manifest: {
-      //   icons: [
-      //     {
-      //       src: "/icon-192.png",
-      //       type: "image/png",
-      //       sizes: "192x192",
-      //     },
-      //     {
-      //       src: "/icon-192-maskable.png",
-      //       type: "image/png",
-      //       sizes: "192x192",
-      //       purpose: "maskable",
-      //     },
-      //     {
-      //       src: "/icon-512.png",
-      //       type: "image/png",
-      //       sizes: "512x512",
-      //     },
-      //     {
-      //       src: "/icon-512-maskable.png",
-      //       type: "image/png",
-      //       sizes: "512x512",
-      //       purpose: "maskable",
-      //     },
-      //   ],
-      // },
+      manifest: {
+        icons: [
+          {
+            src: "/main.png",
+            type: "image/png",
+            sizes: "192x192",
+          },
+          {
+            src: "/main.png",
+            type: "image/png",
+            sizes: "192x192",
+            purpose: "maskable",
+          },
+          {
+            src: "/main.png",
+            type: "image/png",
+            sizes: "512x512",
+          },
+          {
+            src: "/main.png",
+            type: "image/png",
+            sizes: "512x512",
+            purpose: "maskable",
+          },
+        ],
+      },
     }),
   ],
   server: {
     port: 3000,
+    host : "0.0.0.0",
     proxy: {
       "/api": {
         target: "https://k10c106.p.ssafy.io",
