@@ -45,7 +45,6 @@ public class AccidentReport {
     @Column(name = "rejection_reason", length = 255)
     private String rejectionReason;
 
-    // 생성자
     public AccidentReport() {
     }
 

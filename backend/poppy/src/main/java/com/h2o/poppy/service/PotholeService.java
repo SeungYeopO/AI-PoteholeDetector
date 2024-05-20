@@ -2,7 +2,6 @@ package com.h2o.poppy.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.h2o.poppy.entity.AccidentReport;
 import com.h2o.poppy.entity.Pothole;
 import com.h2o.poppy.model.pothole.PotholeDto;
 import com.h2o.poppy.repository.PotholeRepository;
@@ -15,9 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,12 +47,10 @@ public class PotholeService {
         this.potholeRepository = potholeRepository;
     }
 
-    //위도 경도로 도로 찾기
     public String callTmapApi(String lat, String lon) {
         try{
             String url = "https://apis.openapi.sk.com/tmap/road/nearToRoad";
 
-            // 쿼리 매개변수 설정
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                     .queryParam("version", "1")
                     .queryParam("lat", lat)
@@ -68,14 +66,13 @@ public class PotholeService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("accept", "application/json");
-            headers.set("appKey", "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5");
+            headers.set("appKey", "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5");
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
             String responseBody = response.getBody();
 
-            // "roadName" 필드만 추출
             String roadName = extractRoadName(responseBody,lat,lon);
             return roadName;
         }catch (Exception e){
@@ -85,7 +82,6 @@ public class PotholeService {
     }
 
 
-    //위 반환도로이름 파싱해서 도로이름만 추출하기
     private String extractRoadName(String jsonString, String lat, String lon) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -102,14 +98,13 @@ public class PotholeService {
     }
 
 
-    //전체 주소 찾기
     public String findFullRoadName(String args, String lat, String lon) {
         try{
             String url = "https://apis.openapi.sk.com/tmap/pois?version=1&searchKeyword=" + args + "&searchType=all&searchtypCd=R&centerLon=" + lon + "&centerLat=" + lat + "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&radius=1&page=1&count=20&multiPoint=N&poiGroupYn=N";
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "application/json");
-            headers.set("appKey", "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5");
+            headers.set("appKey", "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5");
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -141,19 +136,15 @@ public class PotholeService {
             String upperAddrName = poiList.get("upperAddrName").asText();
             String middleAddrName = poiList.get("middleAddrName").asText();
 
-
-            String potholePk = saveData(upperAddrName, middleAddrName, lowerAddrName, lat, lon);
-            return potholePk;
+            return upperAddrName + ' ' + middleAddrName + ' ' + lowerAddrName;
         } catch (Exception e) {
             return null;
         }
     }
 
 
-    // 포트홀 등록
     public String saveData(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon ) {
         try{
-            // GeometryFactory를 사용하여 Point 생성
             GeometryFactory geometryFactory = new GeometryFactory();
             Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
 
@@ -176,18 +167,97 @@ public class PotholeService {
         }
     }
 
+    public Pothole saveDataByUser(String upperAddrName, String middleAddrName, String lowerAddrName, String lat, String lon, String content ) {
+        try{
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Point point = geometryFactory.createPoint(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))); // x와 y는 좌표값
 
-    // 이미있는 포트홀 검사
+            Pothole pothole = new Pothole();
+            pothole.setLocation(point);
+            pothole.setIsPothole(false);
+            pothole.setProvince(upperAddrName);
+            pothole.setCity(middleAddrName);
+            pothole.setStreet(lowerAddrName);
+            pothole.setDetectedAt(new Date());
+            pothole.setState("확인전");
+            pothole.setContent(content);
+            potholeRepository.save(pothole);
+            long nowPk = pothole.getPotholePk();
+
+            if(nowPk!=0)return pothole;
+            else return null;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+
+    public String changeStateByUser(Long potholePk, String nowState, String changeState){
+        try{
+            String returenString = null;
+            if(nowState.equals("확인전")){
+                if(changeState.equals("삭제")){
+                    potholeRepository.deleteById(potholePk);
+                    returenString = "삭제";
+                }else if(changeState.equals("확인중")){
+                    potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"확인중");
+                    returenString = "확인중";
+                }
+            }else if(nowState.equals("확인중")){
+                if(changeState.equals("반려")){
+                    potholeRepository.updateByUserPotholeRejectOrCheck(potholePk,"반려");
+                    returenString = "반려";
+                }else if(changeState.equals("공사중")){
+
+                    LocalDate now = LocalDate.now();
+                    Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+
+                    Date currentDate = Date.from(instantNow);
+                    Random random = new Random();
+                    int daysToAdd = random.nextInt(4) + 2;
+                    LocalDate exLocalDate = now.plusDays(daysToAdd);
+
+                    Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+                    Date exDate = Date.from(instant);
+
+
+                    potholeRepository.updateByUserPotholeIng(potholePk,currentDate,exDate);
+                    returenString = "공사중";
+                }
+            }
+            return returenString;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<PotholeDto> getPotholesByUserUpload(){
+        try{
+            List<PotholeDto> potholes = potholeRepository.getPotholesByUserUpload();
+            return potholes;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public PotholeDto getPotholeByUserUploadOne(Long potholePk){
+        try{
+            PotholeDto potholes = potholeRepository.getPotholeByUserUploadOne(potholePk);
+            return potholes;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
     public boolean checkGPSdata(double lat, double lon){
 
         List<Pothole> potholes = potholeRepository.findNearbyPotholes(lat,lon);
-        //System.out.println(potholes.get(0).getPotholePk());
         if(potholes.isEmpty())return true;
         else return false;
     }
 
 
-    // 전체 get
     public List<PotholeDto> getAllPothole() {
         try {
             List<Pothole> getPothole = potholeRepository.findAll();
@@ -199,7 +269,33 @@ public class PotholeService {
         }
     }
 
-    // 1인 get
+    public List<PotholeDto> chooseGet(PotholeDto data){
+        try {
+            String nowState = data.getState();
+            String nowProvince = data.getProvince();
+            String nowCity = data.getCity();
+            Date nowDate = data.getDetectedAt();
+
+            Integer year = null;
+            Integer month = null;
+            Integer day = null;
+
+            if(nowDate!=null){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(nowDate);
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH) + 1;
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+            }
+
+            List<PotholeDto> pothole = potholeRepository.getPotholeByFilter(nowState, nowProvince, nowCity, year,month,day);
+            return pothole;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public PotholeDto getIdPothole(Long potholePk) {
         try{
             PotholeDto potholeDto = potholeRepository.getPotholeByPotholeId(potholePk);
@@ -210,7 +306,6 @@ public class PotholeService {
 
     }
 
-    //공사상태 get(공사대기)
     public List<PotholeDto> getState1Pothole(String nowState){
         try{
             List<PotholeDto> statePotholes = potholeRepository.getPotholeByNowState(nowState);
@@ -221,21 +316,30 @@ public class PotholeService {
         }
     }
 
-
     public String changeState(PotholeDto data){
-        long potholePk = data.getPotholePk();
-        String nowState = data.getState();
-        if(nowState==null)return null;
-        if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
-        String changeState =null;
         try{
-            // 공사시작 버튼 누른경우
+            long potholePk = data.getPotholePk();
+            String nowState = data.getState();
+
+            LocalDate now = LocalDate.now();
+            Instant instantNow = now.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+
+            Date currentDate = Date.from(instantNow);
+            Random random = new Random();
+            int daysToAdd = random.nextInt(4) + 2;
+            LocalDate exLocalDate = now.plusDays(daysToAdd);
+
+            Instant instant = exLocalDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+            Date exDate = Date.from(instant);
+
+            if(nowState==null)return null;
+            if(!nowState.equals("미확인") && !nowState.equals("공사중") && !nowState.equals("공사완료"))return null;
+            String changeState =null;
             if(nowState.equals("공사중")){
-                potholeRepository.updateIngState(potholePk,"공사중",new Date());
+                potholeRepository.updateIngState(potholePk,"공사중",currentDate,exDate);
                 changeState = "공사중";
-            // 공사완료 버튼 누른경우
             }else if(nowState.equals("공사완료")){
-                potholeRepository.updateFnishState(potholePk,"공사완료",new Date());
+                potholeRepository.updateFnishState(potholePk,"공사완료",currentDate);
                 changeState = "공사완료";
             }
             return changeState;
@@ -245,13 +349,46 @@ public class PotholeService {
     }
 
 
-    // 삭제
     public boolean rejectData(Long potholePk) {
         try {
             potholeRepository.updateIsPothole(potholePk);
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+
+    public List<PotholeDto> getBoundary(double targetLatitude,double targetLongitude, double size){
+        try{
+            List<PotholeDto> pothole = potholeRepository.findPothlesbySize(targetLatitude,targetLongitude,size);
+            return pothole;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+
+    public List<PotholeDto> getTraceSearch(double targetLatitude, double targetLongitude){
+        try{
+            List<PotholeDto> potholes = potholeRepository.findPothlesbyTrace(targetLatitude,targetLongitude);
+
+            if (potholes.isEmpty()) {
+                return new ArrayList<>();
+            } else {
+                return potholes;
+            }
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public Long deletePothole(Long potholePk){
+        try{
+            potholeRepository.deleteById(potholePk);
+            return potholePk;
+        }catch (Exception e){
+            return 0L;
         }
     }
 

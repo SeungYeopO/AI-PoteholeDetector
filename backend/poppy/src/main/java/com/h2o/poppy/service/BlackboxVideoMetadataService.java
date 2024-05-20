@@ -4,12 +4,16 @@ package com.h2o.poppy.service;
 import com.h2o.poppy.entity.AccidentReport;
 import com.h2o.poppy.entity.SerialList;
 import com.h2o.poppy.entity.User;
+import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataJoinUserDto;
 import com.h2o.poppy.repository.BlackboxVideoMetadataRepository;
 import com.h2o.poppy.entity.BlackboxVideoMetadata;
 import com.h2o.poppy.model.blackboxvideometadata.BlackboxVideoMetadataDto;
 import com.h2o.poppy.repository.SerialListRepository;
+import com.h2o.poppy.repository.UsersSerialsRepository;
+import org.hibernate.boot.model.internal.ListBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -26,6 +30,7 @@ public class BlackboxVideoMetadataService {
         this.blackboxVideoMetadataRepository = blackboxVideoMetadataRepository;
         this.serialListRepository = serialListRepository;
     }
+
     private BlackboxVideoMetadataDto convertToDto(BlackboxVideoMetadata blackboxVideoMetadata) {
         BlackboxVideoMetadataDto blackboxVideoMetadataDto = new BlackboxVideoMetadataDto();
         blackboxVideoMetadataDto.setVideoPk(blackboxVideoMetadata.getVideoPk());
@@ -33,12 +38,11 @@ public class BlackboxVideoMetadataService {
         blackboxVideoMetadataDto.setDetectedAt(blackboxVideoMetadata.getDetectedAt());
         blackboxVideoMetadataDto.setLatitude(blackboxVideoMetadata.getLatitude());
         blackboxVideoMetadataDto.setLongitude(blackboxVideoMetadata.getLongitude());
+        blackboxVideoMetadataDto.setFileName(blackboxVideoMetadata.getFileName());
         return blackboxVideoMetadataDto;
     }
 
 
-
-    // 전체 get
     public List<BlackboxVideoMetadataDto> getAllBlackboxVideoMetadata() {
         List<BlackboxVideoMetadata> getBlackboxVideoMetadata = blackboxVideoMetadataRepository.findAll();
         return getBlackboxVideoMetadata.stream()
@@ -46,42 +50,25 @@ public class BlackboxVideoMetadataService {
                 .collect(Collectors.toList());
     }
 
-    // 1인 get
     public BlackboxVideoMetadataDto getIdBlackboxVideoMetadata(Long blackboxVideoMetadataPk) {
         BlackboxVideoMetadataDto blackboxVideoMetadataDto = blackboxVideoMetadataRepository.getBlackboxVideoMetadataByVideoId(blackboxVideoMetadataPk);
         return blackboxVideoMetadataDto;
     }
 
-
-    // 삽입
-    public long saveData(BlackboxVideoMetadataDto data) {
+    public String saveData(double latitude, double longitude, String serialNumber, MultipartFile video) {
         try{
-            long videoPk = data.getVideoPk();
-            return 0;
+            SerialList serialList = serialListRepository.findBySerialNumber(serialNumber);
+            String fileName = video.getOriginalFilename();
+            BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, new Date(), latitude, longitude, fileName);
+            blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
+            System.out.println(blackboxVideoMetadata);
+            return serialNumber;
         }catch (Exception e){
-            try {
-                long nowPk = 0;
-
-                long serialPk = data.getSerialPk();
-                Date detectedAt = data.getDetectedAt();
-                double latitude = data.getLatitude();
-                double longitude = data.getLongitude();
-
-                SerialList serialList = serialListRepository.findById(serialPk).orElse(null);
-
-                BlackboxVideoMetadata blackboxVideoMetadata = new BlackboxVideoMetadata(serialList, detectedAt, latitude, longitude);
-                blackboxVideoMetadataRepository.save(blackboxVideoMetadata);
-
-                nowPk = blackboxVideoMetadata.getVideoPk();
-
-                return nowPk;
-            } catch (Exception e1) {
-                return 0;
-            }
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // 수정
     public int updateData(BlackboxVideoMetadataDto data) {
         Long videoPk = data.getVideoPk();
         double latitude = data.getLatitude();
@@ -104,18 +91,26 @@ public class BlackboxVideoMetadataService {
             return state;
         } catch (Exception e) {
             System.out.println("update operation failed");
-            e.printStackTrace(); // 예외 스택 트레이스 출력
+            e.printStackTrace();
             return 0;
         }
     }
 
-    // 삭제
     public boolean deleteData(Long blackboxVideoMetadataPk) {
         try {
             blackboxVideoMetadataRepository.deleteById(blackboxVideoMetadataPk);
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public List<BlackboxVideoMetadataJoinUserDto> getByUserPk(Long userPk){
+        try{
+            List<BlackboxVideoMetadataJoinUserDto> videoList = blackboxVideoMetadataRepository.findByJoinUserPk(userPk);
+            return videoList;
+        }catch (Exception e){
+            return null;
         }
     }
 }

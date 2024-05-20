@@ -9,21 +9,23 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class BlackboxVideoMetadataDto {
+public class BlackboxVideoMetadataJoinUserDto {
     private Long videoPk;
     private Long serialPk;
+    private String serialNumber;
     private Date detectedAt;
     private Double latitude;
     private Double longitude;
     private String fileName;
     private AccidentReport accidentReport;
 
-    public BlackboxVideoMetadataDto() {
+    public BlackboxVideoMetadataJoinUserDto() {
     }
 
-    public BlackboxVideoMetadataDto(Long videoPk, Long serialPk, Date detectedAt, Double latitude, Double longitude, String fileName) {
+    public BlackboxVideoMetadataJoinUserDto(Long videoPk, Long serialPk, String serialNumber, Date detectedAt, Double latitude, Double longitude, String fileName) {
         this.videoPk = videoPk;
         this.serialPk = serialPk;
+        this.serialNumber = serialNumber;
         this.detectedAt = detectedAt;
         this.latitude = latitude;
         this.longitude = longitude;

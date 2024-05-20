@@ -26,7 +26,6 @@ public class SerialList {
     @OneToMany(mappedBy = "serialPk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlackboxVideoMetadata> blackboxVideoMetadata;
 
-    // 생성자
     public SerialList() {
     }
 

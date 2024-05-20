@@ -16,7 +16,6 @@ public class UserDto {
     private String phoneNumber;
 
 
-    // Constructors
     public UserDto() {
     }
 
