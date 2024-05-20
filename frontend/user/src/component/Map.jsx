@@ -6,15 +6,225 @@ import { useAuth } from "./AuthContext";
 import { Navigate, useLocation } from "react-router-dom";
 import LocationModal from "./LocationModal.jsx";
 import axios from "axios";
+import Navbar from "./Navbar.jsx";
+import PotholeReportModal from "./PotholeReportModal.jsx"; // 포트홀 신고 모달 import
+import styled from "styled-components";
+import icon1 from "../../public/img/pothole_1.png";
+import icon3 from "../../public/img/pothole_2.png";
+import icon2 from "../../public/img/pothole_3.png";
+import pic from "../../public/img/mainL.png";
 
 let resultMarkerArr = [];
 let resultdrawArr = [];
-
+let routeData = [];
+let potholeMarkers = [];
 let routeMarkers = [];
 let startX = 126.98702028;
 let startY = 37.5652045;
 let timeoutId;
 let map;
+let potholeAlert = [];
+let endX, endY;
+let name;
+
+const LogoOutModal = styled.div`
+  background-color: white;
+  opacity: 98%;
+  border-radius: 1rem;
+  /* border : 1px solid gray; */
+  width: 21rem;
+  height: 17rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+const ModalContent = styled.div`
+  width: 90%;
+  height: 90%;
+  /* background-color : yellow; */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+`;
+const IconImg = styled.img`
+  width: 2.7rem;
+  height: 2.7rem;
+`;
+const InfoTitleBox = styled.div`
+  width: 100%;
+  height: 25%;
+  /* background-color : red; */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1rem;
+  border-bottom: 1px solid darkgray;
+`;
+const InfoTitle = styled.div`
+  width: 75%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color : orange; */
+`;
+const TitleImgBox = styled.div`
+  width: 20%;
+  height: 100%;
+  /* background-color : pink; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const TitleImg = styled.img`
+  width: 2.8em;
+  height: 3rem;
+  margin-bottom: 0.5rem;
+`;
+
+const InfoLists = styled.div`
+  width: 80%;
+  height: 65%;
+  /* background-color : blue; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+const InfoList = styled.div`
+  width: 100%;
+  height: 30%;
+  /* background-color : purple; */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const Imgbox = styled.div`
+  width: 20%;
+  height: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const InfoText = styled.div`
+  width: 75%;
+  height: 100%;
+  /* background-color : pink; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+`;
+
+const styles = {
+  searchWrapper: {
+    position: "absolute",
+    top: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    zIndex: 1000,
+    padding: "0 10px",
+  },
+  backButton: {
+    backgroundColor: "#d7dbec",
+    color: "black",
+    border: "none",
+    width: "90px",
+    height: "40px",
+    textAlign: "center",
+    textDecoration: "none",
+    display: "inline-block",
+    fontSize: "16px",
+    margin: "4px 0px",
+    cursor: "pointer",
+    borderRadius: "5px",
+  },
+  searchInput: {
+    height: "40px",
+    fontSize: "14px",
+    flexGrow: 1,
+    padding: "0 5px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    marginRight: "0px",
+    minWidth: "150px", // 최소 너비 설정
+  },
+  searchButton: {
+    backgroundColor: "#FFC700",
+    color: "white",
+    border: "none",
+    height: "40px",
+    width: "60px",
+    fontSize: "18px",
+    padding: "0 12px",
+    margin: "4px 0px",
+    cursor: "pointer",
+    borderRadius: "5px",
+  },
+  infoButtonWrapper: {
+    position: "fixed",
+    bottom: "11%",
+    left: "-20px",
+    marginRight: "5px",
+    width: "100%",
+    height: "8%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: "5px 20px",
+    zIndex: 2000,
+  },
+  infoContainer: {
+    flexGrow: 2,
+    backgroundColor: "white",
+    padding: "10px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "10px",
+    border: "1px solid #d7dbec",
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    height: "100%", // 높이 설정
+  },
+  infoText: {
+    margin: "2px 0",
+    fontSize: "16px",
+    color: "#333",
+  },
+  startButton: {
+    flexGrow: 1,
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "bold",
+    border: "none",
+    padding: "40px 30px",
+    cursor: "pointer",
+    borderRadius: "10px", // 모서리를 둥글게
+    backgroundColor: "blue",
+    transition: "background-color 0.3s",
+    height: "100%", // 높이 설정
+    display: "flex", // 중앙 정렬을 위해 flex 사용
+    alignItems: "center",
+    justifyContent: "center",
+
+    "&:hover": {
+      backgroundColor: "#a71d2a",
+    },
+  },
+};
 
 function Map() {
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -30,16 +240,23 @@ function Map() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLat, setSeletedLat] = useState(false);
   const [selectedLng, setSeletedLng] = useState(false);
+  const [reportLat, setReportLat] = useState(false);
+  const [reportLng, setReportLng] = useState(false);
+  const [userPosition, setUserPosition] = useState({ lat: 0, lon: 0 });
+  const [potholeAlerts, setPotholeAlerts] = useState([]);
+  const [showAlertOverlay, setShowAlertOverlay] = useState(false);
+  const [showPotholeReportModal, setShowPotholeReportModal] = useState(false); // 포트홀 신고 모달 상태
   const [onRoute, setOnRoute] = useState(false);
+  const blinkIntervalIdRef = useRef(null);
   const mapRef = useRef(null); // 맵 객체를 참조하기 위한 ref
   const userMarkerRef = useRef(null); // 마커 객체를 참조하기 위한 ref// 마커 객체를 참조하기 위한 ref
   const [mapZoom, setMapZoom] = useState(16);
   const mapContainerId = "TMapApp";
   const location = useLocation();
   const { user } = useAuth();
-
   const onRouteRef = useRef(onRoute);
-
+  const [tmapAppStarted, setTmapAppStarted] = useState(false); // 티맵 앱 시작 상태
+  const [infomodalOpen, setInfoModalOpen] = useState(true);
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -65,12 +282,14 @@ function Map() {
   }
 
   useEffect(() => {
-    requestNotificationPermission(); // 컴포넌트가 마운트될 때 권한 요청
-  }, []);
-
-  useEffect(() => {
     onRouteRef.current = onRoute; // onRoute 값이 변경될 때마다 ref 업데이트
   }, [onRoute]);
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   // 현재 위치와 주어진 포인트 간의 거리 계산 함수 (단위: km)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -88,25 +307,30 @@ function Map() {
     return distance;
   };
 
-  const checkCenterChange = async () => {
-    const currentCenter = mapRef.current.getCenter();
-    const distance = calculateDistance(
-      lastCenter.lat(),
-      lastCenter.lng(),
-      currentCenter.lat(),
-      currentCenter.lng()
-    );
-
-    // Ref를 사용하여 최신의 onRoute 값을 확인
-    if (distance > 0.1 && !onRouteRef.current) {
-      await loadAndMarkPotholes(currentCenter.lat(), currentCenter.lng());
-      lastCenter = currentCenter; // 최신 중심으로 업데이트
-    }
-
-    timeoutId = setTimeout(checkCenterChange, 3000); // 3초 후 다시 확인
+  const getSearchDistanceByZoomLevel = (zoomLevel) => {
+    if (zoomLevel >= 17) return 0.2; // zoomLevel이 10보다 작을 때 5km
+    else if (zoomLevel >= 16) return 0.7; // zoomLevel이 15보다 작을 때 2km
+    else if (zoomLevel >= 15) return 1.2;
+    else if (zoomLevel >= 14) return 2.0;
+    else if (zoomLevel >= 13) return 3.5;
+    else if (zoomLevel >= 12) return 7.0;
+    else if (zoomLevel >= 11) return 13.5;
+    else if (zoomLevel >= 10) return 27.5;
+    else if (zoomLevel >= 9) return 50;
+    else if (zoomLevel >= 8) return 100;
+    else return 400;
   };
 
-  let potholeMarkers = [];
+  const handleReportPothole = (latitude, longitude) => {
+    setSeletedLat(latitude);
+    setSeletedLng(longitude);
+    setShowPotholeReportModal(true); // 포트홀 신고 모달 열기
+  };
+
+  // 포트홀 신고 모달 닫기 핸들러
+  const handleClosePotholeReportModal = () => {
+    setShowPotholeReportModal(false);
+  };
 
   // 포트홀 데이터를 로드하고, 필터링하여 마커를 생성하는 함수
   const loadAndMarkPotholes = async (latitude, longitude) => {
@@ -116,34 +340,125 @@ function Map() {
         potholeMarkers.forEach((marker) => marker.setMap(null));
         potholeMarkers = []; // 마커 배열 초기화
 
-        const response = await axios.get("../../data/pothole.json");
+        const zoomLevel = mapRef.current.getZoom();
+        const searchDistance = getSearchDistanceByZoomLevel(zoomLevel);
 
-        const potholes = response.data.filter((pothole) => {
-          // 사용자 위치와 포트홀 위치 간 거리 계산
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            pothole.latitude,
-            pothole.longitude
-          );
+        const data = {
+          latitude: latitude,
+          longitude: longitude,
+          size: searchDistance,
+        };
 
-          return distance <= 0.5; // 0.5km 이내의 포트홀만 필터링
-        });
+        const response = await axios.post(
+          "/api/potholes/search-boundary",
+          data
+        );
+
+        const potholes = response.data.result;
 
         // 필터링된 포트홀에 대해 마커 생성
         potholes.forEach((pothole) => {
+          let iconPath;
+          if (pothole.state == "공사완료") {
+            return; // 공사 완료 상태인 경우 다음 루프로 건너뜀
+          }
+
+          // pothole.state 값에 따라 아이콘 경로 설정
+          switch (pothole.state) {
+            case "미확인":
+              iconPath = "../img/pothole_3.png";
+              break;
+            case "확인전":
+              iconPath = "../img/pothole_2.png";
+            case "확인중":
+              iconPath = "../img/pothole_2.png";
+              break;
+            case "공사중":
+              iconPath = "../img/pothole_1.png";
+              break;
+          }
+
           const marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(pothole.latitude, pothole.longitude),
-            icon: "../img/free-icon-pothole-10392295.png", // 포트홀 아이콘 이미지 경로
+            position: new Tmapv2.LatLng(pothole.longitude, pothole.latitude),
+            icon: iconPath, // 상태에 따른 아이콘 이미지 경로
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
+
           potholeMarkers.push(marker); // 새 마커를 배열에 추가
         });
       } catch (error) {
         console.error("Error loading pothole data:", error);
       }
     }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setInfoModalOpen(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserPosition({ lat: latitude, lon: longitude });
+        checkPotholeProximity(latitude, longitude);
+      },
+      (error) => console.error(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [potholeAlerts]);
+
+  const checkPotholeProximity = (latitude, longitude) => {
+    if (potholeAlerts.length > 0) {
+      const firstAlert = potholeAlerts[0];
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        routeData[firstAlert].latitude,
+        routeData[firstAlert].longitude
+      );
+      if (distance < 0.01) {
+        // 10m 이내로 설정
+        alertUser();
+      } else if (firstAlert + 30 < routeData.length) {
+        // 다음 지점을 지났는지 확인
+        const nextDistance = calculateDistance(
+          latitude,
+          longitude,
+          routeData[firstAlert + 30].latitude,
+          routeData[firstAlert + 30].longitude
+        );
+        if (nextDistance < 0.05) {
+          stopBlinking();
+          removeFirstAlert();
+        }
+      }
+    }
+  };
+
+  const alertUser = () => {
+    clearInterval(blinkIntervalIdRef.current); // 기존 인터벌이 있다면 먼저 제거
+    blinkIntervalIdRef.current = setInterval(() => {
+      setShowAlertOverlay((prev) => !prev); // 깜빡임 효과
+    }, 500); // 0.5초마다 실행
+  };
+
+  const stopBlinking = () => {
+    if (blinkIntervalIdRef.current) {
+      clearInterval(blinkIntervalIdRef.current); // 인터벌 중지
+      setShowAlertOverlay(false); // 오버레이 숨기기
+      blinkIntervalIdRef.current = null; // 인터벌 ID 초기화
+    }
+  };
+
+  const removeFirstAlert = () => {
+    setPotholeAlerts((prevAlerts) => prevAlerts.slice(1)); // 첫 번째 요소 제거
   };
 
   useEffect(() => {
@@ -172,14 +487,29 @@ function Map() {
         height: "100%",
         zoom: mapZoom,
       });
-      lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
-      mapRef.current.addListener("click", async (evt) => {
-        const latLng = evt.latLng;
-        const lat = latLng.lat();
-        const lng = latLng.lng();
 
-        // 여기에서 검색 함수를 호출하고 결과를 모달로 표시
-        await reverseGeocode(lat, lng);
+      mapRef.current.setOptions({ zoomControl: false });
+      lastCenter = mapRef.current.getCenter(); // 초기 중심 저장
+      let touchStartTime = 0; // 터치 시작 시간을 기록할 변수
+
+      mapRef.current.addListener("touchstart", (evt) => {
+        touchStartTime = Date.now(); // 터치가 시작되면 현재 시간을 기록
+      });
+
+      mapRef.current.addListener("touchend", async (evt) => {
+        const touchEndTime = Date.now(); // 터치가 끝날 때의 시간
+        const touchDuration = touchEndTime - touchStartTime; // 터치 지속 시간 계산
+
+        if (touchDuration < 100) {
+          // 지속 시간이 200밀리초 이내면 짧은 터치로 간주
+          const latLng = evt.latLng;
+          const lat = latLng.lat();
+          const lng = latLng.lng();
+
+          setReportLat(lat);
+          setReportLng(lng);
+          await reverseGeocode(lat, lng);
+        }
       });
 
       // 처음 마커 생성
@@ -326,11 +656,11 @@ function Map() {
         lastCenter = currentCenter; // 최신 중심으로 업데이트
       }
 
-      timeoutId = setTimeout(checkCenterChange, 2000);
+      timeoutId = setTimeout(checkCenterChange, 1000);
     };
 
     // 3초마다 맵의 중심이 변경되었는지 확인
-    timeoutId = setTimeout(checkCenterChange, 2000);
+    timeoutId = setTimeout(checkCenterChange, 1000);
 
     const updateMarkerPosition = (latitude, longitude) => {
       // 기존 마커가 있다면 제거
@@ -390,22 +720,53 @@ function Map() {
     setOnRoute(false);
     centerMapOnUser(); // 사용자 위치로 맵 중심 이동
     setSearchPerformed(false);
+    setTmapAppStarted(false);
+    setShowAlertOverlay(false);
     mapRef.current.setZoom(16);
   };
 
-  const handleLocationSelect = async (lat, lng, convertRequired) => {
+  function interpolatePoints(pointA, pointB, numPoints, name) {
+    let points = [];
+    for (let i = 1; i < numPoints; i++) {
+      let lat =
+        pointA.latitude + (pointB.latitude - pointA.latitude) * (i / numPoints);
+      let lon =
+        pointA.longitude +
+        (pointB.longitude - pointA.longitude) * (i / numPoints);
+      points.push({ name, latitude: lat, longitude: lon });
+    }
+    return points;
+  }
+
+  const trafficColors = {
+    0: "#000000", // 교통 정보가 없을 때
+    1: "#009900", // 원활
+    2: "#7A8E0A", // 서행
+    3: "#8E8111", // 정체
+    4: "#FF0000", // 극심한 정체
+  };
+
+  const defaultColor = "#0000FF";
+
+  const handleLocationSelect = async (
+    lat,
+    lng,
+    locationName,
+    convertRequired
+  ) => {
     resettingMap();
-    let endX, endY;
+
     if (!convertRequired) {
       const epsg3857 = new Tmapv2.Point(lng, lat);
       const wgs84 = Tmapv2.Projection.convertEPSG3857ToWGS84GEO(epsg3857);
       endX = wgs84._lng; // 도착점 경도
       endY = wgs84._lat; // 도착점 위도
+      name = locationName;
     } else {
       endX = parseFloat(lng); // 도착점 경도
       endY = parseFloat(lat); // 도착점 위도
+      name = locationName;
     }
-
     setSearchPerformed(true);
     setOnRoute(true);
     onRouteRef.current = onRoute;
@@ -441,6 +802,7 @@ function Map() {
         detailPosFlag: "2",
         resCoordType: "WGS84GEO",
         sort: "index",
+        trafficInfo: "Y",
       }),
     };
 
@@ -453,14 +815,70 @@ function Map() {
       .then((response) => {
         // 전체 응답 데이터를 콘솔에 출력
         const resultData = response.features;
-        const pathPoints = resultData
-          .map((feature) => {
-            return feature.geometry.coordinates.map((coord) => {
-              return new Tmapv2.LatLng(coord[1], coord[0]); // 좌표를 Tmapv2.LatLng 객체로 직접 변환
+        let lastCoord = null; // 이전 좌표를 저장할 변수
+        const maxDistance = 0.015; // 최대 거리(km), 이 거리를 초과하면 보간
+
+        routeData = [];
+        resultData.forEach((feature) => {
+          feature.geometry.coordinates.forEach((coord, index) => {
+            if (
+              coord[0] !== undefined &&
+              coord[1] !== undefined &&
+              coord[0] !== 0 &&
+              coord[1] !== 0
+            ) {
+              const currentCoord = {
+                name: feature.properties.name,
+                latitude: coord[1],
+                longitude: coord[0],
+              };
+
+              if (lastCoord) {
+                const dist = calculateDistance(
+                  lastCoord.latitude,
+                  lastCoord.longitude,
+                  currentCoord.latitude,
+                  currentCoord.longitude
+                );
+                if (dist > maxDistance) {
+                  // 최대 거리를 초과할 경우 중간 지점 보간
+                  const interpolatedPoints = interpolatePoints(
+                    lastCoord,
+                    currentCoord,
+                    Math.ceil(dist / maxDistance),
+                    feature.properties.name
+                  );
+                  routeData.push(...interpolatedPoints);
+                }
+              }
+              routeData.push(currentCoord);
+              lastCoord = currentCoord; // 최신 좌표 업데이트
+            }
+          });
+        });
+
+        console.log(routeData);
+
+        resultData.forEach((feature) => {
+          const trafficInfo = feature.geometry.traffic || []; // 트래픽 정보가 없을 경우 빈 배열
+          if (trafficInfo.length > 0) {
+            trafficInfo.forEach((trafficSegment) => {
+              const [startIdx, endIdx, congestion, speed] = trafficSegment;
+              const segmentPoints = feature.geometry.coordinates
+                .slice(startIdx, endIdx + 1)
+                .map((coord) => {
+                  return new Tmapv2.LatLng(coord[1], coord[0]);
+                });
+              drawLine(segmentPoints, congestion); // 혼잡도를 drawLine에 전달
             });
-          })
-          .flat();
-        drawLine(pathPoints, "0"); // traffic 정보 없이 모두 빨간색으로 통일
+          } else {
+            // 트래픽 정보가 없을 경우 기본 색상으로 경로 그리기
+            const pathPoints = feature.geometry.coordinates.map((coord) => {
+              return new Tmapv2.LatLng(coord[1], coord[0]);
+            });
+            drawLine(pathPoints, null); // 트래픽 정보가 없음을 표시
+          }
+        });
 
         setSelectedRoute({
           distance: response.features[0].properties.totalDistance / 1000,
@@ -476,25 +894,80 @@ function Map() {
       try {
         routeMarkers.forEach((marker) => marker.setMap(null));
         routeMarkers = [];
-        const response = await axios.get("../../data/pothole.json");
+        const response = await axios.post(
+          "/api/potholes/trace-search",
+          routeData
+        );
 
-        response.data.forEach((element) => {
+        console.log(response.data.potholeList);
+        response.data.potholeList.map((element) => {
           const latitude = element.latitude;
           const longitude = element.longitude;
+          const index = element.index;
+          const state = element.state;
+
+          console.log(index);
+          let alertIndex = Math.max(index - 30, 0);
+
+          console.log(alertIndex);
+          const lastAlert = potholeAlerts[potholeAlerts.length - 1];
+          const lastAlertEndIndex = lastAlert ? lastAlert.endIndex : -1;
+
+          // 새로운 알림 인덱스가 기존 마지막 알림 인덱스 + 30보다 작은 경우 인덱스 조정
+          if (alertIndex <= lastAlertEndIndex + 30) {
+            alertIndex = lastAlertEndIndex + 31; // 30 인덱스 후로 이동
+          }
+
+          setPotholeAlerts((prevAlerts) => [...prevAlerts, alertIndex]);
+
+          let iconPath;
+          if (state == "공사완료") {
+            return; // 공사 완료 상태인 경우 다음 루프로 건너뜀
+          }
+
+          // pothole.state 값에 따라 아이콘 경로 설정
+          switch (state) {
+            case "미확인":
+              iconPath = "../img/pothole_3.png";
+              break;
+            case "확인전":
+              iconPath = "../img/pothole_2.png";
+            case "확인중":
+              iconPath = "../img/pothole_2.png";
+              break;
+            case "공사중":
+              iconPath = "../img/pothole_1.png";
+              break;
+          }
+
           const marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(latitude, longitude),
-            icon: "../img/free-icon-pothole-10392295.png",
+            position: new Tmapv2.LatLng(longitude, latitude),
+            icon: iconPath,
             iconSize: new Tmapv2.Size(24, 24),
             map: mapRef.current,
           });
           routeMarkers.push(marker);
         });
+
+        console.log(potholeAlerts);
       } catch (error) {}
     }
 
     marker();
     setShowResults(false);
     setDestinationSelected(true);
+  };
+
+  const onTmapApp = async () => {
+    setTmapAppStarted(true); // 티맵 앱이 시작됨을 나타냄
+    // resultMarkerArr.forEach((marker) => {
+    //   marker.setMap(null);
+    // });
+    // resultMarkerArr = [];
+    const appKey = "ew5nSZ1Mk66M0B2t7GmhDaLb5jks5Nv35LDBJ3A5";
+    const encodedName = encodeURIComponent(name);
+    const url = `https://apis.openapi.sk.com/tmap/app/routes?appKey=${appKey}&name=${encodedName}&lon=${endX}&lat=${endY}`;
+    window.open(url, "_blank");
   };
 
   function simpleDistance(lat1, lon1, lat2, lon2) {
@@ -545,7 +1018,7 @@ function Map() {
   }
 
   function drawLine(arrPoint, traffic) {
-    const lineColor = "#FF0000"; // 빨간색으로 설정
+    const lineColor = trafficColors[traffic] || defaultColor; // 트래픽 정보가 없을 때 기본 색상 사용
     const filteredPoints = arrPoint.filter(
       (point) => point.lat() !== 0 && point.lng() !== 0
     ); // 0인 좌표 다시 한번 걸러내기
@@ -562,89 +1035,137 @@ function Map() {
 
   function resettingMap() {
     // 기존 마커 삭제
-    resultMarkerArr.forEach((marker) => marker.setMap(null));
+    resultMarkerArr.forEach((marker) => {
+      marker.setMap(null);
+    });
 
-    // 기존 draw 삭제
-    resultdrawArr.forEach((draw) => draw.setMap(null));
+    resultdrawArr.forEach((draw) => {
+      draw.setMap(null);
+    });
 
-    routeMarkers.forEach((marker) => marker.setMap(null));
+    potholeMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+
+    routeMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+    setPotholeAlerts([]);
+    setShowAlertOverlay(false); // 오버레이 숨기기
+
     // 배열 초기화
     resultMarkerArr = [];
     resultdrawArr = [];
+    potholeMarkers = [];
     routeMarkers = [];
   }
 
   return (
-    <div id="mapContainer" style={{ position: "relative", height: "100%" }}>
-      <div id="TMapApp" style={{ width: "100%", height: "100%" }} />
-      <div>
-        {locationName && (
-          <LocationModal
-            locationName={locationName}
-            latitude={selectedLat} // 예: 선택된 위치의 위도
-            longitude={selectedLng}
-            show={showModal}
-            onClose={handleCloseModal}
-            onStartRoute={handleLocationSelect}
-          />
-        )}
-      </div>
-      <button
-        onClick={centerMapOnUser}
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          left: "10px",
-          zIndex: 1000,
-        }}
-      >
-        <img src="/img/center.png" style={{ width: "50px", height: "50px" }} />
-      </button>
-      <div
-        style={{
-          position: "absolute",
-          top: "5px",
-          width: "100%",
-          zIndex: 1000,
-        }}
-      >
+    <div
+      id="mapContainer"
+      style={{
+        position: "fixed",
+        height: "100vh",
+        width: "100vw",
+        left: "0",
+        top: "0",
+      }}
+    >
+      {showAlertOverlay && (
         <div
           style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "red",
+            opacity: 0.5, // 투명도 설정을 통해 화면을 빨간색으로 표시하되, 내용은 보이도록 함
             display: "flex",
             justifyContent: "center",
-            padding: "10px 0",
+            alignItems: "center",
+            color: "white",
+            fontSize: "2em",
+            zIndex: 2000, // 다른 요소보다 위에 오도록 z-index 설정
           }}
         >
-          {searchPerformed && (
-            <button onClick={handleBack} style={{ marginLeft: "0px" }}>
-              뒤로 가기
-            </button>
-          )}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              height: "40px",
-              fontSize: "18px",
-              flexGrow: 1,
-              marginRight: "0px",
-            }}
-            placeholder="장소 검색"
-          />
-          <button
-            onClick={handleSearch}
-            style={{ height: "45px", fontSize: "18px", padding: "0 12px" }}
-          >
-            검색
-          </button>
+          경고: 주의하세요!
         </div>
+      )}
+      <div id="TMapApp" style={{ width: "100%", height: "90%" }} />
+      <div>
+        <LocationModal
+          locationName={locationName}
+          latitude={selectedLat}
+          longitude={selectedLng}
+          show={showModal}
+          onClose={handleCloseModal}
+          onStartRoute={handleLocationSelect}
+          onReportPothole={handleReportPothole} // 새로운 핸들러 추가
+        />
+      </div>
+      <div
+        onClick={centerMapOnUser}
+        style={{
+          position: "fixed",
+          width: "3rem",
+          height: "3rem",
+          left: "1rem",
+          zIndex: 1000,
+          bottom: "6rem",
+          marginBottom: "0.5rem",
+          // backgroundColor : 'red',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src="/img/center.png"
+          style={{
+            width: "60px",
+            height: "60px",
+          }}
+        />
+      </div>
+      <div style={styles.searchWrapper}>
+        {searchPerformed && (
+          <button onClick={handleBack} style={styles.backButton}>
+            뒤로 가기
+          </button>
+        )}
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={styles.searchInput}
+          placeholder="장소 검색"
+        />
+        <button onClick={handleSearch} style={styles.searchButton}>
+          검색
+        </button>
       </div>
       {showResults && (
         <div
           style={{
             position: "absolute",
             top: "50px",
+            width: "100%",
+            zIndex: 1000,
+          }}
+        >
+          <SearchResults
+            results={searchResults}
+            onSelectLocation={handleLocationSelect}
+          />
+        </div>
+      )}
+      {showResults && (
+        <div
+          style={{
+            position: "absolute",
+            top: "60px",
             width: "100%",
             zIndex: 1000,
           }}
@@ -669,58 +1190,77 @@ function Map() {
           onClick={handleMapClick}
         />
       )}
-      {selectedRoute && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "0",
-            left: "0",
-            width: "100%",
-            display: "flex",
-          }}
-        >
-          <div
-            style={{
-              flexGrow: 2,
-              backgroundColor: "#f8f9fa",
-              padding: "10px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              zIndex: 1001,
-            }}
-          >
-            <div>예상 시간: {Math.round(selectedRoute.time)} 분</div>
-            <div>
+      {selectedRoute && !tmapAppStarted && (
+        <div style={styles.infoButtonWrapper}>
+          <div style={styles.infoContainer}>
+            <div style={styles.infoText}>
+              예상 시간: {Math.round(selectedRoute.time)} 분
+            </div>
+            <div style={styles.infoText}>
               도착 시간: {selectedRoute.arrivalTime.toLocaleTimeString()}
             </div>
-            <div>거리: {selectedRoute.distance.toFixed(2)} km</div>
+            <div style={styles.infoText}>
+              거리: {selectedRoute.distance.toFixed(2)} km
+            </div>
           </div>
-          <div
-            style={{
-              flexGrow: 1,
-              backgroundColor: "#dc3545",
-              padding: "0px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+          <button
+            onClick={onTmapApp}
+            style={styles.startButton}
+            onMouseEnter={(e) =>
+              (e.target.style.backgroundColor =
+                styles.startButton["&:hover"].backgroundColor)
+            }
+            onMouseLeave={(e) =>
+              (e.target.style.backgroundColor =
+                styles.startButton.backgroundColor)
+            }
           >
-            <button
-              style={{
-                color: "black",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "none",
-                padding: "20px 30px",
-                cursor: "pointer",
-              }}
-            >
-              안내 시작
-            </button>
-          </div>
+            안내 시작
+          </button>
         </div>
       )}
+      {showPotholeReportModal && (
+        <PotholeReportModal
+          latitude={reportLat}
+          longitude={reportLng}
+          onClose={handleClosePotholeReportModal}
+        />
+      )}
+
+      {infomodalOpen && (
+        <LogoOutModal>
+          <ModalContent>
+            <InfoTitleBox>
+              <TitleImgBox>
+                <TitleImg src={pic}></TitleImg>
+              </TitleImgBox>
+              <InfoTitle>각 아이콘의 의미를 알려드려요!</InfoTitle>
+            </InfoTitleBox>
+            <InfoLists>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon1}></IconImg>
+                </Imgbox>
+                <InfoText>현재 공사중인 포트홀</InfoText>
+              </InfoList>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon3}></IconImg>
+                </Imgbox>
+                <InfoText>어플 사용자신고 포트홀</InfoText>
+              </InfoList>
+              <InfoList>
+                <Imgbox>
+                  <IconImg src={icon2}></IconImg>
+                </Imgbox>
+                <InfoText>블랙박스의 AI가 판단한 포트홀</InfoText>
+              </InfoList>
+            </InfoLists>
+          </ModalContent>
+        </LogoOutModal>
+      )}
+
+      <Navbar />
     </div>
   );
 }

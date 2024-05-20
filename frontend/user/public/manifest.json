@@ -1,32 +1,33 @@
 {
   "name": "POPPY",
-  "short_name": "POPPY",
-  "start_url": "",
+  "start_url": "https://k10c106.p.ssafy.io/",
   "display": "standalone",
   "background_color": "#F8F7DA",
-  "theme_color": "#8C383A",
+  "theme_color": "black",
   "description": "PWA with Vite.js, React.js and TypeScript",
   "icons": [
     {
-      "src": "icons/end.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "icons/end.png",
+      "src": "icons/main.png",
       "type": "image/png",
       "sizes": "196x196"
     },
     {
-      "src": "icons/end.png",
+      "src": "icons/loading.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "icons/end.png",
+      "src": "icons/loading.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    }
+  ],
+  "splash_screens": [
+    {
+      "src": "img/loading.png",
+      "type": "image/png",
+      "sizes": "668x1125"
     }
   ]
 }
