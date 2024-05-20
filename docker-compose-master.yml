@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  mariadb:
+    build: 
+      context: ./mariadb
+    container_name: mariadb-container
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: "poppy"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: always
+
+  mongo:
+    build: 
+      context: ./mongodb
+    container_name: mongodb-container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: h2o
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    restart: always
+
+  server:
+    image: h2o_server
+    container_name: server
+    build:
+      context: ./backend/poppy
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mariadb
+      - mongo
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-container:3306/poppy
+      - SPRING_DATASOURCE_USERNAME=h2o
+      - SPRING_DATASOURCE_PASSWORD=s10p31c106
+    restart: always
+
+  client_user:
+    image: h2o_client_user
+    container_name: client-user
+    build:
+      context: ./frontend/user
+    ports:
+      - "3000:80"
+    restart: always
+
+  client_manager:
+    image: h2o_client_manager
+    container_name: client-manager
+    build:
+      context: ./frontend/poppy
+    ports:
+      - "3001:80"
+    restart: always
+
+volumes:
+  mariadb-data:
+  mongodb-data:
