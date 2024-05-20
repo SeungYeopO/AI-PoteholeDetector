@@ -24,11 +24,12 @@ public class PotholeDto {
     private Date startAt;
     private Date expectAt;
     private Date endAt;
+    private String content;
     public PotholeDto() {
-        // 매개변수 없는 생성자 내용
+        
     }
 
-    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt) {
+    public PotholeDto(Long potholePk, Double latitude, Double longitude, Boolean isPothole,String province, String city,String street,Date detectedAt,String state,Date startAt,Date expectAt,Date endAt,String content) {
         this.potholePk = potholePk;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -41,6 +42,7 @@ public class PotholeDto {
         this.startAt = startAt;
         this.expectAt = expectAt;
         this.endAt = endAt;
+        this.content = content;
     }
 
 }

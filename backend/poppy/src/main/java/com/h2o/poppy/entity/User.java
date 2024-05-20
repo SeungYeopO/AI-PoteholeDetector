@@ -40,7 +40,6 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "userPk", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AccidentReport> accidentReport;
 
-    // 생성자
     public User() {
     }
 

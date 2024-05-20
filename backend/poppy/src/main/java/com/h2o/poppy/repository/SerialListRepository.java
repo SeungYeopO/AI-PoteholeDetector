@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerialListRepository extends JpaRepository<SerialList, Long> {
+    SerialList findBySerialNumber(String serialNumber);
 }
