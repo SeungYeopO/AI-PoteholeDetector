@@ -504,6 +504,15 @@ const CompensationReportPage = () => {
     setCurrentPage(pageNumber);
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+      setCurrentDateTime(new Date());
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [data]);
+
+  
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
