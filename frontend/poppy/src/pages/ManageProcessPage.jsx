@@ -421,26 +421,14 @@ const ManageProcessPage = () => {
   ];
   const [isLoading, setIsLoading] = useState(false);
 
-  //  useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('/dummydata/dummydata.json'); // public 디렉토리 기준 경로.
+  const convertToKoreanTime = (isoString) => {
+    const date = new Date(isoString);
+    date.setHours(date.getHours() + 9);
+    return date.toISOString().replace('T', ' ').substring(0, 19);
+  };
 
-  //       if (response.ok) {
-  //         const jsonData = await response.json();
-  //         console.log('더미 데이터 가져오기 성공:', jsonData);
-  //         setData(jsonData);
-  //         setTotalPages(Math.max(Math.ceil(jsonData.length / itemsPerPage), 1));
-  //       } else {
-  //         console.log('더미 데이터 가져오기 실패');
-  //       }
-  //     } catch (error) {
-  //       console.error('더미 데이터 가져오기 실패:', error);
-  //     }
-  //   };
+  
 
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -454,7 +442,12 @@ const ManageProcessPage = () => {
             throw new Error("일단 try 구문은 돌았음");
           }
           const jsonData = await response.json();
-          setData(jsonData.state1Potholes);
+          const convertedData = jsonData.state1Potholes.map(item => ({
+            ...item,
+            detectedAt: convertToKoreanTime(item.detectedAt)
+          }));  
+          console.log('변환후 처리 데이터', convertedData)
+          setData(convertedData);
           setTotalPages(
             Math.max(
               Math.ceil(jsonData.state1Potholes.length / itemsPerPage),
@@ -596,7 +589,11 @@ const ManageProcessPage = () => {
         });
         if (response.ok) {
           const responseData = await response.json();
-          setData(responseData.filteredDate);
+          const convert = responseData.filteredDate.map(item => ({
+            ...item,
+            detectedAt: convertToKoreanTime(item.detectedAt)
+          }));
+          setData(convert);
           setIsLoading(false);
         } else {
           console.log("데이터조회실패");
