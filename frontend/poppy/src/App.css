@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'BlackHanSans';
+  src: url('../public/fonts/전기안전체\ Regular.ttf') format('truetype');
+}
+
+body {
+  font-family: 'BlackHanSans', sans-serif;
+}
