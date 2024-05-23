@@ -491,7 +491,7 @@ const CompensationDonePage = () => {
                   currentData.map((item, index) => (
                     <Lists key={index} onClick={() => handleListClick(item)}>
                       <Info color={color}>{item.state}</Info>
-                      <Info width="48%">{item.reportContent}</Info>
+                      <Info width="48%">{item.reportName}</Info>
                       <Info width="20%">{item.userName}</Info>
                       <Info width="20%">{item.reportDate.slice(0, 10)}</Info>
                     </Lists>
